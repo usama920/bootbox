@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductDetailResource;
+use App\Http\Resources\ProductResource;
+use App\Models\Gender;
 use App\Models\Material;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
+use App\Models\ProductSubscription;
 use App\Models\SafetyResistance;
 use App\Models\Size;
 use App\Models\Style;
 use App\Models\SubCategory;
+use App\Models\Subscription;
 use App\Models\TierLevel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +32,7 @@ class ProductController extends Controller
     {
         return Inertia::render('Product/AllProducts', [
             'products' => Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
-                ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages','ProductSizes')
+                ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages','ProductSizes', 'ProductSubscriptions')
                 ->paginate(10)
         ]);
     }
@@ -35,9 +40,13 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function display()
     {
-        //
+        $products = Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id')
+            ->where('status' , 0)
+            ->with('SubCategoryName', 'ProductImages', 'GenderName')
+            ->get();
+        return response()->json(ProductResource::collection($products));
     }
 
     /**
@@ -45,9 +54,12 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+//        dd($request->all());
         $id = json_decode($request->id, true);
+        $gender = json_decode($request->gender, true);
         $style = json_decode($request->style, true);
         $size = json_decode($request->size, true);
+        $subscription = json_decode($request->subscription, true);
         $subCategory = json_decode($request->subCategory, true);
         $tier = json_decode($request->tier, true);
         $safety = json_decode($request->safety, true);
@@ -58,7 +70,6 @@ class ProductController extends Controller
         $status = json_decode($request->status, true);
         $previous_img = json_decode($request->previous_img, true);
         $length = json_decode($request->length, true);
-//        dd($subCategory);
 
         $product = Product::updateOrCreate([
             'id'=>$id ?? ''
@@ -72,6 +83,7 @@ class ProductController extends Controller
             'materials_id'=>$material ?? '',
             'tier_levels_id'=>$tier ?? '',
             'safety_resistances_id'=>$safety ?? '',
+            'genders_id'=>$gender ?? '',
             'status'=>$status ?? '',
         ]);
 
@@ -84,6 +96,20 @@ class ProductController extends Controller
                 ProductSize::updateOrCreate([
                     'products_id' => $product->id,
                     'sizes_id' => $key,
+                    'status' => $check,
+                ]);
+            }
+        }
+
+        if (!empty($subscription) && count($subscription)>0){
+            foreach ($subscription as $key => $status ) {
+                if (!empty($status) && $status === true)
+                    $check = 1;
+                else
+                    $check = 0;
+                ProductSubscription::updateOrCreate([
+                    'products_id' => $product->id,
+                    'subscriptions_id' => $key,
                     'status' => $check,
                 ]);
             }
@@ -122,15 +148,15 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($slug=''): \Inertia\Response
+    public function show($slug='')
     {
         if(empty($slug))
             return Inertia::render('Product/AddProduct');
         else
             return Inertia::render('Product/AddProduct', [
-                'product_info' => Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+                'product_info' => Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'genders_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
                     ->where('product_slug', $slug)
-                    ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages', 'ProductSizes')
+                    ->with('ProductImages', 'ProductSizes', 'ProductSubscriptions')
                     ->first()
             ]);
     }
@@ -138,17 +164,14 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product): Response
+    public function detail($slug)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Product $product): RedirectResponse
-    {
-        //
+        return Inertia::render('User/ProductDetail', [
+            'product_detail' => new ProductDetailResource(Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+            ->where('product_slug', $slug)
+            ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages', 'ProductSizes', 'GenderName', 'SubscribeOptions')
+            ->first())
+        ]);
     }
 
     /**
@@ -168,6 +191,8 @@ class ProductController extends Controller
         $tier = TierLevel::all();
         $safety = SafetyResistance::all();
         $material = Material::all();
+        $subscription = Subscription::all();
+        $genders = Gender::all();
 
         return response()->json([
             'data1'=> $style,
@@ -176,6 +201,22 @@ class ProductController extends Controller
             'data4'=> $subCategory,
             'data5'=> $tier,
             'data6'=> $safety,
+            'data7'=> $subscription,
+            'data8'=> $genders,
         ]);
+    }
+
+    public function cart (Request $request)
+    {
+        $data = [
+            'size'=>$request->size,
+            'subscription'=>$request->subscription,
+        ];
+        session()->put('product', $data);
+        if (session()->has('product')) {
+            return response()->success();
+        } else {
+            return response()->error('something went wrong', 500);
+        }
     }
 }

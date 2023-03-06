@@ -16,6 +16,7 @@ class Product extends Model
         'status',
         'sub_categories_id',
         'styles_id',
+        'genders_id',
         'materials_id',
         'tier_levels_id',
         'safety_resistances_id'
@@ -41,6 +42,10 @@ class Product extends Model
         return $this->hasOne(TierLevel::class, 'id', 'safety_resistances_id')->select('id', 'name');
     }
 
+    public function GenderName(){
+        return $this->hasOne(Gender::class, 'id', 'genders_id')->select('id', 'name');
+    }
+
     public function ProductImages(){
         return $this->hasMany(ProductImage::class, 'products_id', 'id')->select('id', 'products_id', 'name');
     }
@@ -49,4 +54,11 @@ class Product extends Model
         return $this->hasMany(ProductSize::class, 'products_id', 'id')->select('id', 'products_id', 'sizes_id', 'status')->with('SizeName');
     }
 
+    public function ProductSubscriptions(){
+        return $this->hasMany(ProductSubscription::class, 'products_id', 'id')->select('id', 'products_id', 'subscriptions_id', 'status')->with('SubscriptionName');
+    }
+
+    public function SubscribeOptions (){
+        return $this->hasMany(ProductSubscription::class, 'products_id', 'id')->select('id', 'products_id', 'subscriptions_id', 'status')->where('status', 1)->with('SubscriptionName');
+    }
 }

@@ -15,10 +15,11 @@ class SizeSeeder extends Seeder
     {
         $current_date = now()->toDateTimeString();
         $data = [
-            ['name' => 'small', 'created_at' => $current_date, 'updated_at' => $current_date],
-            ['name' => 'medium', 'created_at' => $current_date, 'updated_at' => $current_date],
-            ['name' => 'large', 'created_at' => $current_date, 'updated_at' => $current_date],
-            ['name' => 'extra large', 'created_at' => $current_date, 'updated_at' => $current_date],
+            ['name' => '8', 'created_at' => $current_date, 'updated_at' => $current_date],
+            ['name' => '9', 'created_at' => $current_date, 'updated_at' => $current_date],
+            ['name' => '10', 'created_at' => $current_date, 'updated_at' => $current_date],
+            ['name' => '11', 'created_at' => $current_date, 'updated_at' => $current_date],
+            ['name' => '12', 'created_at' => $current_date, 'updated_at' => $current_date],
         ];
         Size::insert($data);
     }

@@ -1,22 +1,8 @@
 <?php
 
-use App\Http\Controllers\AccountController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\MaterialController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SafetyResistanceController;
-use App\Http\Controllers\SizeController;
-use App\Http\Controllers\StyleController;
-use App\Http\Controllers\SubCategoryController;
-use App\Http\Controllers\TierLevelController;
-use App\Http\Controllers\UserController;
-use App\Models\Category;
-use App\Models\Material;
-use App\Models\Size;
-use App\Models\Style;
-use App\Models\SubCategory;
+use App\Http\Controllers\{CategoryController, MaterialController, ProductController, SafetyResistanceController,
+    ProfileController, SizeController, StyleController, SubCategoryController, TierLevelController,
+    UserController};
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,7 +25,8 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('welcome-home');
+
 Route::get('/test', function(){
     return view('test');
 })->name('test');
@@ -47,24 +34,47 @@ Route::get('/test', function(){
 //    return Inertia::render('Dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+Route::get('/display-products', [ProductController::class, 'display']);
+Route::get('/product-detail/{slug}', [ProductController::class, 'detail']);
+Route::post('/addToCart', [ProductController::class, 'cart']);
+
+Route::get('/cart-login', function () {
+    return Inertia::render('Auth/Register');
+})->name('cart-login');
+
+Route::get('/contact', function () {
+    return Inertia::render('User/Contact');
+})->name('contact');
+Route::get('/privacy-policy', function () {
+    return Inertia::render('User/Privacy');
+})->name('privacy-policy');
+Route::get('/about', function () {
+    return Inertia::render('User/About');
+})->name('about');
+Route::get('/terms', function () {
+    return Inertia::render('User/Terms');
+})->name('terms');
+
+//Route::middleware('auth')->group(function () {
+//    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+//});
 
 require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
-    //Admin
 
+    //Admin
     Route::middleware('role:1')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
 
-//    Route::get('/category', fn ()=> Inertia::render('ProductDetail/Category') )->name('personal');
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
         Route::get('/category', [CategoryController::class, 'index'])->name('category.index');
         Route::get('/category/{id}', [CategoryController::class, 'show']);
@@ -115,7 +125,7 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    //    User
+//    user
     Route::middleware('role:2')->group(function () {
 
     });

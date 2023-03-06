@@ -1,5 +1,5 @@
 <template>
-    <header class="flex items-center justify-between border-b-4 border-gray-900 bg-white px-6 py-4">
+    <header class="flex items-center justify-between border-y-2 border-black bg-white px-6 py-4">
         <div class="flex items-center">
             <button @click="$page.props.showingMobileMenu = !$page.props.showingMobileMenu" class="text-gray-500 focus:outline-none lg:hidden">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -7,7 +7,6 @@
                 </svg>
             </button>
         </div>
-
         <div class="flex items-center">
             <dropdown>
                 <template #trigger>
@@ -15,12 +14,10 @@
                         {{ $page.props.auth.user.name }}
                     </button>
                 </template>
-
                 <template #content>
                     <dropdown-link :href="route('profile.show')">
                         My profile
                     </dropdown-link>
-
                     <dropdown-link class="w-full text-left" :href="route('logout')" method="post" as="button">
                         Log out
                     </dropdown-link>

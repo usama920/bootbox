@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('status')->nullable(false)->default(0)->comment('0 for show, 1 for hide');
             $table->foreignId('sub_categories_id')->nullable(true)->constrained()->onDelete('cascade');
             $table->foreignId('styles_id')->nullable(true)->constrained()->onDelete('cascade');
+            $table->foreignId('genders_id')->nullable(true)->constrained()->onDelete('cascade');
             $table->foreignId('materials_id')->nullable(true)->constrained()->onDelete('cascade');
             $table->foreignId('tier_levels_id')->nullable(true)->constrained()->onDelete('cascade');
             $table->foreignId('safety_resistances_id')->nullable(true)->constrained()->onDelete('cascade');

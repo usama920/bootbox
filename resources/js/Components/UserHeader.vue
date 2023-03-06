@@ -1,0 +1,123 @@
+<script setup>
+import {Link} from "@inertiajs/vue3";
+
+defineProps({
+    canLogin: Boolean,
+    canRegister: Boolean,
+    laravelVersion: String,
+    phpVersion: String,
+});
+
+</script>
+<template>
+    <nav id="topnav" class="defaultscroll is-sticky py-2">
+        <div class="container">
+            <Link :href="route('welcome-home')" class="logo pl-0" href="#">
+                <div>
+                    <img src="/assets/logo/logo.jpeg" class="inline-block sm:hidden h-20"  alt="">
+                    <div class="sm:block hidden">
+                        <img src="/assets/logo/logo.jpeg" class="inline-block h-20" alt="">
+                    </div>
+                </div>
+            </Link>
+            <div class="menu-extras">
+                <div class="menu-item">
+                    <a class="navbar-toggle" id="isToggle" onclick="toggleMenu()">
+                        <div class="lines">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <ul class="navigation-menu buy-button items-center list-none mb-0">
+                <li class="inline-block mb-0">
+                    <div class="form-icon relative">
+                        <i class="uil uil-search text-lg absolute top-1/2 -translate-y-1/2 left-3"></i>
+                        <input type="text" class="form-input pl-10 rounded-3xl sm:w-44 w-28 bg-white dark:bg-slate-900" name="s" id="searchItem" placeholder="Search...">
+                    </div>
+                </li>
+                <li class="has-submenu parent-menu-item">
+                    <a href="javascript:void(0)">
+                        <i class="fas fa-user text-[20px]"></i>
+                    </a><span class="menu-arrow"></span>
+                    <ul class="submenu">
+                        <template v-if="!!$page.props.auth.user">
+                            <li v-if="$page.props.auth.user?.roles_id === 1">
+                                <Link :href="route('dashboard')" class="hover:text-violet-600 text-[15px] font-semibold">Dashboard</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('logout')" method="post" as="button" class="hover:text-violet-600 text-[15px] px-5 font-semibold">Logout</Link>
+                            </li>
+                        </template>
+                        <template v-else>
+                            <li>
+                                <Link :href="route('login')" class="hover:text-violet-600 text-[15px] font-semibold">Login</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('register')" class="hover:text-violet-600 text-[15px] font-semibold">Signup</Link>
+                            </li>
+                        </template>
+                    </ul>
+                </li>
+            </ul>
+            <div id="navigation">
+                <ul class="navigation-menu justify-center space-x-4">
+                    <li class="has-submenu parent-menu-item">
+                        <a href="javascript:void(0)">Home</a><span class="menu-arrow"></span>
+                        <ul class="submenu">
+                            <li><a href="#" class="sub-menu-item">{{ !!$page.props.auth.user }}</a></li>
+                            <li><a href="#" class="sub-menu-item">Home Two</a></li>
+                            <li><a href="#" class="sub-menu-item">Home Three</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-submenu parent-menu-item">
+                        <a href="javascript:void(0)">Products</a><span class="menu-arrow"></span>
+                        <ul class="submenu">
+                            <li><a href="#" class="sub-menu-item">Men</a></li>
+                            <li><a href="#" class="sub-menu-item">Women</a></li>
+                            <li><a href="#" class="sub-menu-item">All</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#" class="sub-menu-item">Cart</a></li>
+                    <li class="has-submenu parent-parent-menu-item">
+                        <a href="javascript:void(0)">Pages</a><span class="menu-arrow"></span>
+                        <ul class="submenu">
+                            <li>
+                                <Link :href="route('about')" class="sub-menu-item">About Us</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('contact')" class="sub-menu-item">Contact Us</Link>
+                            </li>
+                            <li class="has-submenu parent-menu-item"><a href="javascript:void(0)"> Special </a><span class="submenu-arrow"></span>
+                                <ul class="submenu">
+                                    <li><a href="#" class="sub-menu-item"> Coming Soon</a></li>
+                                    <li><a href="#" class="sub-menu-item"> Maintenance</a></li>
+                                    <li><a href="#" class="sub-menu-item"> 404!</a></li>
+                                    <li><a href="#" class="sub-menu-item"> Thank you</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-submenu parent-menu-item"><a href="javascript:void(0)"> Help Center </a><span class="submenu-arrow"></span>
+                                <ul class="submenu">
+                                    <li><a href="#" class="sub-menu-item"> Overview</a></li>
+                                    <li><a href="#" class="sub-menu-item"> FAQs</a></li>
+                                    <li><a href="#" class="sub-menu-item"> Guides</a></li>
+                                    <li><a href="#" class="sub-menu-item"> Support</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <Link :href="route('contact')" class="sub-menu-item">Terms Policy</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('contact')" class="sub-menu-item">Privacy Policy</Link>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</template>
+
+

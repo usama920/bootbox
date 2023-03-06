@@ -80,11 +80,26 @@
                     <option v-for="data in options.material" :value="data?.id">{{data?.name}}</option>
                 </select>
             </div>
+            <div>
+                <label class="font-bold">Gender:</label>
+                <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.gender}}</span>
+                <select v-model="productInfo.gender" class="w-full border-gray-500 bg-white p-[9px] border rounded">
+                    <option value="0" disabled>select option</option>
+                    <option v-for="data in options.gender" :value="data?.id">{{data?.name}}</option>
+                </select>
+            </div>
             <div class="">
-                <label class="font-bold">Size:</label>
+                <label class="font-bold">Available Sizes:</label>
                 <div v-for="data in options.size">
-                    <input  v-model="productInfo.size[data.id]" :checked="productInfo.size[data.id] === true" type="checkbox" :id="'size'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
+                    <input v-model="productInfo.size[data.id]" :checked="productInfo.size[data.id] === true" type="checkbox" :id="'size'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
                     <label :for="'size'+data?.id+'boots'">{{data?.name}}</label>
+                </div>
+            </div>
+            <div class="">
+                <label class="font-bold">Available Subscriptions:</label>
+                <div v-for="data in options.subscription">
+                    <input v-model="productInfo.subscription[data.id]" :checked="productInfo.subscription[data.id] === true" type="checkbox" :id="'sub'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
+                    <label :for="'sub'+data?.id+'boots'">{{data?.name}}</label>
                 </div>
             </div>
         </form>
@@ -107,13 +122,13 @@ import commonFunctions from "@/use/common";
 
 const { Toast, ConfirmToast } = commonFunctions()
 
-const productInfo = ref({id:'', previous_img:[], style:0, size:{}, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
+const productInfo = ref({id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{}, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
     baseUrl = window.location.origin,
     errors = ref([]),
     ImagesUri = ref([]),
     disable = ref(false),
     productError = ref({image:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
-    options = ref({style:{}, size:{}, subCategory:{}, tier:{}, safety:{}, material:{}})
+    options = ref({style:{}, size:{}, subscription:{}, subCategory:{}, tier:{}, gender:{}, safety:{}, material:{}})
 
 const props = defineProps({
     product_info: Object
@@ -206,26 +221,37 @@ const productDetail = () =>{
                 options.value.subCategory = !!response?.data?.data4 ? response?.data?.data4:{}
                 options.value.tier = !!response?.data?.data5 ? response?.data?.data5:{}
                 options.value.safety = !!response?.data?.data6 ? response?.data?.data6:{}
+                options.value.subscription = !!response?.data?.data7 ? response?.data?.data7:{}
+                options.value.gender = !!response?.data?.data8 ? response?.data?.data8:{}
             }
         })
 }
 
 const productInformation = () =>{
     productInfo.value.id = props?.product_info?.id
-    productInfo.value.name = props?.product_info?.product_name
-    productInfo.value.description = props?.product_info?.description
-    productInfo.value.price = props?.product_info?.product_price
-    productInfo.value.status = props?.product_info?.status
-    productInfo.value.material = props?.product_info?.material_name?.id
-    productInfo.value.subCategory = props?.product_info?.sub_categories_id
-    productInfo.value.safety = props?.product_info?.safety_name?.id
-    productInfo.value.tier = props?.product_info?.tier_name?.id
-    productInfo.value.style = props?.product_info?.style_name?.id
+    productInfo.value.name = !!props?.product_info?.product_name ? props?.product_info?.product_name:''
+    productInfo.value.description = !!props?.product_info?.description ? props?.product_info?.description:''
+    productInfo.value.price = !!props?.product_info?.product_price ? props?.product_info?.product_price:''
+    productInfo.value.status = !!props?.product_info?.status ? props?.product_info?.status: 0
+    productInfo.value.material = !!props?.product_info?.materials_id ? props?.product_info?.materials_id:0
+    productInfo.value.subCategory = !!props?.product_info?.sub_categories_id ? props?.product_info?.sub_categories_id:0
+    productInfo.value.safety = !!props?.product_info?.safety_resistances_id ? props?.product_info?.safety_resistances_id:0
+    productInfo.value.tier = !!props?.product_info?.tier_levels_id ? props?.product_info?.tier_levels_id:0
+    productInfo.value.style = !!props?.product_info?.styles_id ? props?.product_info?.styles_id:0
+    productInfo.value.gender = !!props?.product_info?.genders_id ? props?.product_info?.genders_id:0
+ console.log(props.product_info)
     if(!!props?.product_info?.product_images)
         productInfo.value.previous_img = props?.product_info?.product_images
+
     if(!!props?.product_info?.product_sizes && props?.product_info?.product_sizes.length>0){
         _.forEach(props?.product_info?.product_sizes, function (value, key) {
             productInfo.value.size[value?.sizes_id] = value?.status === 1;
+        });
+    }
+
+    if(!!props?.product_info?.product_subscriptions && props?.product_info?.product_subscriptions.length>0){
+        _.forEach(props?.product_info?.product_subscriptions, function (value, key) {
+            productInfo.value.subscription[value?.subscriptions_id] = value?.status === 1;
         });
     }
 }
