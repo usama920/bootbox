@@ -17,8 +17,6 @@ class GenderSeeder extends Seeder
         $data = [
             ['name' => 'Men', 'created_at' => $current_date, 'updated_at' => $current_date],
             ['name' => 'Women', 'created_at' => $current_date, 'updated_at' => $current_date],
-            ['name' => 'Both Men & Women', 'created_at' => $current_date, 'updated_at' => $current_date],
-            ['name' => 'Kids', 'created_at' => $current_date, 'updated_at' => $current_date],
         ];
         Gender::insert($data);
     }

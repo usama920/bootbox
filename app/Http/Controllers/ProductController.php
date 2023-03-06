@@ -40,11 +40,42 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function display()
+    public function displayProducts()
     {
         $products = Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id')
             ->where('status' , 0)
             ->with('SubCategoryName', 'ProductImages', 'GenderName')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        return response()->json(ProductResource::collection($products));
+    }
+
+    public function displayAllProduct()
+    {
+        $products = Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id')
+            ->where('status' , 0)
+            ->with('SubCategoryName', 'ProductImages', 'GenderName')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        return response()->json(ProductResource::collection($products));
+    }
+
+    public function displayMenProduct()
+    {
+        $products = Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id')
+            ->where(array('status'=> 0, 'genders_id'=>1))
+            ->with('SubCategoryName', 'ProductImages', 'GenderName')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        return response()->json(ProductResource::collection($products));
+    }
+
+    public function displayWomenProduct()
+    {
+        $products = Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id')
+            ->where(array('status'=> 0, 'genders_id'=>2))
+            ->with('SubCategoryName', 'ProductImages', 'GenderName')
+            ->orderBy('created_at', 'DESC')
             ->get();
         return response()->json(ProductResource::collection($products));
     }
@@ -206,7 +237,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function cart (Request $request)
+    public function addInCart (Request $request)
     {
         $data = [
             'size'=>$request->size,

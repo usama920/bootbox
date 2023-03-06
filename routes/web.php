@@ -30,13 +30,15 @@ Route::get('/', function () {
 Route::get('/test', function(){
     return view('test');
 })->name('test');
-//Route::get('/dashboard', function () {
-//    return Inertia::render('Dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/display-products', [ProductController::class, 'display']);
+Route::get('/display-all-products', [ProductController::class, 'displayAllProduct']);
+Route::get('/display-men-products', [ProductController::class, 'displayMenProduct']);
+Route::get('/display-women-products', [ProductController::class, 'displayWomenProduct']);
+
+Route::get('/display-products', [ProductController::class, 'displayProducts']);
+
 Route::get('/product-detail/{slug}', [ProductController::class, 'detail']);
-Route::post('/addToCart', [ProductController::class, 'cart']);
+Route::post('/addToCart', [ProductController::class, 'addInCart']);
 
 Route::get('/cart-login', function () {
     return Inertia::render('Auth/Register');
@@ -45,6 +47,15 @@ Route::get('/cart-login', function () {
 Route::get('/contact', function () {
     return Inertia::render('User/Contact');
 })->name('contact');
+Route::get('/show-products/all', function () {
+    return Inertia::render('User/Products');
+})->name('show_products_all');
+Route::get('/show-products/men', function () {
+    return Inertia::render('User/Products');
+})->name('show_products_men');
+Route::get('/show-products/women', function () {
+    return Inertia::render('User/Products');
+})->name('show_products_women');
 Route::get('/privacy-policy', function () {
     return Inertia::render('User/Privacy');
 })->name('privacy-policy');
@@ -54,6 +65,9 @@ Route::get('/about', function () {
 Route::get('/terms', function () {
     return Inertia::render('User/Terms');
 })->name('terms');
+Route::get('/privacy', function () {
+    return Inertia::render('User/Privacy');
+})->name('privacy');
 
 //Route::middleware('auth')->group(function () {
 //    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -64,10 +78,8 @@ Route::get('/terms', function () {
 require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
-
-    //Admin
     Route::middleware('role:1')->group(function () {
-
+        //Admin
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard');
         })->name('dashboard');
@@ -126,7 +138,10 @@ Route::middleware('auth')->group(function () {
     });
 
 //    user
-    Route::middleware('role:2')->group(function () {
 
+    Route::middleware('role:2')->group(function () {
+        Route::get('/cart', function () {
+            return Inertia::render('User/Cart');
+        })->name('cart');
     });
 });

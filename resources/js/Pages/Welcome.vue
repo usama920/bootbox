@@ -17,12 +17,11 @@ const displayProducts = () =>{
     axios
         .get('/display-products')
         .then((response)=>{
-            console.log(products.value = response.data)
+            products.value = response.data
         })
 }
 
 const openProduct = (slug) =>{
-    console.log(slug)
     router.visit('product-detail/'+slug)
 }
 
@@ -49,7 +48,7 @@ onMounted(()=>{
                             </div>
                             <p class="text-slate-400 dark:text-white/70 text-lg max-w-xl mx-auto">We have best boots collection with quality and comfort!</p>
                             <div class="mt-8">
-                                <a href="#" class="btn bg-gray-700 hover:bg-gray-900 border-white hover:border-white text-white rounded-full">Explore Products</a>
+                                <Link :href="route('show_products_all')" class="btn bg-gray-700 hover:bg-gray-900 border-white hover:border-white text-white rounded-full">Explore Products</Link>
                             </div>
                         </div>
                     </div>
@@ -102,7 +101,7 @@ onMounted(()=>{
                          </div>
                          <div class="grid grid-cols-1 mt-6">
                              <div class="text-center">
-                                 <a href="#" class="btn btn-link text-[16px] font-medium hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">Explore More <i class="uil uil-arrow-right"></i></a>
+                                 <Link :href="route('show_products_all')" class="btn btn-link text-[16px] font-medium hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">Explore More <i class="uil uil-arrow-right"></i></Link>
                              </div>
                          </div>
                      </div>
@@ -113,103 +112,109 @@ onMounted(()=>{
                          <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-10 gap-[30px]">
                              <div v-for="data in 6" class="flex justify-between items-center p-3 rounded-md bg-white dark:bg-slate-900 shadow dark:shadow-gray-800">
                                  <div class="flex items-center">
-                                     <div class="relative inline-block">
-                                         <img src="/assets/images/avatar/1.jpg" class="h-16 rounded-md" alt="">
-                                         <i class="mdi mdi-check-decagram text-emerald-600 text-lg absolute -top-2 -right-2"></i>
-                                     </div>
                                      <div class="ml-3">
-                                         <a href="#" class="font-semibold block hover:text-violet-600">Steven Townsend</a>
-                                         <span class="text-slate-400 text-sm block mt-0.5">@StreetBoy</span>
+                                         <span class="font-semibold block hover:text-violet-600">Steven Townsend</span>
+                                         <span class="text-slate-400 whitespace-nowrap truncate... text-sm block mt-0.5">One on best product. Highly recommended</span>
                                      </div>
                                  </div>
-                                 <a href="" class="btn btn-icon rounded-full bg-violet-600/5 hover:bg-violet-600 border-violet-600/10 hover:border-violet-600 text-violet-600 hover:text-white"><i class="uil uil-user-plus text-[20px]"></i></a>
                              </div>
                          </div>
                      </div>
                      <div class="container md:mt-24 mt-16">
                          <div class="grid grid-cols-1 text-center">
                              <h3 class="mb-4 md:text-3xl text-2xl md:leading-snug leading-snug font-semibold">Q&A</h3>
-
                              <p class="text-slate-400 max-w-xl mx-auto">We are a huge marketplace dedicated to connecting great artists of all Giglink with their fans and unique token collectors!</p>
                          </div>
-
-                         <div class="flex justify-center mt-10">
-                             <div class="lg:w-2/3">
-                                 <div id="accordion-collapseone" data-accordion="collapse" class="mt-6">
-                                     <div class="relative shadow dark:shadow-gray-800 rounded-md overflow-hidden">
-                                         <h2 class="text-base font-semibold" id="accordion-collapse-heading-1">
-                                             <button type="button" class="flex justify-between items-center p-5 w-full font-semibold text-left" data-accordion-target="#accordion-collapse-body-1" aria-expanded="true" aria-controls="accordion-collapse-body-1">
-                                                 <span>How does it work ?</span>
-                                                 <svg data-accordion-icon class="w-4 h-4 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                                 </svg>
-                                             </button>
-                                         </h2>
-                                         <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
-                                             <div class="p-5">
-                                                 <p class="text-slate-400 dark:text-gray-400">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.</p>
-                                             </div>
-                                         </div>
+                         <div id="accordionExample">
+                             <div class="rounded-t-lg bg-transparent dark:border-neutral-600 dark:bg-neutral-800">
+                                 <h2 class="mb-0" id="headingOne">
+                                     <button class="group relative flex w-full items-center rounded-t-[15px] border-0 bg-transparent py-4 px-5 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none dark:bg-neutral-800 dark:text-white [&:not([data-te-collapse-collapsed])]:bg-transparent [&:not([data-te-collapse-collapsed])]:text-primary [&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(229,231,235)] dark:[&:not([data-te-collapse-collapsed])]:bg-neutral-800 dark:[&:not([data-te-collapse-collapsed])]:text-primary-400 dark:[&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(75,85,99)]"
+                                         type="button" data-te-collapse-init data-te-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                         How does it work ?
+                                        <span class="ml-auto h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
+                                            <i class="fa-sharp fa-solid fa-caret-down"></i>
+                                        </span>
+                                     </button>
+                                 </h2>
+                                 <div id="collapseOne" class="!visible" data-te-collapse-item data-te-collapse-show aria-labelledby="headingOne" data-te-parent="#accordionExample">
+                                     <div class="py-4 px-5">
+                                         <strong>This is the first item's accordion body.</strong> It is
+                                         shown by default, until the collapse plugin adds the appropriate
+                                         classes that we use to style each element. These classes control
+                                         the overall appearance, as well as the showing and hiding via CSS
+                                         transitions. You can modify any of this with custom CSS or
+                                         overriding our default variables. It's also worth noting that just
+                                         about any HTML can go within the <code>.accordion-body</code>,
+                                         though the transition does limit overflow.
                                      </div>
-
-                                     <div class="relative shadow dark:shadow-gray-800 rounded-md overflow-hidden mt-4">
-                                         <h2 class="text-base font-semibold" id="accordion-collapse-heading-2">
-                                             <button type="button" class="flex justify-between items-center p-5 w-full font-semibold text-left" data-accordion-target="#accordion-collapse-body-2" aria-expanded="false" aria-controls="accordion-collapse-body-2">
-                                                 <span>Do I need a designer to use Giglink ?</span>
-                                                 <svg data-accordion-icon class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                                 </svg>
-                                             </button>
-                                         </h2>
-                                         <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-2">
-                                             <div class="p-5">
-                                                 <p class="text-slate-400 dark:text-gray-400">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.</p>
-                                             </div>
-                                         </div>
+                                 </div>
+                             </div>
+                             <div class=" bg-transparent dark:border-neutral-600 dark:bg-neutral-800">
+                                 <h2 class="mb-0" id="headingTwo">
+                                     <button class="group relative flex w-full items-center rounded-none border-0 bg-transparent py-4 px-5 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none dark:bg-neutral-800 dark:text-white [&:not([data-te-collapse-collapsed])]:bg-transparent [&:not([data-te-collapse-collapsed])]:text-primary [&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(229,231,235)] dark:[&:not([data-te-collapse-collapsed])]:bg-neutral-800 dark:[&:not([data-te-collapse-collapsed])]:text-primary-400 dark:[&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(75,85,99)]"
+                                         type="button"
+                                         data-te-collapse-init
+                                         data-te-collapse-collapsed
+                                         data-te-target="#collapseTwo"
+                                         aria-expanded="false"
+                                         aria-controls="collapseTwo">
+                                         Accordion Item #2
+                                         <span class="ml-auto -mr-1 h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:mr-0 group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
+                                             <i class="fa-sharp fa-solid fa-caret-down"></i>
+                                         </span>
+                                     </button>
+                                 </h2>
+                                 <div id="collapseTwo" class="!visible hidden" data-te-collapse-item aria-labelledby="headingTwo" data-te-parent="#accordionExample">
+                                     <div class="py-4 px-5">
+                                         <strong>This is the second item's accordion body.</strong> It is
+                                         hidden by default, until the collapse plugin adds the appropriate
+                                         classes that we use to style each element. These classes control
+                                         the overall appearance, as well as the showing and hiding via CSS
+                                         transitions. You can modify any of this with custom CSS or
+                                         overriding our default variables. It's also worth noting that just
+                                         about any HTML can go within the <code>.accordion-body</code>,
+                                         though the transition does limit overflow.
                                      </div>
-
-                                     <div class="relative shadow dark:shadow-gray-800 rounded-md overflow-hidden mt-4">
-                                         <h2 class="text-base font-semibold" id="accordion-collapse-heading-3">
-                                             <button type="button" class="flex justify-between items-center p-5 w-full font-semibold text-left" data-accordion-target="#accordion-collapse-body-3" aria-expanded="false" aria-controls="accordion-collapse-body-3">
-                                                 <span>What do I need to do to start selling ?</span>
-                                                 <svg data-accordion-icon class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                                 </svg>
-                                             </button>
-                                         </h2>
-                                         <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-3">
-                                             <div class="p-5">
-                                                 <p class="text-slate-400 dark:text-gray-400">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.</p>
-                                             </div>
-                                         </div>
-                                     </div>
-
-                                     <div class="relative shadow dark:shadow-gray-800 rounded-md overflow-hidden mt-4">
-                                         <h2 class="text-base font-semibold" id="accordion-collapse-heading-4">
-                                             <button type="button" class="flex justify-between items-center p-5 w-full font-semibold text-left" data-accordion-target="#accordion-collapse-body-4" aria-expanded="false" aria-controls="accordion-collapse-body-4">
-                                                 <span>What happens when I receive an order ?</span>
-                                                 <svg data-accordion-icon class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                                 </svg>
-                                             </button>
-                                         </h2>
-                                         <div id="accordion-collapse-body-4" class="hidden" aria-labelledby="accordion-collapse-heading-4">
-                                             <div class="p-5">
-                                                 <p class="text-slate-400 dark:text-gray-400">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form.</p>
-                                             </div>
-                                         </div>
+                                 </div>
+                             </div>
+                             <div class="rounded-b-lg bg-transparent">
+                                 <h2 class="accordion-header mb-0" id="headingThree">
+                                     <button class="group relative flex w-full items-center border-0 bg-transparent py-4 px-5 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none dark:bg-neutral-800 dark:text-white [&:not([data-te-collapse-collapsed])]:bg-transparent [&:not([data-te-collapse-collapsed])]:text-primary [&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(229,231,235)] dark:[&:not([data-te-collapse-collapsed])]:bg-neutral-800 dark:[&:not([data-te-collapse-collapsed])]:text-primary-400 dark:[&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(75,85,99)] [&[data-te-collapse-collapsed]]:rounded-b-[15px] [&[data-te-collapse-collapsed]]:transition-none"
+                                         type="button" data-te-collapse-init data-te-collapse-collapsed data-te-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                         Accordion Item #3
+                                        <span class="ml-auto -mr-1 h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:mr-0 group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
+                                            <i class="fa-sharp fa-solid fa-caret-down"></i>
+                                        </span>
+                                     </button>
+                                 </h2>
+                                 <div id="collapseThree"
+                                     class="!visible hidden"
+                                     data-te-collapse-item
+                                     aria-labelledby="headingThree"
+                                     data-te-parent="#accordionExample">
+                                     <div class="py-4 px-5">
+                                         <strong>This is the third item's accordion body.</strong> It is
+                                         hidden by default, until the collapse plugin adds the appropriate
+                                         classes that we use to style each element. These classes control
+                                         the overall appearance, as well as the showing and hiding via CSS
+                                         transitions. You can modify any of this with custom CSS or
+                                         overriding our default variables. It's also worth noting that just
+                                         about any HTML can go within the <code>.accordion-body</code>,
+                                         though the transition does limit overflow.
                                      </div>
                                  </div>
                              </div>
                          </div>
                      </div>
-
                      <div class="container md:mt-24 mt-16">
                          <div class="grid grid-cols-1 text-center">
                              <h3 class="mb-4 md:text-3xl text-2xl md:leading-snug leading-snug font-semibold">Have Question ? Get in touch!</h3>
                              <p class="text-slate-400 max-w-xl mx-auto">We are a huge marketplace dedicated to connecting great artists of all Giglink with their fans and unique token collectors!</p>
                              <div class="mt-6">
-                                 <a href="#" class="btn bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white rounded-full mr-2 mt-2"><i class="uil uil-phone"></i> Contact us</a>
+                                 <Link :href="route('contact')" class="btn bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white rounded-full mr-2 mt-2">
+                                     <i class="uil uil-phone"></i>
+                                     Contact us
+                                 </Link>
                              </div>
                          </div>
                      </div>

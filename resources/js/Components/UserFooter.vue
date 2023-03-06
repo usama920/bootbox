@@ -1,5 +1,9 @@
 <script setup>
 import {Link} from "@inertiajs/vue3";
+
+const yearShow = () =>{
+    return new Date().getFullYear()
+}
 </script>
 <template>
     <footer class="footer bg-dark-footer relative text-gray-200 dark:text-gray-200 mt-24">
@@ -42,10 +46,10 @@ import {Link} from "@inertiajs/vue3";
                                         <Link :href="route('about')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> About Us</Link>
                                     </li>
                                     <li class="mt-[10px]">
-                                        <a href="#" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Terms & Condition</a>
+                                        <Link :href="route('terms')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Terms & Condition</Link>
                                     </li>
                                     <li class="mt-[10px]">
-                                        <a href="#" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Privacy policy</a>
+                                        <Link :href="route('privacy')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Privacy policy</Link>
                                     </li>
                                     <li class="mt-[10px]">
                                         <Link :href="route('contact')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Contact Us</Link>
@@ -78,7 +82,9 @@ import {Link} from "@inertiajs/vue3";
             <div class="container text-center">
                 <div class="grid md:grid-cols-2 items-center gap-6">
                     <div class="md:text-left text-center">
-                        <p class="mb-0 text-gray-300">© Boot Box <i class="mdi mdi-heart text-red-600"></i>
+                        <p class="mb-0 text-gray-300">©
+                            {{ yearShow() }} Boot Box. Develop by <i class="mdi mdi-heart text-red-600"></i>
+                            <a href="https://shreethemes.in/" target="_blank" class="text-reset"> Usama Aslam</a>.
                         </p>
                     </div>
                     <ul class="list-none md:text-right space-x-4 text-center">
