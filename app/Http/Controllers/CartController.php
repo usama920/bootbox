@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,9 +37,13 @@ class CartController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Cart $cart): Response
+    public function show()
     {
-        //
+        $cart = Cart::select('id', 'products_id', 'quantity', 'sizes_id', 'subscription_price', 'subscriptions_id', 'total_price', 'users_id')
+            ->where('users_id', auth()->user()->id)
+            ->with('CartProduct', 'CartSize', 'CartSubscription')
+            ->get();
+        return response()->success(CartResource::collection($cart));
     }
 
     /**
@@ -60,8 +65,9 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Cart $cart): RedirectResponse
+    public function destroy($id)
     {
-        //
+        Cart::where('id', $id)->delete();
+        return response()->success();
     }
 }

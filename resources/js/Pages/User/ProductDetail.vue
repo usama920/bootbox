@@ -1,16 +1,65 @@
 <script setup>
-import {Head, Link, router} from '@inertiajs/vue3';
-import UserLayout from '@/Layouts/UserLayout.vue'
+import UserLayout from '@/Layouts/UserLayout.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Head, router, Link, useForm } from '@inertiajs/vue3';
+import ModalDialog from '@/Components/ModalDialog.vue';
 import {onMounted, ref} from "vue";
+import commonFunctions from "@/use/common";
+import { usePage } from '@inertiajs/vue3';
 
-const baseUrl = window.location.origin,
-    showSubscribe = ref({first: 0, second:0}),
-    product = ref({size:'', subscription:''}),
-    error = ref({size:'', subscription:''})
+const { Toast, ConfirmToast } = commonFunctions(),
+    user = ref(usePage())
 
 const props = defineProps({
     product_detail: Object,
+    canResetPassword: Boolean,
+    status: String,
 });
+
+const loginForm = useForm({
+        email: '',
+        password: '',
+        remember: false,
+        cart: true
+    }),
+    registerForm = useForm({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        terms: false,
+        cart: true
+    }),
+    baseUrl = window.location.origin,
+    showSubscribe = ref({first: 0, second:0}),
+    product = ref({size:'', subscription:'', slug:''}),
+    error = ref({size:'', subscription:''}),
+    disable = ref({show: false, text: 'Add to Cart'})
+
+const submitRegister = () => {
+    registerForm.post(route('register'), {
+        onFinish: (()=>{
+            registerForm.reset('password', 'password_confirmation')
+            $('#registerModal').modal('hide')
+            Toast.fire({icon: "success", title: "Account Registered Successfully"})
+            user.value = usePage()
+        })
+    })
+};
+
+const submitLogin = () => {
+    loginForm.post(route('login'), {
+        onFinish: (()=>{
+            loginForm.reset('password')
+            $('#loginModal').modal('hide')
+            Toast.fire({icon: "success", title: "Account Logged in Successfully"})
+            user.value = usePage()
+        })
+    })
+};
 
 const subValidation = () =>{
     error.value = {size:'', subscription:''}
@@ -20,11 +69,13 @@ const subValidation = () =>{
         error.value.subscription='*select a subscription option'
     return error.value.size === '' && error.value.subscription === ''
 }
+
 const showSubscribeSecond = () =>{
     const valid = subValidation()
     if (valid)
         showSubscribe.value.second = 1
 }
+
 const monthlyPayment = () =>{
     if (parseInt(product.value.subscription) === 1){
         let test = parseInt(props.product_detail?.data?.price)/3
@@ -41,23 +92,42 @@ const monthlyPayment = () =>{
 }
 
 const addCart = () =>{
+    console.log(user.value.props?.auth?.user)
+    product.value.slug = props.product_detail?.data?.product_slug
     const valid = subValidation()
     if (valid){
-        axios
-            .post('/addToCart', product.value)
-            .then((response)=>{
-                if(response.data.success){
-                    if(!props?.auth)
-                        router.visit('/cart-login')
-                }
-            })
+        if(!!user.value?.props?.auth?.user){
+            disable.value.show = true
+            axios
+                .post('/addToCart', product.value)
+                .then((response)=>{
+                    if(response.data.success){
+                        Toast.fire({icon: "success", title: "Product Added to Cart!"})
+                        disable.value.text = 'Added to Cart'
+                        disable.value.show = true
+                    }else
+                        disable.value.show = false
+                })
+        }else
+            $('#loginModal').modal('show');
     }
 }
 
-onMounted(()=>{
-    console.log(!!props?.auth)
+const CloseModal = () =>{
+    registerForm.reset('password', 'password_confirmation')
+    loginForm.reset('password')
+}
 
-})
+const signUpModal = () =>{
+    $('#loginModal').modal('hide')
+    $('#registerModal').modal('show')
+}
+
+const loginModal = () =>{
+    $('#registerModal').modal('hide')
+    $('#loginModal').modal('show')
+}
+
 </script>
 <template>
     <Head title="Product Detail" />
@@ -169,9 +239,9 @@ onMounted(()=>{
                                         </div>
                                     </div>
                                     <div class="p-5 flex justify-center">
-                                        <span @click="addCart()" class="cursor-pointer px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
-                                             Add to Cart
-                                        </span>
+                                        <button :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" @click="addCart()" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                                             {{ disable.text }}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -181,6 +251,76 @@ onMounted(()=>{
             </section>
         </UserLayout>
     </div>
+    <modal-dialog ModalId="loginModal" @CloseModal="CloseModal">
+        <div class="mx-auto">
+            <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+                {{ status }}
+            </div>
+            <form @submit.prevent="submitLogin">
+                <div>
+                    <InputLabel for="email" value="Email" />
+                    <TextInput id="email" type="email" class="mt-1 block w-full" v-model="loginForm.email" required autofocus autocomplete="username" />
+                    <InputError class="mt-2" :message="loginForm.errors.email" />
+                </div>
+                <div class="mt-3">
+                    <InputLabel for="password" value="Password" />
+                    <TextInput id="password" type="password" class="mt-1 block w-full" v-model="loginForm.password" required autocomplete="current-password" />
+                    <InputError class="mt-2" :message="loginForm.errors.password" />
+                </div>
+                <div class="mt-4 flex justify-center">
+                    <div @click="signUpModal()" class="text-sm pr-4 cursor-pointer text-gray-600 underline hover:text-gray-900">
+                        Signup
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <PrimaryButton class="w-full" :class="{ 'opacity-25': loginForm.processing }" :disabled="loginForm.processing">
+                        Log in
+                    </PrimaryButton>
+                </div>
+            </form>
+        </div>
+    </modal-dialog>
+    <modal-dialog ModalId="registerModal" @CloseModal="CloseModal">
+        <div class="mx-auto">
+            <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+                {{ status }}
+            </div>
+            <form @submit.prevent="submitRegister">
+                <div>
+                    <InputLabel for="name" value="Name" />
+                    <TextInput id="name" type="text" class="mt-1 block w-full" v-model="registerForm.name" required autofocus autocomplete="name" />
+                    <InputError class="mt-2" :message="registerForm.errors.name" />
+                </div>
+
+                <div class="mt-3">
+                    <InputLabel for="email" value="Email" />
+                    <TextInput id="email" type="email" class="mt-1 block w-full" v-model="registerForm.email" required autocomplete="username" />
+                    <InputError class="mt-2" :message="registerForm.errors.email" />
+                </div>
+
+                <div class="mt-3">
+                    <InputLabel for="password" value="Password" />
+                    <TextInput id="password" type="password" class="mt-1 block w-full" v-model="registerForm.password" required autocomplete="new-password" />
+                    <InputError class="mt-2" :message="registerForm.errors.password" />
+                </div>
+
+                <div class="mt-3">
+                    <InputLabel for="password_confirmation" value="Confirm Password" />
+                    <TextInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="registerForm.password_confirmation" required autocomplete="new-password" />
+                    <InputError class="mt-2" :message="registerForm.errors.password_confirmation" />
+                </div>
+
+                <div class="mt-4 flex flex-col items-end">
+                    <PrimaryButton class="w-full" :class="{ 'opacity-25': registerForm.processing }" :disabled="registerForm.processing">
+                        Register
+                    </PrimaryButton>
+                    <div @click="loginModal()" class="text-sm cursor-pointer text-gray-600 underline hover:text-gray-900">
+                        Already registered?
+                    </div>
+                </div>
+            </form>
+        </div>
+    </modal-dialog>
 </template>
 <style scoped>
 

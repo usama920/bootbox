@@ -2,9 +2,13 @@
 import {Head, Link, router} from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
 import {onMounted, ref} from "vue";
+import commonFunctions from "@/use/common";
 
-const products = ref({}),
-    baseUrl = window.location.origin
+const { Toast, ConfirmToast } = commonFunctions(),
+    products = ref({}),
+    price = ref({total: 0, sub_total:0}),
+    baseUrl = window.location.origin,
+    cart = ref([])
 
 defineProps({
     canLogin: Boolean,
@@ -14,7 +18,38 @@ defineProps({
 });
 
 const displayCart = () =>{
+    axios
+        .get('/cart-items')
+        .then((response)=>{
+           cart.value = response?.data?.data
+            if (cart.value.length>0)
+                totalPrice(cart.value)
+        })
+}
+function totalPrice(cart) {
+    price.value.total = cart.reduce((total, item) => {
+        return total + parseInt(item?.price);
+    }, 0);
+    price.value.sub_total = cart.reduce((total, item) => {
+        return total + parseFloat(item?.sub_price);
+    }, 0);
+}
 
+const removeCart = (id) =>{
+    if (!!id){
+        ConfirmToast.fire({}).then((confirmed) => {
+            if (confirmed.isConfirmed === true) {
+                axios
+                    .delete('/cart/'+id)
+                    .then((response) => {
+                        if(response.data.success) {
+                            Toast.fire({icon: "success", title: "Product removed from Cart!"})
+                            displayCart()
+                        }
+                    })
+            }
+        })
+    }
 }
 
 onMounted(()=>{
@@ -49,12 +84,15 @@ onMounted(()=>{
             </section>
             <section class="relative">
                 <div class="container">
-                    <div class="overflow-x-auto">
-                        <table v-if="true" class="min-w-full text-left text-sm font-light">
+                    <div v-if="cart?.length>0" class="overflow-x-auto">
+                        <table class="min-w-full text-left text-sm font-light">
                             <thead>
                             <tr class="border-b !text-left text-white text-[16px] bg-transparent whitespace-nowrap text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
                                 <th class="py-5">
                                     Products
+                                </th>
+                                <th class="py-5">
+                                    Size
                                 </th>
                                 <th class="py-5">
                                     Quantity
@@ -74,34 +112,69 @@ onMounted(()=>{
                             </tr>
                             </thead>
                             <tbody>
-                            <tr class="text-[16px] font-sans text-white">
-                                <td class="">
-                                    <p class="whitespace-no-wrap">1</p>
+                            <tr v-for="data in cart" class="text-[16px] font-sans text-white">
+                                <td class="py-2">
+                                    <div class="flex items-center">
+                                        <img :src="baseUrl+'/storage/images/products/'+data?.image" class="rounded-md w-20 h-20" alt="">
+                                        <p class="whitespace-no-wrap pl-2">{{ data?.product }}</p>
+                                    </div>
                                 </td>
                                 <td class="">
-                                    <p class="whitespace-no-wrap">1</p>
+                                    <p class="whitespace-no-wrap py-2">{{ data?.size }}</p>
                                 </td>
                                 <td class="">
-                                    <p class="whitespace-no-wrap">
-                                        <span class="text-blue-300 corsor-pointer hover:text-red-300">Remove</span>
+                                    <p class="whitespace-no-wrap py-2">{{ data?.quantity }}</p>
+                                </td>
+                                <td class="">
+                                    <p class="whitespace-no-wrap py-2">
+                                        <span @click="removeCart(data?.cart_identity)" class="text-blue-600 cursor-pointer hover:text-red-600">Remove</span>
                                     </p>
                                 </td>
                                 <td class="">
-                                    <p class="whitespace-no-wrap">$50</p>
+                                    <p class="whitespace-no-wrap py-2">${{ data?.price }}</p>
                                 </td>
                                 <td class="">
-                                    <p class="whitespace-no-wrap">3 months</p>
+                                    <p class="whitespace-no-wrap py-2">${{ data?.sub_type }}</p>
                                 </td>
                                 <td class="">
-                                    <p class="whitespace-no-wrap">$10</p>
+                                    <p class="whitespace-no-wrap py-2">{{ data?.sub_price }}</p>
                                 </td>
-
                             </tr>
                             </tbody>
                         </table>
-                        <div v-else class="text-lg p-5 text-center">
-                            No Category Available !
+                        <div class="text-lg p-5 text-center">
+                            <table class="min-w-full text-left text-sm font-light">
+                                <thead>
+                                <tr class="border-b !text-left text-white text-[16px] bg-transparent whitespace-nowrap text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <th class="py-5">
+                                        Total Products
+                                    </th>
+                                    <th class="py-5">
+                                        Total Price
+                                    </th>
+                                    <th class="py-5">
+                                        Total First Subscription Price
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="text-[16px] font-sans text-white">
+                                    <td class="">
+                                        <p class="whitespace-no-wrap py-2">{{ cart?.length }}</p>
+                                    </td>
+                                    <td class="">
+                                        <p class="whitespace-no-wrap py-2">${{price.total}}</p>
+                                    </td>
+                                    <td class="">
+                                        <p class="whitespace-no-wrap py-2">${{ price.sub_total }} First Month</p>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
+                    <div v-else class="text-lg p-5 text-center">
+                        No Product added to Cart !
                     </div>
                 </div>
             </section>

@@ -29,7 +29,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -50,7 +50,13 @@ class RegisteredUserController extends Controller
 
         if (auth()->user()->role_id == 1)
             return redirect(RouteServiceProvider::AdminHOME);
+        else if (!empty($request->cart) && $request->cart)
+            $this->cart();
         else
             return redirect(RouteServiceProvider::HOME);
+    }
+    public function cart()
+    {
+        return response()->success();
     }
 }

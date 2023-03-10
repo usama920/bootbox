@@ -1,7 +1,15 @@
 <?php
 
-use App\Http\Controllers\{CategoryController, MaterialController, ProductController, SafetyResistanceController,
-    ProfileController, SizeController, StyleController, SubCategoryController, TierLevelController,
+use App\Http\Controllers\{CartController,
+    CategoryController,
+    MaterialController,
+    ProductController,
+    SafetyResistanceController,
+    ProfileController,
+    SizeController,
+    StyleController,
+    SubCategoryController,
+    TierLevelController,
     UserController};
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -138,10 +146,15 @@ Route::middleware('auth')->group(function () {
     });
 
 //    user
+    Route::get('/cart', function () {
+        return Inertia::render('User/Cart');
+    })->name('cart');
+    Route::get('/cart-items', [CartController::class, 'show']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 
     Route::middleware('role:2')->group(function () {
-        Route::get('/cart', function () {
-            return Inertia::render('User/Cart');
-        })->name('cart');
+//        Route::get('/cart', function () {
+//            return Inertia::render('User/Cart');
+//        })->name('cart');
     });
 });

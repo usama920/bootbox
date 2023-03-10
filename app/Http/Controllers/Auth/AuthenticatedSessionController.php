@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
         $request->authenticate();
 
@@ -36,13 +36,20 @@ class AuthenticatedSessionController extends Controller
 
         if (auth()->user()->role_id == 1)
             return redirect()->intended(RouteServiceProvider::AdminHOME);
+        else if (!empty($request->cart) && $request->cart)
+            $this->cart();
         else
             return redirect()->intended(RouteServiceProvider::HOME);
     }
 
+    public function cart()
+    {
+        return response()->success();
+    }
     /**
      * Destroy an authenticated session.
      */
+
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Cart;
 use App\Models\Gender;
 use App\Models\Material;
 use App\Models\Product;
@@ -239,15 +240,23 @@ class ProductController extends Controller
 
     public function addInCart (Request $request)
     {
-        $data = [
-            'size'=>$request->size,
-            'subscription'=>$request->subscription,
-        ];
-        session()->put('product', $data);
-        if (session()->has('product')) {
-            return response()->success();
-        } else {
-            return response()->error('something went wrong', 500);
-        }
+        $product = Product::where('product_slug', $request->slug)->first();
+        if($request->subscription === 1)
+            $sub_price = $product->product_price/3;
+        else if($request->subscription === 2)
+            $sub_price = $product->product_price/6;
+        else if($request->subscription === 3)
+            $sub_price = $product->product_price/9;
+        $formattedValue = number_format($sub_price, 2, '.', '');
+        $cart = Cart::create([
+            'users_id'=>auth()->user()->id,
+            'products_id' => $product->id,
+            'quantity' => 1,
+            'total_price' => $product->product_price,
+            'subscription_price' => $formattedValue,
+            'sizes_id' => $request->size,
+            'subscriptions_id' => $request->subscription,
+        ]);
+        return response()->success($cart);
     }
 }
