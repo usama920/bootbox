@@ -59,27 +59,24 @@ onMounted(()=>{
     <div class="font-urbanist text-base text-black dark:text-white dark:bg-slate-900">
         <span class="fixed blur-[200px] w-[600px] h-[600px] rounded-full top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 bg-gradient-to-tl from-red-600/20 to-violet-600/20 dark:from-red-600/40 dark:to-violet-600/40"></span>
         <UserLayout>
-            <section class="relative table w-full py-36 bg-[url('../../assets/images/bg/bg1.jpg')] bg-bottom bg-no-repeat">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900"></div>
-                <div class="container">
+            <section class="relative">
+                <div class="container py-20">
                     <div class="grid grid-cols-1 pb-8 text-center mt-10">
                         <h3 class="md:text-3xl text-2xl md:leading-snug tracking-wide leading-snug font-medium text-white">
                             {{ heading }}
                         </h3>
                     </div>
+                    <div class="text-center">
+                        <ul class="breadcrumb tracking-[0.5px] breadcrumb-light mb-0 inline-block">
+                            <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white/50 hover:text-white">
+                                <Link :href="route('welcome-home')">Home</Link>
+                            </li>
+                            <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white">
+                                {{ breadCrum }}
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="absolute text-center z-10 bottom-5 right-0 left-0 mx-3">
-                    <ul class="breadcrumb tracking-[0.5px] breadcrumb-light mb-0 inline-block">
-                        <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white/50 hover:text-white">
-                            <Link :href="route('welcome-home')">Home</Link>
-                        </li>
-                        <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white">
-                            {{ breadCrum }}
-                        </li>
-                    </ul>
-                </div>
-            </section>
-            <section class="relative">
                 <div class="container">
                     <div class="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-[30px]">
                         <div @click="openProduct(data?.product_slug)" v-for="data in products" class="group cursor-pointer my-10 relative overflow-hidden p-2 rounded-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-800 hover:shadow-md dark:shadow-md hover:dark:shadow-gray-700 transition-all duration-500 hover:-mt-2 h-fit">

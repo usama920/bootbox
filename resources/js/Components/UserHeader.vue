@@ -32,12 +32,6 @@ defineProps({
                 </div>
             </div>
             <ul class="navigation-menu buy-button items-center list-none mb-0">
-                <li class="inline-block mb-0">
-                    <div class="form-icon relative">
-                        <i class="uil uil-search text-lg absolute top-1/2 -translate-y-1/2 left-3"></i>
-                        <input type="text" class="form-input pl-10 rounded-3xl sm:w-44 w-28 bg-white dark:bg-slate-900" name="s" id="searchItem" placeholder="Search...">
-                    </div>
-                </li>
                 <li class="has-submenu parent-menu-item">
                     <a><i class="fas fa-user text-[20px]"></i></a>
                     <span class="menu-arrow"></span>

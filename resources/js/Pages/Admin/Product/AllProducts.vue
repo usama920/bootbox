@@ -16,9 +16,9 @@
                                     <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
                                         Product Name
                                     </th>
-                                    <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
-                                        Product Description
-                                    </th>
+<!--                                    <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">-->
+<!--                                        Product Description-->
+<!--                                    </th>-->
                                     <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
                                         Product Price
                                     </th>
@@ -57,9 +57,9 @@
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                     <p class="text-gray-900 whitespace-nowrap">{{ product?.product_name }}</p>
                                 </td>
-                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                    <p class="text-gray-900 whitespace-nowrap">{{ product?.description }}</p>
-                                </td>
+<!--                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">-->
+<!--                                    <p class="text-gray-900 whitespace-nowrap">{{ product?.description }}</p>-->
+<!--                                </td>-->
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                     <p class="text-gray-900 whitespace-nowrap">{{ product?.product_price }}</p>
                                 </td>

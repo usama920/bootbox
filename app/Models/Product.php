@@ -55,10 +55,10 @@ class Product extends Model
     }
 
     public function ProductSubscriptions(){
-        return $this->hasMany(ProductSubscription::class, 'products_id', 'id')->select('id', 'products_id', 'subscriptions_id', 'status')->with('SubscriptionName');
+        return $this->hasMany(ProductSubscription::class, 'products_id', 'id')->select('id', 'products_id', 'subscriptions_id', 'price', 'status');
     }
 
     public function SubscribeOptions (){
-        return $this->hasMany(ProductSubscription::class, 'products_id', 'id')->select('id', 'products_id', 'subscriptions_id', 'status')->where('status', 1)->with('SubscriptionName');
+        return $this->hasMany(ProductSubscription::class, 'products_id', 'id')->select('id', 'products_id', 'subscriptions_id', 'price', 'status')->where('status', 1)->with('SubscriptionName');
     }
 }

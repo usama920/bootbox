@@ -37,7 +37,8 @@ const loginForm = useForm({
     showSubscribe = ref({first: 0, second:0}),
     product = ref({size:'', subscription:'', slug:''}),
     error = ref({size:'', subscription:''}),
-    disable = ref({show: false, text: 'Add to Cart'})
+    disable = ref({show: false, text: 'Add to Cart'}),
+    subscriptionPrice = ref({total:0, monthly:0})
 
 const submitRegister = () => {
     registerForm.post(route('register'), {
@@ -72,27 +73,29 @@ const subValidation = () =>{
 
 const showSubscribeSecond = () =>{
     const valid = subValidation()
-    if (valid)
+    if (valid){
         showSubscribe.value.second = 1
+        subTotalPayment ()
+    }
 }
 
-const monthlyPayment = () =>{
+const subTotalPayment = () =>{
+    let test = props.product_detail?.data?.subscription.filter(x=>x.subscriptions_id === product.value.subscription)
+    subscriptionPrice.value.total = test[0].price
+    let amount = 0;
     if (parseInt(product.value.subscription) === 1){
-        let test = parseInt(props.product_detail?.data?.price)/3
-        return test.toFixed(2)
+        amount = parseInt(subscriptionPrice.value.total)/3
     }
     else if (parseInt(product.value.subscription) === 2){
-        let test = parseInt(props.product_detail?.data?.price)/6
-        return test.toFixed(2)
+        amount = parseInt(subscriptionPrice.value.total)/6
     }
     else if (parseInt(product.value.subscription) === 3){
-        let test = parseInt(props.product_detail?.data?.price)/9
-        return test.toFixed(2)
+        amount = parseInt(subscriptionPrice.value.total)/9
     }
+    subscriptionPrice.value.monthly = amount.toFixed(2)
 }
 
 const addCart = () =>{
-    console.log(user.value.props?.auth?.user)
     product.value.slug = props.product_detail?.data?.product_slug
     const valid = subValidation()
     if (valid){
@@ -223,11 +226,11 @@ const loginModal = () =>{
                             <div v-if="showSubscribe.second === 1" class="grid grid-cols-1 mt-8">
                                 <div class="bg-slate-800 rounded-md shadow shadow-gray-800 p-6">
                                     <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
-                                        Product Total Price
+                                        Total Payment of this Subscription
                                     </div>
-                                    <div v-if="!!product_detail?.data?.price" class="my-4">
+                                    <div class="my-4">
                                         <div class="p-2 flex items-center">
-                                            $ {{ product_detail?.data?.price}}
+                                            $ {{ subscriptionPrice.total }}
                                         </div>
                                     </div>
                                     <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
@@ -235,7 +238,7 @@ const loginModal = () =>{
                                     </div>
                                     <div class="mt-4">
                                         <div class="p-2 flex items-center">
-                                            You have to pay approximately $ {{ monthlyPayment() }} every month
+                                            You have to pay approximately $ {{ subscriptionPrice.monthly }} every month
                                         </div>
                                     </div>
                                     <div class="p-5 flex justify-center">

@@ -1,14 +1,19 @@
 <?php
 
-use App\Http\Controllers\{CartController,
+use App\Http\Controllers\{AboutController,
+    CartController,
     CategoryController,
+    ContactController,
     MaterialController,
+    PrivacyController,
     ProductController,
     SafetyResistanceController,
     ProfileController,
     SizeController,
+    SocialLinksController,
     StyleController,
     SubCategoryController,
+    TermController,
     TierLevelController,
     UserController};
 use Illuminate\Foundation\Application;
@@ -52,9 +57,6 @@ Route::get('/cart-login', function () {
     return Inertia::render('Auth/Register');
 })->name('cart-login');
 
-Route::get('/contact', function () {
-    return Inertia::render('User/Contact');
-})->name('contact');
 Route::get('/show-products/all', function () {
     return Inertia::render('User/Products');
 })->name('show_products_all');
@@ -64,24 +66,11 @@ Route::get('/show-products/men', function () {
 Route::get('/show-products/women', function () {
     return Inertia::render('User/Products');
 })->name('show_products_women');
-Route::get('/privacy-policy', function () {
-    return Inertia::render('User/Privacy');
-})->name('privacy-policy');
-Route::get('/about', function () {
-    return Inertia::render('User/About');
-})->name('about');
-Route::get('/terms', function () {
-    return Inertia::render('User/Terms');
-})->name('terms');
-Route::get('/privacy', function () {
-    return Inertia::render('User/Privacy');
-})->name('privacy');
 
-//Route::middleware('auth')->group(function () {
-//    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-//});
+Route::get('/privacy', [PrivacyController::class, 'index'])->name('privacy');
+Route::get('/terms', [TermController::class, 'index'])->name('terms');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 require __DIR__.'/auth.php';
 
@@ -91,6 +80,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard');
         })->name('dashboard');
+
+        Route::get('/social-links', function () {
+            return Inertia::render('Admin/ThemeContent/SocialLinks');
+        })->name('social-links');
+        Route::get('/privacy-content', function () {
+            return Inertia::render('Admin/ThemeContent/Privacy');
+        })->name('privacy-content');
+        Route::get('/about-content', function () {
+            return Inertia::render('Admin/ThemeContent/About');
+        })->name('about-content');
+        Route::get('/contact-content', function () {
+            return Inertia::render('Admin/ThemeContent/Contact');
+        })->name('contact-content');
+        Route::get('/terms-content', function () {
+            return Inertia::render('Admin/ThemeContent/Terms');
+        })->name('terms-content');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -142,6 +147,21 @@ Route::middleware('auth')->group(function () {
 
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+        Route::get('/save-social', [SocialLinksController::class, 'show']);
+        Route::post('/save-social', [SocialLinksController::class, 'store']);
+
+        Route::get('/save-about', [AboutController::class, 'show']);
+        Route::post('/save-about', [AboutController::class, 'store']);
+
+        Route::get('/save-privacy', [PrivacyController::class, 'show']);
+        Route::post('/save-privacy', [PrivacyController::class, 'store']);
+
+        Route::get('/save-contact', [ContactController::class, 'show']);
+        Route::post('/save-contact', [ContactController::class, 'store']);
+
+        Route::get('/save-terms', [TermController::class, 'show']);
+        Route::post('/save-terms', [TermController::class, 'store']);
 
     });
 

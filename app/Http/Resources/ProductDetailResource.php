@@ -27,7 +27,6 @@ class ProductDetailResource extends JsonResource
             'tier_level' => $this->TierName->name ?? '',
             'safety' => $this->SafetyName->name ?? '',
             'gender' => $this->GenderName->name ?? '',
-//            'size'=> SizeResource::collection($this->ProductSizes) ?? '',
             'size'=> SizeResource::collection($this->ProductSizes) ?? '',
             'subscription'=> $this->SubscribeOptions ?? '',
             'image' => $this->ProductImages ?? '',

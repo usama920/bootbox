@@ -31,7 +31,7 @@ class ProductController extends Controller
      */
     public function index(): \Inertia\Response
     {
-        return Inertia::render('Product/AllProducts', [
+        return Inertia::render('Admin/Product/AllProducts', [
             'products' => Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
                 ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages','ProductSizes', 'ProductSubscriptions')
                 ->paginate(10)
@@ -47,6 +47,7 @@ class ProductController extends Controller
             ->where('status' , 0)
             ->with('SubCategoryName', 'ProductImages', 'GenderName')
             ->orderBy('created_at', 'DESC')
+            ->take(8)
             ->get();
         return response()->json(ProductResource::collection($products));
     }
@@ -86,7 +87,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         $id = json_decode($request->id, true);
         $gender = json_decode($request->gender, true);
         $style = json_decode($request->style, true);
@@ -133,15 +134,20 @@ class ProductController extends Controller
             }
         }
 
-        if (!empty($subscription) && count($subscription)>0){
-            foreach ($subscription as $key => $status ) {
-                if (!empty($status) && $status === true)
+        if (!empty($subscription) && !empty($subscription['check']) && count($subscription['check'])>0){
+            foreach ($subscription['check'] as $key => $status ) {
+                if (!empty($status) && $status === true && !empty($subscription['price'][$key])){
                     $check = 1;
-                else
+                    $price = $subscription['price'][$key];
+                }else{
+                    $price = 0;
                     $check = 0;
+                }
                 ProductSubscription::updateOrCreate([
                     'products_id' => $product->id,
                     'subscriptions_id' => $key,
+                    ],[
+                    'price' => $price,
                     'status' => $check,
                 ]);
             }
@@ -183,9 +189,9 @@ class ProductController extends Controller
     public function show($slug='')
     {
         if(empty($slug))
-            return Inertia::render('Product/AddProduct');
+            return Inertia::render('Admin/Product/AddProduct');
         else
-            return Inertia::render('Product/AddProduct', [
+            return Inertia::render('Admin/Product/AddProduct', [
                 'product_info' => Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'genders_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
                     ->where('product_slug', $slug)
                     ->with('ProductImages', 'ProductSizes', 'ProductSubscriptions')

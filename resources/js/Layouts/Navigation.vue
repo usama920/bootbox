@@ -15,12 +15,9 @@
         <nav class="mt-10" x-data="{ isMultiLevelMenuOpen: true }">
             <nav-link :href="route('dashboard')" :active="route().current('dashboard')">
                 <template #icon>
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
                     </svg>
                 </template>
                 Dashboard
@@ -35,9 +32,46 @@
                 </template>
                 Users
             </nav-link>
+            <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="contentDrop = !contentDrop">
+                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                </svg>
+                <span class="mx-3">Pages Content</span>
+                <i class="fa-solid fa-sort-down -mt-1.5"></i>
+            </a>
+            <transition
+                enter-to-class="transition-all duration-300 ease-in-out"
+                enter-from-class="max-h-0 opacity-25"
+                leave-from-class="opacity-100 max-h-xl"
+                leave-to-class="max-h-0 opacity-0">
+                <div v-show="contentDrop">
+                    <ul class="overflow-hidden p-2 mx-4 mt-2 space-y-2 text-sm font-medium text-white bg-gray-700 bg-opacity-50 rounded-md shadow-inner"
+                        aria-label="submenu">
+                        <li class="px-2 py-1 transition-colors duration-150 flex items-center space-x-2">
+                            <i class="fas fa-circle text-gray-100"></i>
+                            <Link class="w-full" :href="route('social-links')">Social Links</Link>
+                        </li>
+                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                            <i class="fas fa-circle text-gray-100"></i>
+                            <Link class="w-full" :href="route('about-content')">About Us</Link>
+                        </li>
+                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                            <i class="fas fa-circle text-gray-100"></i>
+                            <Link class="w-full" :href="route('contact-content')">Contact Us</Link>
+                        </li>
+                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                            <i class="fas fa-circle text-gray-100"></i>
+                            <Link class="w-full" :href="route('terms-content')">Terms Policy</Link>
+                        </li>
+                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                            <i class="fas fa-circle text-gray-100"></i>
+                            <Link class="w-full" :href="route('privacy-content')">Privacy Policy</Link>
+                        </li>
+                    </ul>
+                </div>
+            </transition>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="optionDrop = !optionDrop">
-                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"
-                     stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                     <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
                 </svg>
                 <span class="mx-3">Product Detail</span>
@@ -109,6 +143,26 @@
                     </ul>
                 </div>
             </transition>
+            <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="messageDrop = !messageDrop">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="mx-3">Messages</span>
+                <i class="fa-solid fa-sort-down -mt-1.5"></i>
+            </a>
+            <transition
+                enter-to-class="transition-all duration-300 ease-in-out"
+                enter-from-class="max-h-0 opacity-25"
+                leave-from-class="opacity-100 max-h-xl"
+                leave-to-class="max-h-0 opacity-0">
+                <div v-show="messageDrop">
+                    <ul class="overflow-hidden p-2 mx-4 mt-2 space-y-2 text-sm font-medium text-white bg-gray-700 bg-opacity-50 rounded-md shadow-inner"
+                        aria-label="submenu">
+                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                            <i class="fas fa-circle text-white"></i>
+                            <Link class="w-full" :href="route('products.index')">Unread Messages</Link>
+                        </li>
+                    </ul>
+                </div>
+            </transition>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="orderDrop = !orderDrop">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="mx-3">Orders</span>
@@ -149,7 +203,10 @@ import { ref } from 'vue'
 
 const orderDrop = ref(false),
     productDrop = ref(false),
-    optionDrop = ref(false)
+    optionDrop = ref(false),
+    contentDrop = ref(false),
+    messageDrop = ref(false)
+
 
 const addProduct = () =>{
     router.visit('/products/edit/'+'')

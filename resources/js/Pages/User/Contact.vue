@@ -1,37 +1,29 @@
 <script setup>
 import {Head, Link, router} from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
-import {onMounted, ref} from "vue";
-
-const baseUrl = window.location.origin
-
 
 const props = defineProps({
-
-});
-
-onMounted(()=>{
-
+    contact: Object
 })
 </script>
 <template>
     <Head title="Product Detail" />
     <div class="font-urbanist text-base text-black dark:text-white dark:bg-slate-900">
         <UserLayout>
-            <section class="relative table w-full py-36 bg-[url('../../assets/images/bg/bg1.jpg')] bg-bottom bg-no-repeat">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900"></div>
+            <section class="relative table w-full py-20 bg-[url('../../assets/images/bg/bg1.jpg')] bg-bottom bg-no-repeat">
+                <div class="absolute inset-0 bg-gradient-to-b from-violet-600 to-slate-900"></div>
                 <div class="container">
                     <div class="grid grid-cols-1 pb-8 text-center mt-10">
                         <h3 class="md:text-3xl text-2xl md:leading-snug tracking-wide leading-snug font-medium text-white">Contact Us</h3>
                     </div>
-                </div>
-                <div class="absolute text-center z-10 bottom-5 right-0 left-0 mx-3">
-                    <ul class="breadcrumb tracking-[0.5px] breadcrumb-light mb-0 inline-block">
-                        <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white/50 hover:text-white">
-                            <Link :href="route('welcome-home')">Home</Link>
-                        </li>
-                        <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white">Contact Us</li>
-                    </ul>
+                    <div class="text-center">
+                        <ul class="breadcrumb tracking-[0.5px] breadcrumb-light mb-0 inline-block">
+                            <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white/50 hover:text-white">
+                                <Link :href="route('welcome-home')">Home</Link>
+                            </li>
+                            <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white">Contact Us</li>
+                        </ul>
+                    </div>
                 </div>
             </section>
             <div class="relative">
@@ -41,7 +33,7 @@ onMounted(()=>{
                     </svg>
                 </div>
             </div>
-            <section class="relative md:py-24 py-16">
+            <section class="relative pb-16">
                 <div class="container">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-[30px]">
                         <div class="text-center px-6 mt-6">
@@ -50,9 +42,9 @@ onMounted(()=>{
                             </div>
                             <div class="content mt-7">
                                 <h5 class="title text-xl font-semibold">Phone</h5>
-                                <p class="text-slate-400 mt-3">The phrasal sequence of the is now so that many campaign and benefit</p>
+                                <p class="text-slate-400 mt-3">{{contact?.phone_text}}</p>
                                 <div class="mt-5">
-                                    <a href="tel:+152534-468-854" class="btn btn-link text-violet-600 hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">+152 534-468-854</a>
+                                    <a :href="contact?.phone" class="btn btn-link text-violet-600 hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">{{contact?.phone}}</a>
                                 </div>
                             </div>
                         </div>
@@ -62,9 +54,9 @@ onMounted(()=>{
                             </div>
                             <div class="content mt-7">
                                 <h5 class="title text-xl font-semibold">Email</h5>
-                                <p class="text-slate-400 mt-3">The phrasal sequence of the is now so that many campaign and benefit</p>
+                                <p class="text-slate-400 mt-3">{{contact?.email_text}}</p>
                                 <div class="mt-5">
-                                    <a href="mailto:contact@example.com" class="btn btn-link text-violet-600 hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">contact@example.com</a>
+                                    <a :href="'mailto:'+contact?.email" class="btn btn-link text-violet-600 hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">{{contact?.email}}</a>
                                 </div>
                             </div>
                         </div>

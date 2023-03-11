@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('products_id')->constrained()->onDelete('cascade');
             $table->foreignId('subscriptions_id')->constrained()->onDelete('cascade');
+            $table->integer('price')->nullable();
             $table->boolean('status')->default(0)->comment('0 for uncheck, 1 for check');
             $table->timestamps();
         });

@@ -59,9 +59,9 @@ onMounted(()=>{
                 </div>
                  <section class="relative md:py-24 py-16">
                      <div class="container">
-                         <div class="grid grid-cols-1 text-center">
-                             <h3 class="md:text-[30px] text-[26px] font-semibold">Discover Items</h3>
-                         </div>
+<!--                         <div class="grid grid-cols-1 text-center">-->
+<!--                             <h3 class="md:text-[30px] text-[26px] font-semibold">Discover Items</h3>-->
+<!--                         </div>-->
                          <div class="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-10 gap-[30px]">
                              <div @click="openProduct(data?.product_slug)"  v-for="data in products" class="group relative overflow-hidden p-2 rounded-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-800 hover:shadow-md dark:shadow-md hover:dark:shadow-gray-700 transition-all duration-500 hover:-mt-2 h-fit">
                                  <div class="relative overflow-hidden">
@@ -105,21 +105,21 @@ onMounted(()=>{
                              </div>
                          </div>
                      </div>
-                     <div class="container md:mt-24 mt-16">
-                         <div class="grid grid-cols-1 text-center">
-                             <h3 class="md:text-[30px] text-[26px] font-semibold">Customer Review & Comments</h3>
-                         </div>
-                         <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-10 gap-[30px]">
-                             <div v-for="data in 6" class="flex justify-between items-center p-3 rounded-md bg-white dark:bg-slate-900 shadow dark:shadow-gray-800">
-                                 <div class="flex items-center">
-                                     <div class="ml-3">
-                                         <span class="font-semibold block hover:text-violet-600">Steven Townsend</span>
-                                         <span class="text-slate-400 whitespace-nowrap truncate... text-sm block mt-0.5">One on best product. Highly recommended</span>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
+<!--                     <div class="container md:mt-24 mt-16">-->
+<!--                         <div class="grid grid-cols-1 text-center">-->
+<!--                             <h3 class="md:text-[30px] text-[26px] font-semibold">Customer Review & Comments</h3>-->
+<!--                         </div>-->
+<!--                         <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-10 gap-[30px]">-->
+<!--                             <div v-for="data in 6" class="flex justify-between items-center p-3 rounded-md bg-white dark:bg-slate-900 shadow dark:shadow-gray-800">-->
+<!--                                 <div class="flex items-center">-->
+<!--                                     <div class="ml-3">-->
+<!--                                         <span class="font-semibold block hover:text-violet-600">Steven Townsend</span>-->
+<!--                                         <span class="text-slate-400 whitespace-nowrap truncate... text-sm block mt-0.5">One on best product. Highly recommended</span>-->
+<!--                                     </div>-->
+<!--                                 </div>-->
+<!--                             </div>-->
+<!--                         </div>-->
+<!--                     </div>-->
                      <div class="container md:mt-24 mt-16">
                          <div class="grid grid-cols-1 text-center">
                              <h3 class="mb-4 md:text-3xl text-2xl md:leading-snug leading-snug font-semibold">Q&A</h3>

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('product_name')->nullable(false);
             $table->string('product_slug')->nullable(false);
-            $table->string('description')->nullable(false);
-            $table->string('product_price')->nullable(false);
+            $table->longText('description')->nullable(false);
+            $table->string('product_price')->nullable(true);
             $table->boolean('status')->nullable(false)->default(0)->comment('0 for show, 1 for hide');
             $table->foreignId('sub_categories_id')->nullable(true)->constrained()->onDelete('cascade');
             $table->foreignId('styles_id')->nullable(true)->constrained()->onDelete('cascade');

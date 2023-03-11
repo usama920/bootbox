@@ -90,16 +90,17 @@
             </div>
             <div class="">
                 <label class="font-bold">Available Sizes:</label>
-                <div v-for="data in options.size">
+                <div v-for="data in options.size" class="flex items-center my-2">
                     <input v-model="productInfo.size[data.id]" :checked="productInfo.size[data.id] === true" type="checkbox" :id="'size'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
                     <label :for="'size'+data?.id+'boots'">{{data?.name}}</label>
                 </div>
             </div>
             <div class="">
                 <label class="font-bold">Available Subscriptions:</label>
-                <div v-for="data in options.subscription">
-                    <input v-model="productInfo.subscription[data.id]" :checked="productInfo.subscription[data.id] === true" type="checkbox" :id="'sub'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
-                    <label :for="'sub'+data?.id+'boots'">{{data?.name}}</label>
+                <div v-for="data in options.subscription" class="flex items-center my-2">
+                    <input v-model="productInfo.subscription.check[data.id]" :checked="productInfo.subscription[data.id] === true" type="checkbox" :id="'sub'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
+                    <label :for="'sub'+data?.id+'boots'" class="mr-4">{{data?.name}}</label>
+                    <input v-model="productInfo.subscription.price[data.id]" :disabled="productInfo.subscription.check[data.id] !== true" :class="{'opacity-50 bg-gray-500':productInfo.subscription.check[data.id] !== true}" type="number" placeholder="Enter Price" class="ml-5 w-40 rounded h-10">
                 </div>
             </div>
         </form>
@@ -122,7 +123,7 @@ import commonFunctions from "@/use/common";
 
 const { Toast, ConfirmToast } = commonFunctions()
 
-const productInfo = ref({id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{}, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
+const productInfo = ref({id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}}, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
     baseUrl = window.location.origin,
     errors = ref([]),
     ImagesUri = ref([]),
@@ -139,7 +140,6 @@ const productStatus = (status) =>{
 }
 
 const images = (e) =>{
-    console.log(e.target.files)
     _.forEach(e.target.files, function(value, key) {
         productInfo.value.images.push(value)
         ImagesUri.value.push(URL.createObjectURL(value))
@@ -192,7 +192,6 @@ const productSave = (post) =>{
                     formData.append(item,  JSON.stringify(post[item]));
             }
         }
-        // formData.append('image_name',  JSON.stringify(imagesPreview.value));
         axios
             .post('/save-product', formData , {
                 headers: {
@@ -239,7 +238,7 @@ const productInformation = () =>{
     productInfo.value.tier = !!props?.product_info?.tier_levels_id ? props?.product_info?.tier_levels_id:0
     productInfo.value.style = !!props?.product_info?.styles_id ? props?.product_info?.styles_id:0
     productInfo.value.gender = !!props?.product_info?.genders_id ? props?.product_info?.genders_id:0
- console.log(props.product_info)
+
     if(!!props?.product_info?.product_images)
         productInfo.value.previous_img = props?.product_info?.product_images
 
@@ -251,7 +250,8 @@ const productInformation = () =>{
 
     if(!!props?.product_info?.product_subscriptions && props?.product_info?.product_subscriptions.length>0){
         _.forEach(props?.product_info?.product_subscriptions, function (value, key) {
-            productInfo.value.subscription[value?.subscriptions_id] = value?.status === 1;
+            productInfo.value.subscription.check[value?.subscriptions_id] = value?.status === 1;
+            productInfo.value.subscription.price[value?.subscriptions_id] = value?.price;
         });
     }
 }
