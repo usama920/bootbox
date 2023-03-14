@@ -11,8 +11,10 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
 use App\Models\ProductSubscription;
+use App\Models\Question;
 use App\Models\SafetyResistance;
 use App\Models\Size;
+use App\Models\SocialLinks;
 use App\Models\Style;
 use App\Models\SubCategory;
 use App\Models\Subscription;
@@ -49,7 +51,9 @@ class ProductController extends Controller
             ->orderBy('created_at', 'DESC')
             ->take(8)
             ->get();
-        return response()->json(ProductResource::collection($products));
+        $content = SocialLinks::select('question_text')->first();
+        $question = Question::select('id', 'question', 'answer')->get();
+        return response()->json(['data1'=>ProductResource::collection($products), 'data2'=>$question,  'data3'=>$content]);
     }
 
     public function displayAllProduct()
@@ -87,7 +91,6 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //        dd($request->all());
         $id = json_decode($request->id, true);
         $gender = json_decode($request->gender, true);
         $style = json_decode($request->style, true);

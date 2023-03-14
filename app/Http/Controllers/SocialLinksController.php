@@ -69,9 +69,10 @@ class SocialLinksController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(SocialLinks $socialLinks): Response
+    public function footerContent()
     {
-        //
+        $data = SocialLinks::select('contact_email', 'contact_number', 'social_facebook', 'social_instagram', 'social_twitter', 'social_email')->first();
+        return response()->success($data);
     }
 
     /**

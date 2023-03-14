@@ -55,7 +55,7 @@ defineProps({
                     </ul>
                 </li>
             </ul>
-            <div id="navigation">
+            <div >
                 <ul class="navigation-menu justify-center space-x-4">
                     <li>
                         <Link :href="route('welcome-home')" class="sub-menu-item">Home</Link>

@@ -1,9 +1,24 @@
 <script setup>
 import {Link} from "@inertiajs/vue3";
+import {onMounted, ref} from "vue";
+
+const footer = ref({})
 
 const yearShow = () =>{
     return new Date().getFullYear()
 }
+
+const footerContent = () =>{
+    axios
+        .get('/footer-content')
+        .then((response)=>{
+            footer.value = response?.data?.data
+        })
+}
+
+onMounted(()=>{
+    footerContent()
+})
 </script>
 <template>
     <footer class="footer bg-dark-footer relative text-gray-200 dark:text-gray-200 mt-24">
@@ -43,16 +58,16 @@ const yearShow = () =>{
                                 <h5 class="tracking-[1px] text-lg text-gray-100 font-semibold">Boot Box</h5>
                                 <ul class="list-none footer-list mt-6">
                                     <li>
-                                        <Link :href="route('about')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> About Us</Link>
+                                        <Link :href="route('about')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="pr-1 fa-solid fa-angle-right"></i> About Us</Link>
                                     </li>
                                     <li class="mt-[10px]">
-                                        <Link :href="route('terms')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Terms & Condition</Link>
+                                        <Link :href="route('terms')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="pr-1 fa-solid fa-angle-right"></i> Terms & Condition</Link>
                                     </li>
                                     <li class="mt-[10px]">
-                                        <Link :href="route('privacy')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Privacy policy</Link>
+                                        <Link :href="route('privacy')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="pr-1 fa-solid fa-angle-right"></i> Privacy policy</Link>
                                     </li>
                                     <li class="mt-[10px]">
-                                        <Link :href="route('contact')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="uil uil-angle-right-b me-1"></i> Contact Us</Link>
+                                        <Link :href="route('contact')" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out"><i class="pr-1 fa-solid fa-angle-right"></i> Contact Us</Link>
                                     </li>
                                 </ul>
                             </div>
@@ -60,15 +75,15 @@ const yearShow = () =>{
                                 <h5 class="tracking-[1px] text-lg text-gray-100 font-semibold">Contact Details</h5>
                                 <div class="mt-6">
                                     <div class="flex mt-6">
-                                        <i data-feather="mail" class="w-5 h-5 text-violet-600 mr-3 mt-1"></i>
+                                        <i class="w-5 h-5 text-violet-600 mr-3 mt-1 fa-solid fa-envelope"></i>
                                         <div class="">
-                                            <a href="mailto:contact@example.com" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">contact@example.com</a>
+                                            <a :href="footer?.contact_email" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer.contact_email}}</a>
                                         </div>
                                     </div>
                                     <div class="flex mt-6">
-                                        <i data-feather="phone" class="w-5 h-5 text-violet-600 mr-3 mt-1"></i>
+                                        <i class="w-5 h-5 text-violet-600 mr-3 mt-1 fa-solid fa-phone"></i>
                                         <div class="">
-                                            <a href="tel:+152534-468-854" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">+152 534-468-854</a>
+                                            <a :href="'tel:'+footer.contact_number" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer.contact_number}}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -89,22 +104,22 @@ const yearShow = () =>{
                     </div>
                     <ul class="list-none md:text-right space-x-4 text-center">
                         <li class="inline">
-                            <a href="#" target="_blank" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
+                            <a :href="footer?.social_facebook" target="_blank" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
                                 <i class="uil uil-facebook-f align-middle" title="facebook"></i>
                             </a>
                         </li>
                         <li class="inline">
-                            <a href="#" target="_blank" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
+                            <a :href="footer?.social_instagram" target="_blank" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
                                 <i class="uil uil-instagram align-middle" title="instagram"></i>
                             </a>
                         </li>
                         <li class="inline">
-                            <a href="#" target="_blank" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
+                            <a :href="footer?.social_twitter" target="_blank" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
                                 <i class="uil uil-twitter align-middle" title="twitter"></i>
                             </a>
                         </li>
                         <li class="inline">
-                            <a href="#" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
+                            <a :href="footer?.social_email" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
                                 <i class="uil uil-envelope align-middle" title="email"></i>
                             </a>
                         </li>

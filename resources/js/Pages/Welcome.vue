@@ -4,6 +4,8 @@ import UserLayout from '@/Layouts/UserLayout.vue'
 import {onMounted, ref} from "vue";
 
 const products = ref({}),
+    questions = ref({}),
+    content = ref({}),
     baseUrl = window.location.origin
 
 defineProps({
@@ -17,7 +19,9 @@ const displayProducts = () =>{
     axios
         .get('/display-products')
         .then((response)=>{
-            products.value = response.data
+            products.value = !!response?.data?.data1 ? response?.data?.data1: {}
+            questions.value = !!response?.data?.data2 ? response?.data?.data2 : {}
+            content.value = !!response?.data?.data3 ? response?.data?.data3: {}
         })
 }
 
@@ -59,14 +63,11 @@ onMounted(()=>{
                 </div>
                  <section class="relative md:py-24 py-16">
                      <div class="container">
-<!--                         <div class="grid grid-cols-1 text-center">-->
-<!--                             <h3 class="md:text-[30px] text-[26px] font-semibold">Discover Items</h3>-->
-<!--                         </div>-->
                          <div class="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-10 gap-[30px]">
-                             <div @click="openProduct(data?.product_slug)"  v-for="data in products" class="group relative overflow-hidden p-2 rounded-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-800 hover:shadow-md dark:shadow-md hover:dark:shadow-gray-700 transition-all duration-500 hover:-mt-2 h-fit">
+                             <div v-if="!!products && products?.length>0" @click="openProduct(data?.product_slug)" v-for="data in products" class="group relative overflow-hidden p-2 rounded-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-800 hover:shadow-md dark:shadow-md hover:dark:shadow-gray-700 transition-all duration-500 hover:-mt-2 h-fit">
                                  <div class="relative overflow-hidden">
-                                     <div class="relative overflow-hidden rounded-lg h-[200px]">
-                                         <img alt="image" class="rounded-lg min-h-[200px] min-h-full shadow-md dark:shadow-gray-700 group-hover:scale-110 transition-all duration-500" :src="baseUrl+'/storage/images/products/'+data.image[0].name">
+                                     <div v-if="!!data" class="relative overflow-hidden rounded-lg h-[200px]">
+                                         <img alt="image" class="rounded-lg min-h-[200px] min-h-full shadow-md dark:shadow-gray-700 group-hover:scale-110 transition-all duration-500" :src="baseUrl+'/storage/images/products/'+data?.image[0]?.name">
                                      </div>
                                      <div class="absolute -bottom-20 group-hover:bottom-1/2 group-hover:translate-y-1/2 right-0 left-0 mx-auto text-center transition-all duration-500">
                                          <a href="javascript:void(0)" class="btn btn-sm rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
@@ -105,102 +106,25 @@ onMounted(()=>{
                              </div>
                          </div>
                      </div>
-<!--                     <div class="container md:mt-24 mt-16">-->
-<!--                         <div class="grid grid-cols-1 text-center">-->
-<!--                             <h3 class="md:text-[30px] text-[26px] font-semibold">Customer Review & Comments</h3>-->
-<!--                         </div>-->
-<!--                         <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-10 gap-[30px]">-->
-<!--                             <div v-for="data in 6" class="flex justify-between items-center p-3 rounded-md bg-white dark:bg-slate-900 shadow dark:shadow-gray-800">-->
-<!--                                 <div class="flex items-center">-->
-<!--                                     <div class="ml-3">-->
-<!--                                         <span class="font-semibold block hover:text-violet-600">Steven Townsend</span>-->
-<!--                                         <span class="text-slate-400 whitespace-nowrap truncate... text-sm block mt-0.5">One on best product. Highly recommended</span>-->
-<!--                                     </div>-->
-<!--                                 </div>-->
-<!--                             </div>-->
-<!--                         </div>-->
-<!--                     </div>-->
                      <div class="container md:mt-24 mt-16">
                          <div class="grid grid-cols-1 text-center">
                              <h3 class="mb-4 md:text-3xl text-2xl md:leading-snug leading-snug font-semibold">Q&A</h3>
-                             <p class="text-slate-400 max-w-xl mx-auto">We are a huge marketplace dedicated to connecting great artists of all Giglink with their fans and unique token collectors!</p>
+                             <p class="text-slate-400 max-w-xl mx-auto">{{content?.question_text}}</p>
                          </div>
                          <div id="accordionExample">
-                             <div class="rounded-t-lg bg-transparent dark:border-neutral-600 dark:bg-neutral-800">
-                                 <h2 class="mb-0" id="headingOne">
+                             <div v-for="(data, key) in questions" class="rounded-t-lg bg-transparent dark:border-neutral-600 dark:bg-neutral-800">
+                                 <h2 class="mb-0" :id="'headingOne'+data.id">
                                      <button class="group relative flex w-full items-center rounded-t-[15px] border-0 bg-transparent py-4 px-5 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none dark:bg-neutral-800 dark:text-white [&:not([data-te-collapse-collapsed])]:bg-transparent [&:not([data-te-collapse-collapsed])]:text-primary [&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(229,231,235)] dark:[&:not([data-te-collapse-collapsed])]:bg-neutral-800 dark:[&:not([data-te-collapse-collapsed])]:text-primary-400 dark:[&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(75,85,99)]"
-                                         type="button" data-te-collapse-init data-te-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                         How does it work ?
+                                         type="button" data-te-collapse-init data-te-collapse-collapsed :data-te-target="'#collapseOne'+data.id" :aria-expanded="key === 0" :aria-controls="'collapseOne'+data.id">
+                                         {{ data?.question }} ?
                                         <span class="ml-auto h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
                                             <i class="fa-sharp fa-solid fa-caret-down"></i>
                                         </span>
                                      </button>
                                  </h2>
-                                 <div id="collapseOne" class="!visible" data-te-collapse-item data-te-collapse-show aria-labelledby="headingOne" data-te-parent="#accordionExample">
+                                 <div :id="'collapseOne'+data.id" class="hidden" :class="{'!visible': key === 0}" data-te-collapse-item :aria-labelledby="'headingOne'+data.id" data-te-parent="#accordionExample">
                                      <div class="py-4 px-5">
-                                         <strong>This is the first item's accordion body.</strong> It is
-                                         shown by default, until the collapse plugin adds the appropriate
-                                         classes that we use to style each element. These classes control
-                                         the overall appearance, as well as the showing and hiding via CSS
-                                         transitions. You can modify any of this with custom CSS or
-                                         overriding our default variables. It's also worth noting that just
-                                         about any HTML can go within the <code>.accordion-body</code>,
-                                         though the transition does limit overflow.
-                                     </div>
-                                 </div>
-                             </div>
-                             <div class=" bg-transparent dark:border-neutral-600 dark:bg-neutral-800">
-                                 <h2 class="mb-0" id="headingTwo">
-                                     <button class="group relative flex w-full items-center rounded-none border-0 bg-transparent py-4 px-5 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none dark:bg-neutral-800 dark:text-white [&:not([data-te-collapse-collapsed])]:bg-transparent [&:not([data-te-collapse-collapsed])]:text-primary [&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(229,231,235)] dark:[&:not([data-te-collapse-collapsed])]:bg-neutral-800 dark:[&:not([data-te-collapse-collapsed])]:text-primary-400 dark:[&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(75,85,99)]"
-                                         type="button"
-                                         data-te-collapse-init
-                                         data-te-collapse-collapsed
-                                         data-te-target="#collapseTwo"
-                                         aria-expanded="false"
-                                         aria-controls="collapseTwo">
-                                         Accordion Item #2
-                                         <span class="ml-auto -mr-1 h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:mr-0 group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
-                                             <i class="fa-sharp fa-solid fa-caret-down"></i>
-                                         </span>
-                                     </button>
-                                 </h2>
-                                 <div id="collapseTwo" class="!visible hidden" data-te-collapse-item aria-labelledby="headingTwo" data-te-parent="#accordionExample">
-                                     <div class="py-4 px-5">
-                                         <strong>This is the second item's accordion body.</strong> It is
-                                         hidden by default, until the collapse plugin adds the appropriate
-                                         classes that we use to style each element. These classes control
-                                         the overall appearance, as well as the showing and hiding via CSS
-                                         transitions. You can modify any of this with custom CSS or
-                                         overriding our default variables. It's also worth noting that just
-                                         about any HTML can go within the <code>.accordion-body</code>,
-                                         though the transition does limit overflow.
-                                     </div>
-                                 </div>
-                             </div>
-                             <div class="rounded-b-lg bg-transparent">
-                                 <h2 class="accordion-header mb-0" id="headingThree">
-                                     <button class="group relative flex w-full items-center border-0 bg-transparent py-4 px-5 text-left text-base text-neutral-800 transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none dark:bg-neutral-800 dark:text-white [&:not([data-te-collapse-collapsed])]:bg-transparent [&:not([data-te-collapse-collapsed])]:text-primary [&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(229,231,235)] dark:[&:not([data-te-collapse-collapsed])]:bg-neutral-800 dark:[&:not([data-te-collapse-collapsed])]:text-primary-400 dark:[&:not([data-te-collapse-collapsed])]:[box-shadow:inset_0_-1px_0_rgba(75,85,99)] [&[data-te-collapse-collapsed]]:rounded-b-[15px] [&[data-te-collapse-collapsed]]:transition-none"
-                                         type="button" data-te-collapse-init data-te-collapse-collapsed data-te-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                         Accordion Item #3
-                                        <span class="ml-auto -mr-1 h-5 w-5 shrink-0 rotate-[-180deg] fill-[#336dec] transition-transform duration-200 ease-in-out group-[[data-te-collapse-collapsed]]:mr-0 group-[[data-te-collapse-collapsed]]:rotate-0 group-[[data-te-collapse-collapsed]]:fill-[#212529] motion-reduce:transition-none dark:fill-blue-300 dark:group-[[data-te-collapse-collapsed]]:fill-white">
-                                            <i class="fa-sharp fa-solid fa-caret-down"></i>
-                                        </span>
-                                     </button>
-                                 </h2>
-                                 <div id="collapseThree"
-                                     class="!visible hidden"
-                                     data-te-collapse-item
-                                     aria-labelledby="headingThree"
-                                     data-te-parent="#accordionExample">
-                                     <div class="py-4 px-5">
-                                         <strong>This is the third item's accordion body.</strong> It is
-                                         hidden by default, until the collapse plugin adds the appropriate
-                                         classes that we use to style each element. These classes control
-                                         the overall appearance, as well as the showing and hiding via CSS
-                                         transitions. You can modify any of this with custom CSS or
-                                         overriding our default variables. It's also worth noting that just
-                                         about any HTML can go within the <code>.accordion-body</code>,
-                                         though the transition does limit overflow.
+                                         {{ data?.answer }}
                                      </div>
                                  </div>
                              </div>
@@ -209,7 +133,6 @@ onMounted(()=>{
                      <div class="container md:mt-24 mt-16">
                          <div class="grid grid-cols-1 text-center">
                              <h3 class="mb-4 md:text-3xl text-2xl md:leading-snug leading-snug font-semibold">Have Question ? Get in touch!</h3>
-                             <p class="text-slate-400 max-w-xl mx-auto">We are a huge marketplace dedicated to connecting great artists of all Giglink with their fans and unique token collectors!</p>
                              <div class="mt-6">
                                  <Link :href="route('contact')" class="btn bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white rounded-full mr-2 mt-2">
                                      <i class="uil uil-phone"></i>
