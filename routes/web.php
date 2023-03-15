@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\{AboutController,
+    Auth\NewPasswordController,
     CartController,
     CategoryController,
     ContactController,
     MaterialController,
+    NewsletterController,
     PrivacyController,
     ProductController,
     SafetyResistanceController,
@@ -142,6 +144,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/products/edit/{slug?}', [ProductController::class, 'show'])->name('products.show');
         Route::post('/save-product', [ProductController::class, 'store']);
         Route::delete('/delete-product/{id}', [ProductController::class, 'destroy']);
+
+        Route::get('/news-letter', [NewsletterController::class, 'index'])->name('news-letter.index');
+        Route::post('/news-letter', [NewsletterController::class, 'store']);
+        Route::post('/send-news-email', [NewsletterController::class, 'email']);
+        Route::delete('/send-news-email/{id}', [NewsletterController::class, 'destroy']);
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::delete('/users/{id}', [UserController::class, 'destroy']);

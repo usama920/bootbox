@@ -15,27 +15,24 @@
         <nav class="mt-10" x-data="{ isMultiLevelMenuOpen: true }">
             <nav-link :href="route('dashboard')" :active="route().current('dashboard')">
                 <template #icon>
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
-                    </svg>
+                    <i class="fa-solid fa-user"></i>
                 </template>
-                Dashboard
+                Admin Dashboard
             </nav-link>
             <nav-link :href="route('users.index')" :active="route().current('users.index')">
                 <template #icon>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
+                    <i class="fa-solid fa-users"></i>
                 </template>
                 Users
             </nav-link>
+            <nav-link :href="route('news-letter.index')" :active="route().current('news-letter.index')">
+                <template #icon>
+                    <i class="fa-solid fa-envelope "></i>
+                </template>
+                Newsletter
+            </nav-link>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="contentDrop = !contentDrop">
-                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-                </svg>
+                <i class="fa-solid fa-folder"></i>
                 <span class="mx-3">Pages Content</span>
                 <i class="fa-solid fa-sort-down -mt-1.5"></i>
             </a>
@@ -71,9 +68,7 @@
                 </div>
             </transition>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="optionDrop = !optionDrop">
-                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-                </svg>
+                <i class="fa-solid fa-circle-info"></i>
                 <span class="mx-3">Product Detail</span>
                 <i class="fa-solid fa-sort-down -mt-1.5"></i>
             </a>
@@ -117,10 +112,7 @@
                 </div>
             </transition>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="productDrop = !productDrop">
-                <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"
-                     stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
-                </svg>
+                <i class="fa-brands fa-product-hunt"></i>
                 <span class="mx-3">Products</span>
                 <i class="fa-solid fa-sort-down -mt-1.5"></i>
             </a>
@@ -144,7 +136,7 @@
                 </div>
             </transition>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="messageDrop = !messageDrop">
-                <i class="fa-solid fa-cart-shopping"></i>
+                <i class="fa-solid fa-message"></i>
                 <span class="mx-3">Messages</span>
                 <i class="fa-solid fa-sort-down -mt-1.5"></i>
             </a>

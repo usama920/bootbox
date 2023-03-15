@@ -1,11 +1,28 @@
 <script setup>
 import {Link} from "@inertiajs/vue3";
 import {onMounted, ref} from "vue";
+import commonFunctions from "@/use/common";
 
-const footer = ref({})
+const { Toast, ConfirmToast } = commonFunctions(),
+    footer = ref({}),
+    news_email = ref({email:''})
 
 const yearShow = () =>{
     return new Date().getFullYear()
+}
+
+const newsletter = () =>{
+    if (!!news_email.value.email){
+        axios
+            .post('/news-letter', news_email.value)
+            .then((response)=>{
+                if(response.data.success)
+                    Toast.fire({icon: "success", title: "Subscribed to Newsletter!"})
+            }).catch((err)=>{
+            Toast.fire({icon: "error", title: err?.response?.data?.errors?.email[0]})
+        })
+    } else
+        Toast.fire({icon: "error", title: "Email Required!"})
 }
 
 const footerContent = () =>{
@@ -34,8 +51,8 @@ onMounted(()=>{
                                 </div>
                                 <div class="subcribe-form z-1">
                                     <form class="relative max-w-lg md:ml-auto">
-                                        <input type="email" id="subcribe" name="email" class="pt-4 pr-40 pb-4 pl-6 w-full h-[50px] outline-none text-slate-900 dark:text-white rounded-full bg-white dark:bg-slate-900 shadow dark:shadow-gray-800" placeholder="Enter your email :">
-                                        <button type="submit" class="btn absolute top-[2px] right-[3px] h-[46px] bg-gray-700 hover:bg-gray-900 border-white hover:border-white text-white rounded-full">Subscribe</button>
+                                        <input v-model="news_email.email" type="email" id="subcribe" name="email" class="pt-4 pr-40 pb-4 pl-6 w-full h-[50px] outline-none text-slate-900 dark:text-white rounded-full bg-white dark:bg-slate-900 shadow dark:shadow-gray-800" placeholder="Enter your email :">
+                                        <button @click="newsletter()" type="button" class="btn absolute top-[2px] right-[3px] h-[46px] bg-gray-700 hover:bg-gray-900 border-white hover:border-white text-white rounded-full">Subscribe</button>
                                     </form>
                                 </div>
                             </div>
