@@ -24,7 +24,6 @@ class CartResource extends JsonResource
             'sub_type' => $this->CartSubscription->name ?? '',
             'product' => $this->CartProduct->product_name ?? '',
             'image' => $this->CartProduct->ProductImages[0]->name ?? '',
-
         ];
     }
 }

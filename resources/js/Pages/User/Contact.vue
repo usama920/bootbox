@@ -1,10 +1,41 @@
 <script setup>
 import {Head, Link, router} from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
+import {ref} from "vue";
+import commonFunctions from "@/use/common";
 
-const props = defineProps({
+const { Toast, ConfirmToast } = commonFunctions(),
+    props = defineProps({
     contact: Object
 })
+
+const contactData = ref({}),
+    disable=ref(false)
+
+const validContact = (post) =>{
+    if (!post.name || !post.email || !post.comment || !post.question)
+        Toast.fire({icon: "error", title: "Fill up all information"})
+    else return true
+}
+
+const saveContact = (post)=>{
+    let valid = validContact(post)
+    if(valid){
+        disable.value = true
+        axios
+            .post('/contact-data', contactData.value)
+            .then((response)=>{
+                if(response.data.success)
+                    Toast.fire({icon: "success", title: "Question Submitted"})
+            }).finally(()=>{
+            disable.value = false
+            contactData.value={}
+        }).catch((err)=>{
+            Toast.fire({icon: "error", title: err?.response?.data?.errors?.email[0]})
+        })
+    }
+}
+
 </script>
 <template>
     <Head title="Product Detail" />
@@ -60,19 +91,6 @@ const props = defineProps({
                                 </div>
                             </div>
                         </div>
-<!--                        <div class="text-center px-6 mt-6">-->
-<!--                            <div class="w-20 h-20 bg-violet-600/5 text-violet-600 rounded-full text-3xl flex align-middle justify-center items-center shadow-sm dark:shadow-gray-800 mx-auto">-->
-<!--                                <i class="uil uil-map-marker"></i>-->
-<!--                            </div>-->
-<!--                            <div class="content mt-7">-->
-<!--                                <h5 class="title text-xl font-semibold">Location</h5>-->
-<!--                                <p class="text-slate-400 mt-3">C/54 Northwest Freeway, Suite 558, <br> Houston, USA 485</p>-->
-<!--                                <div class="mt-5">-->
-<!--                                    <a href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39206.002432144705!2d-95.4973981212445!3d29.709510002925988!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640c16de81f3ca5%3A0xf43e0b60ae539ac9!2sGerald+D.+Hines+Waterwall+Park!5e0!3m2!1sen!2sin!4v1566305861440!5m2!1sen!2sin"-->
-<!--                                       data-type="iframe" class="video-play-icon read-more lightbox btn btn-link text-violet-600 hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">View on Google map</a>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
                     </div>
                 </div>
                 <div class="container md:mt-24 mt-16">
@@ -91,14 +109,14 @@ const props = defineProps({
                                             <div class="lg:col-span-6 mb-5">
                                                 <div class="text-left">
                                                     <label for="name" class="font-semibold">Your Name:</label>
-                                                    <input name="name" id="name" type="text" class="form-input text-[15px] rounded-full mt-2" placeholder="Name :">
+                                                    <input v-model="contactData.name" name="name" id="name" type="text" class="form-input text-[15px] rounded-full mt-2" placeholder="Name :">
                                                 </div>
                                             </div>
 
                                             <div class="lg:col-span-6 mb-5">
                                                 <div class="text-left">
                                                     <label for="email" class="font-semibold">Your Email:</label>
-                                                    <input name="email" id="email" type="email" class="form-input text-[15px] rounded-full mt-2" placeholder="Email :">
+                                                    <input v-model="contactData.email" name="email" id="email" type="email" class="form-input text-[15px] rounded-full mt-2" placeholder="Email :">
                                                 </div>
                                             </div>
                                         </div>
@@ -106,17 +124,17 @@ const props = defineProps({
                                             <div class="mb-5">
                                                 <div class="text-left">
                                                     <label for="subject" class="font-semibold">Your Question:</label>
-                                                    <input name="subject" id="subject" class="form-input text-[15px] rounded-full mt-2" placeholder="Subject :">
+                                                    <input v-model="contactData.question" name="subject" id="subject" class="form-input text-[15px] rounded-full mt-2" placeholder="Subject :">
                                                 </div>
                                             </div>
                                             <div class="mb-5">
                                                 <div class="text-left">
                                                     <label for="comments" class="font-semibold">Your Comment:</label>
-                                                    <textarea name="comments" id="comments" class="form-input text-[15px] rounded-2xl h-28 mt-2" placeholder="Message :"></textarea>
+                                                    <textarea v-model="contactData.comment" name="comments" id="comments" class="form-input text-[15px] rounded-2xl h-28 mt-2" placeholder="Message :"></textarea>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="submit" id="submit" name="send" class="btn bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white rounded-full justify-center flex items-center">Send Message</button>
+                                        <button @click="saveContact(contactData)" :disabled="disable" :class="{'opacity-50':disable}" type="button" id="submit" name="send" class="btn bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white rounded-full justify-center flex items-center">Send Message</button>
                                     </form>
                                 </div>
                             </div>

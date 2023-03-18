@@ -29,7 +29,6 @@ class NewsletterController extends Controller
      */
     public function email(Request $request)
     {
-//        dd($request->all());
         $request->validate([
             'email'=>'required',
             'newsContent' => 'required',

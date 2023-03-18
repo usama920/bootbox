@@ -28,9 +28,21 @@ class UserContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        //
+            $request->validate([
+                'name'=>'required',
+                'email'=>'required|email',
+                'question'=>'required',
+                'comment'=>'required',
+            ]);
+            UserContact::create([
+                'name'=>$request->name,
+                'email'=>$request->email,
+                'question'=>$request->question,
+                'comment'=>$request->comment,
+            ]);
+            return response()->success();
     }
 
     /**

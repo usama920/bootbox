@@ -142,17 +142,14 @@ class ProductController extends Controller
                 if (!empty($status) && $status === true && !empty($subscription['price'][$key])){
                     $check = 1;
                     $price = $subscription['price'][$key];
-                }else{
-                    $price = 0;
-                    $check = 0;
+                    ProductSubscription::updateOrCreate([
+                        'products_id' => $product->id,
+                        'subscriptions_id' => $key,
+                        ],[
+                        'price' => $price,
+                        'status' => $check,
+                    ]);
                 }
-                ProductSubscription::updateOrCreate([
-                    'products_id' => $product->id,
-                    'subscriptions_id' => $key,
-                    ],[
-                    'price' => $price,
-                    'status' => $check,
-                ]);
             }
         }
 
@@ -250,18 +247,21 @@ class ProductController extends Controller
     public function addInCart (Request $request)
     {
         $product = Product::where('product_slug', $request->slug)->first();
+        $sub_product = ProductSubscription::where(array('products_id'=> $product->id, 'subscriptions_id'=> $request->subscription))->first();
         if($request->subscription === 1)
-            $sub_price = $product->product_price/3;
+            $sub_price = $sub_product->price/3;
         else if($request->subscription === 2)
-            $sub_price = $product->product_price/6;
+            $sub_price = $sub_product->price/6;
         else if($request->subscription === 3)
-            $sub_price = $product->product_price/9;
+            $sub_price = $sub_product->price/9;
+        else if($request->subscription === 4)
+            $sub_price = $sub_product->price/12;
         $formattedValue = number_format($sub_price, 2, '.', '');
         $cart = Cart::create([
             'users_id'=>auth()->user()->id,
             'products_id' => $product->id,
             'quantity' => 1,
-            'total_price' => $product->product_price,
+            'total_price' => $sub_product->price,
             'subscription_price' => $formattedValue,
             'sizes_id' => $request->size,
             'subscriptions_id' => $request->subscription,

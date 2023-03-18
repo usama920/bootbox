@@ -18,6 +18,7 @@ class SubscriptionSeeder extends Seeder
             ['name' => '3 months', 'created_at' => $current_date, 'updated_at' => $current_date],
             ['name' => '6 months', 'created_at' => $current_date, 'updated_at' => $current_date],
             ['name' => '9 months', 'created_at' => $current_date, 'updated_at' => $current_date],
+            ['name' => '12 months', 'created_at' => $current_date, 'updated_at' => $current_date],
         ];
         Subscription::insert($data);
     }

@@ -8,7 +8,8 @@ const { Toast, ConfirmToast } = commonFunctions(),
     products = ref({}),
     price = ref({total: 0, sub_total:0}),
     baseUrl = window.location.origin,
-    cart = ref([])
+    cart = ref([]),
+    weekPlan = ref({})
 
 defineProps({
     canLogin: Boolean,
@@ -21,7 +22,8 @@ const displayCart = () =>{
     axios
         .get('/cart-items')
         .then((response)=>{
-           cart.value = response?.data?.data
+            cart.value = response?.data?.data?.data1
+            weekPlan.value.weeks = response?.data?.data?.data2*4
             if (cart.value.length>0)
                 totalPrice(cart.value)
         })
@@ -33,6 +35,7 @@ function totalPrice(cart) {
     price.value.sub_total = cart.reduce((total, item) => {
         return total + parseFloat(item?.sub_price);
     }, 0);
+    weekPlan.value.firstWeek = price.value.total/weekPlan.value.weeks + 2.99
 }
 
 const removeCart = (id) =>{
@@ -50,6 +53,10 @@ const removeCart = (id) =>{
             }
         })
     }
+}
+
+const checkout = (val) =>{
+
 }
 
 onMounted(()=>{
@@ -80,94 +87,113 @@ onMounted(()=>{
                         </ul>
                     </div>
                 </div>
-                <div class="container">
-                    <div v-if="cart?.length>0" class="overflow-x-auto">
-                        <table class="min-w-full text-left text-sm font-light">
-                            <thead>
-                            <tr class="border-b !text-left text-white text-[16px] bg-transparent whitespace-nowrap text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                <th class="py-5">
-                                    Products
-                                </th>
-                                <th class="py-5">
-                                    Size
-                                </th>
-                                <th class="py-5">
-                                    Quantity
-                                </th>
-                                <th class="py-5">
-                                    Remove
-                                </th>
-                                <th class="py-5">
-                                    Total Price
-                                </th>
-                                <th class="py-5">
-                                    Subscription
-                                </th>
-                                <th class="py-5">
-                                    Monthly Payment
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="data in cart" class="text-[16px] font-sans text-white">
-                                <td class="py-2">
-                                    <div class="flex items-center">
-                                        <img :src="baseUrl+'/storage/images/products/'+data?.image" class="rounded-md w-20 h-20" alt="">
-                                        <p class="whitespace-no-wrap pl-2">{{ data?.product }}</p>
-                                    </div>
-                                </td>
-                                <td class="">
-                                    <p class="whitespace-no-wrap py-2">{{ data?.size }}</p>
-                                </td>
-                                <td class="">
-                                    <p class="whitespace-no-wrap py-2">{{ data?.quantity }}</p>
-                                </td>
-                                <td class="">
-                                    <p class="whitespace-no-wrap py-2">
-                                        <span @click="removeCart(data?.cart_identity)" class="text-blue-600 cursor-pointer hover:text-red-600">Remove</span>
-                                    </p>
-                                </td>
-                                <td class="">
-                                    <p class="whitespace-no-wrap py-2">${{ data?.price }}</p>
-                                </td>
-                                <td class="">
-                                    <p class="whitespace-no-wrap py-2">${{ data?.sub_type }}</p>
-                                </td>
-                                <td class="">
-                                    <p class="whitespace-no-wrap py-2">{{ data?.sub_price }}</p>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="text-lg p-5 text-center">
-                            <table class="min-w-full text-left text-sm font-light">
+                <div class="max-w-6xl mx-auto">
+                    <div v-if="cart?.length>0">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full mx-5 xl:mx-0 text-left text-sm font-light">
                                 <thead>
-                                <tr class="border-b !text-left text-white text-[16px] bg-transparent whitespace-nowrap text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                    <th class="py-5">
-                                        Total Products
+                                <tr class="border-b !text-left text-white text-[14px] bg-transparent whitespace-nowrap font-normal uppercase text-gray-500">
+                                    <th>
+                                        <div class="w-32 ml-2">Products</div>
+                                    </th>
+                                    <th>
+                                        <div class="w-20">Size</div>
+                                    </th>
+                                    <th>
+                                        <div class="w-20">Remove</div>
+                                    </th>
+                                    <th>
+                                        <div class="w-24">Total Price</div>
+                                    </th>
+                                    <th>
+                                        <div class="w-28">Subscription</div>
                                     </th>
                                     <th class="py-5">
-                                        Total Price
-                                    </th>
-                                    <th class="py-5">
-                                        Total First Subscription Price
+                                        <div class="w-28">Monthly Payment</div>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr class="text-[16px] font-sans text-white">
-                                    <td class="">
-                                        <p class="whitespace-no-wrap py-2">{{ cart?.length }}</p>
+                                <tr v-for="data in cart" class="text-[16px] font-sans text-white">
+                                    <td class="py-2">
+                                        <div class="flex items-center">
+                                            <img :src="baseUrl+'/storage/images/products/'+data?.image" class="rounded-md w-20 h-20" alt="">
+                                            <div :title="data?.product" class="whitespace-nowrap overflow-hidden px-2 truncate">{{ data?.product }}</div>
+                                        </div>
                                     </td>
                                     <td class="">
-                                        <p class="whitespace-no-wrap py-2">${{price.total}}</p>
+                                        <p class="whitespace-no-wrap px-2">{{ data?.size }}</p>
                                     </td>
                                     <td class="">
-                                        <p class="whitespace-no-wrap py-2">${{ price.sub_total }} First Month</p>
+                                        <p class="whitespace-no-wrap py-2">
+                                            <span @click="removeCart(data?.cart_identity)" class="text-blue-600 cursor-pointer hover:text-red-600">Remove</span>
+                                        </p>
+                                    </td>
+                                    <td class="">
+                                        <p class="whitespace-no-wrap py-2">${{ data?.price }}</p>
+                                    </td>
+                                    <td class="">
+                                        <p class="whitespace-no-wrap py-2">${{ data?.sub_type }}</p>
+                                    </td>
+                                    <td class="">
+                                        <p class="whitespace-no-wrap py-2">{{ data?.sub_price }}</p>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
+                            <div class="text-lg p-5 text-center">
+                                <table class="min-w-full mx-5 text-left text-sm font-light">
+                                    <thead>
+                                    <tr class="border-b !text-left text-white text-[14px] bg-transparent whitespace-nowrap uppercase text-gray-500">
+                                        <th class="py-5">
+                                            <div class="w-32">Total Products</div>
+                                        </th>
+                                        <th class="py-5">
+                                            <div class="w-32">Total Price</div>
+                                        </th>
+                                        <th class="py-5">
+                                            <div class="w-60">Total First Subscription Price</div>
+                                        </th>
+                                        <th class="py-5">
+                                            <div class="w-20">Action</div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr class="text-[16px] font-sans text-white">
+                                        <td class="py-2">
+                                            <p class="whitespace-nowrap py-2">{{ cart?.length }}</p>
+                                        </td>
+                                        <td class="">
+                                            <p class="whitespace-nowrap py-2">${{price.total}}</p>
+                                        </td>
+                                        <td class="">
+                                            <p class="whitespace-nowrap py-2">${{ price.sub_total.toFixed(2) }} First Month</p>
+                                        </td>
+                                        <td class="">
+                                            <button @click="checkout(1)" class="px-4 py-2 border border-white rounded-full bg-violet-600 hover:bg-violet-700 text-white">
+                                                CHECKOUT
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="  mx-8 bg-violet-900 border-white border rounded p-2 items-center">
+                            <input v-model="weekPlan.check" id="enableWeek" type="checkbox" class="w-4 h-4 rounded mr-2">
+                            <label for="enableWeek">Do you want to take weekly subscription plan</label>
+                            <div v-if="weekPlan.check" class=" text-left text-sm font-light">
+                                <div class="!text-left p-5 text-white text-[16px] bg-transparent whitespace-nowrap text-gray-500">
+                                    <div >Total Subscription Weeks:</div>
+                                    <div class="py-5">{{ weekPlan.weeks }} weeks</div>
+                                    <div>First Week Subscription Price:</div>
+                                    <div class="py-5">$ {{ weekPlan.firstWeek.toFixed(2)}}</div>
+                                    <button @click="checkout(2)" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border border-white text-white">
+                                        CHECKOUT
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div v-else class="text-lg p-5 text-center">

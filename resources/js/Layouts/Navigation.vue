@@ -31,6 +31,12 @@
                 </template>
                 Newsletter
             </nav-link>
+            <nav-link :href="route('view-contact.index')" :active="route().current('view-contact.index')">
+                <template #icon>
+                    <i class="fa-solid fa-address-book"></i>
+                </template>
+                User Contact
+            </nav-link>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="contentDrop = !contentDrop">
                 <i class="fa-solid fa-folder"></i>
                 <span class="mx-3">Pages Content</span>
@@ -131,6 +137,10 @@
                         <li class="px-2 py-1 transition-colors duration-150 space-x-2">
                             <i class="fas fa-circle text-gray-100"></i>
                             <Link class="w-full" :href="route('products.index')">All Products</Link>
+                        </li>
+                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                            <i class="fas fa-circle text-gray-100"></i>
+                            <Link class="w-full" :href="route('view-coupon.index')">Coupons</Link>
                         </li>
                     </ul>
                 </div>

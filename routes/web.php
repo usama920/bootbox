@@ -5,6 +5,8 @@ use App\Http\Controllers\{AboutController,
     CartController,
     CategoryController,
     ContactController,
+    ContactReplyController,
+    CouponController,
     MaterialController,
     NewsletterController,
     PrivacyController,
@@ -17,6 +19,7 @@ use App\Http\Controllers\{AboutController,
     SubCategoryController,
     TermController,
     TierLevelController,
+    UserContactController,
     UserController};
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -150,6 +153,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/send-news-email', [NewsletterController::class, 'email']);
         Route::delete('/send-news-email/{id}', [NewsletterController::class, 'destroy']);
 
+        Route::get('/all-contacts', [ContactReplyController::class, 'index'])->name('view-contact.index');
+        Route::get('/change-status/{id}', [ContactReplyController::class, 'status']);
+        Route::post('/user-contact-reply', [ContactReplyController::class, 'store']);
+        Route::delete('/user-contact/{id}', [ContactReplyController::class, 'destroy']);
+
+        Route::get('/coupons', [CouponController::class, 'index'])->name('view-coupon.index');
+        Route::post('/coupons', [CouponController::class, 'store']);
+        Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
+
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
@@ -180,9 +192,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart-items', [CartController::class, 'show']);
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 
+    Route::post('/contact-data', [UserContactController::class, 'store']);
+
     Route::middleware('role:2')->group(function () {
-//        Route::get('/cart', function () {
-//            return Inertia::render('User/Cart');
-//        })->name('cart');
+
     });
 });

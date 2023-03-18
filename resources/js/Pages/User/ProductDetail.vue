@@ -92,6 +92,9 @@ const subTotalPayment = () =>{
     else if (parseInt(product.value.subscription) === 3){
         amount = parseInt(subscriptionPrice.value.total)/9
     }
+    else if (parseInt(product.value.subscription) === 4){
+        amount = parseInt(subscriptionPrice.value.total)/12
+    }
     subscriptionPrice.value.monthly = amount.toFixed(2)
 }
 
@@ -201,7 +204,7 @@ const loginModal = () =>{
                                     </div>
                                     <div v-if="!!product_detail?.data?.category" class="my-4">
                                          <div class="p-2 flex items-center" v-for="data in product_detail?.data?.subscription">
-                                             <input @click="product.subscription = data?.subscription_name?.id" :checked="product.subscription === data?.subscription_name?.id" class="text-gray-600 mr-2 focus:ring-0" name="subscription" :id="'sub'+data.subscriptions_id+'scribe'" type="radio" >
+                                             <input @change="showSubscribeSecond()" @click="product.subscription = data?.subscription_name?.id" :checked="product.subscription === data?.subscription_name?.id" class="text-gray-600 mr-2 focus:ring-0" name="subscription" :id="'sub'+data.subscriptions_id+'scribe'" type="radio" >
                                              <label :for="'sub'+data.subscriptions_id+'scribe'">{{data?.subscription_name?.name }} subscription</label>
                                          </div>
                                     </div>
@@ -294,25 +297,21 @@ const loginModal = () =>{
                     <TextInput id="name" type="text" class="mt-1 block w-full" v-model="registerForm.name" required autofocus autocomplete="name" />
                     <InputError class="mt-2" :message="registerForm.errors.name" />
                 </div>
-
                 <div class="mt-3">
                     <InputLabel for="email" value="Email" />
                     <TextInput id="email" type="email" class="mt-1 block w-full" v-model="registerForm.email" required autocomplete="username" />
                     <InputError class="mt-2" :message="registerForm.errors.email" />
                 </div>
-
                 <div class="mt-3">
                     <InputLabel for="password" value="Password" />
                     <TextInput id="password" type="password" class="mt-1 block w-full" v-model="registerForm.password" required autocomplete="new-password" />
                     <InputError class="mt-2" :message="registerForm.errors.password" />
                 </div>
-
                 <div class="mt-3">
                     <InputLabel for="password_confirmation" value="Confirm Password" />
                     <TextInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="registerForm.password_confirmation" required autocomplete="new-password" />
                     <InputError class="mt-2" :message="registerForm.errors.password_confirmation" />
                 </div>
-
                 <div class="mt-4 flex flex-col items-end">
                     <PrimaryButton class="w-full" :class="{ 'opacity-25': registerForm.processing }" :disabled="registerForm.processing">
                         Register

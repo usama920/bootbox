@@ -43,7 +43,9 @@ class CartController extends Controller
             ->where('users_id', auth()->user()->id)
             ->with('CartProduct', 'CartSize', 'CartSubscription')
             ->get();
-        return response()->success(CartResource::collection($cart));
+        $largestSubscriptionId = $cart->max('subscriptions_id');
+        $data=[1=>3, 2=>6, 3=>9, 4=>12];
+        return response()->success(['data1'=>CartResource::collection($cart), 'data2'=>$data[$largestSubscriptionId]]);
     }
 
     /**
