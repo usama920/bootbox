@@ -88,6 +88,10 @@
                         aria-label="submenu">
                         <li class="px-2 py-1 transition-colors duration-150 flex items-center space-x-2">
                             <i class="fas fa-circle text-gray-100"></i>
+                            <Link class="w-full" :href="route('weekly-margin.index')">Weekly Product Margin</Link>
+                        </li>
+                        <li class="px-2 py-1 transition-colors duration-150 flex items-center space-x-2">
+                            <i class="fas fa-circle text-gray-100"></i>
                             <Link class="w-full" :href="route('category.index')">Categories</Link>
                         </li>
                         <li class="px-2 py-1 transition-colors duration-150 space-x-2">

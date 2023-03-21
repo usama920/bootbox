@@ -15,6 +15,7 @@ const { Toast, ConfirmToast } = commonFunctions(),
 
 const props = defineProps({
     product_detail: Object,
+    weekly_margin: Object,
     canResetPassword: Boolean,
     status: String,
 });
@@ -117,25 +118,26 @@ const showSubscribeSecond = () =>{
 }
 
 const subTotalPayment = () =>{
+    console.log(props.weekly_margin.margin_amount)
     let test = props.product_detail?.data?.subscription.filter(x=>x.subscription_types_id === product.value.subscription)
     subscriptionPrice.value.total = test[0]?.price
     let amount = 0;
     let weekly_amount = 0;
     if (parseInt(product.value.subscription) === 1){
         amount = parseInt(subscriptionPrice.value.total)/3
-        weekly_amount = parseInt(subscriptionPrice.value.total)/12
+        weekly_amount = parseInt(subscriptionPrice.value.total)/12 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 2){
         amount = parseInt(subscriptionPrice.value.total)/6
-        weekly_amount = parseInt(subscriptionPrice.value.total)/24 + 2.99
+        weekly_amount = parseInt(subscriptionPrice.value.total)/24 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 3){
         amount = parseInt(subscriptionPrice.value.total)/9
-        weekly_amount = parseInt(subscriptionPrice.value.total)/32 + 2.99
+        weekly_amount = parseInt(subscriptionPrice.value.total)/32 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 4){
         amount = parseInt(subscriptionPrice.value.total)/12
-        weekly_amount = parseInt(subscriptionPrice.value.total)/48 + 2.99
+        weekly_amount = parseInt(subscriptionPrice.value.total)/48 + props.weekly_margin.margin_amount
     }
     subscriptionPrice.value.monthly = amount.toFixed(2)
     subscriptionPrice.value.weekly = weekly_amount.toFixed(2)
@@ -296,11 +298,11 @@ const loginModal = () =>{
                                     <div class="space-y-2">
                                         <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
                                             <input @click="product.type = 1" :checked="product.type === 1" name="productEnableType" class="text-gray-600 mr-2 focus:ring-0" id="enable_monthly" type="radio" >
-                                            <label for="enable_monthly">Do you want to enable Monthly Installment</label>
+                                            <label for="enable_monthly">Monthly Installment</label>
                                         </div>
                                         <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
                                             <input @click="product.type = 2" :checked="product.type === 2" name="productEnableType" class="text-gray-600 mr-2 focus:ring-0" id="enable_weekly" type="radio" >
-                                            <label for="enable_weekly">Do you want to enable Weekly Installment</label>
+                                            <label for="enable_weekly">Weekly Installment</label>
                                         </div>
                                     </div>
                                     <span v-if="!!error.type" class="text-red-600 font-bold text-sm ml-2">{{error.type}}</span>
@@ -348,7 +350,7 @@ const loginModal = () =>{
                                         </div>
                                     </div>
                                     <div class="p-5 flex justify-center">
-                                        <button @click="checkOut()" :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                                        <button @click="checkOutModal()" :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
                                              Checkout
                                         </button>
                                     </div>
@@ -365,7 +367,7 @@ const loginModal = () =>{
             stripe modal contant
         </div>
         <div class="p-5 flex justify-center">
-            <button @click="checkOutModal()" :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+            <button @click="checkOut()" :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
                 Checkout
             </button>
         </div>

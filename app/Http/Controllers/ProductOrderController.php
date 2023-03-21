@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CartResource;
-use App\Models\Cart;
+use App\Models\ProductOrder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class CartController extends Controller
+class ProductOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -39,19 +38,13 @@ class CartController extends Controller
      */
     public function show()
     {
-//        $cart = Cart::select('id', 'products_id', 'quantity', 'sizes_id', 'subscription_price', 'subscriptions_id', 'total_price', 'users_id')
-//            ->where('users_id', auth()->user()->id)
-//            ->with('CartProduct', 'CartSize', 'CartSubscription')
-//            ->get();
-//        $largestSubscriptionId = $cart->max('subscriptions_id');
-//        $data=[1=>3, 2=>6, 3=>9, 4=>12];
-//        return response()->success(['data1'=>CartResource::collection($cart), 'data2'=>$data[$largestSubscriptionId]]);
+        return response()->success();
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Cart $cart): Response
+    public function edit(ProductOrder $productOrder): Response
     {
         //
     }
@@ -59,7 +52,7 @@ class CartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Cart $cart): RedirectResponse
+    public function update(Request $request, ProductOrder $productOrder): RedirectResponse
     {
         //
     }
@@ -67,9 +60,8 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(ProductOrder $productOrder): RedirectResponse
     {
-//        Cart::where('id', $id)->delete();
-//        return response()->success();
+        //
     }
 }

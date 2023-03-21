@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\{AboutController,
     Auth\NewPasswordController,
-    CartController,
     CategoryController,
     ContactController,
     ContactReplyController,
@@ -11,6 +10,7 @@ use App\Http\Controllers\{AboutController,
     NewsletterController,
     PrivacyController,
     ProductController,
+    ProductOrderController,
     SafetyResistanceController,
     ProfileController,
     SizeController,
@@ -20,7 +20,8 @@ use App\Http\Controllers\{AboutController,
     TermController,
     TierLevelController,
     UserContactController,
-    UserController};
+    UserController,
+    WeeklyMarginController};
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -183,14 +184,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/save-terms', [TermController::class, 'show']);
         Route::post('/save-terms', [TermController::class, 'store']);
 
+        Route::get('/weekly-margin-show', [WeeklyMarginController::class, 'index'])->name('weekly-margin.index');
+        Route::get('/weekly-margin', [WeeklyMarginController::class, 'show']);
+        Route::post('/weekly-margin', [WeeklyMarginController::class, 'store']);
+
     });
 
 //    user
     Route::get('/cart', function () {
         return Inertia::render('User/Cart');
     })->name('cart');
-    Route::get('/cart-items', [CartController::class, 'show']);
-    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+    Route::get('/orders', [ProductOrderController::class, 'show']);
 
     Route::post('/contact-data', [UserContactController::class, 'store']);
 

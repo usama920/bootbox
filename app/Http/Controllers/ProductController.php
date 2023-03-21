@@ -4,10 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductResource;
-use App\Models\{
-    Gender, Material, Product, ProductImage, ProductSize, ProductSubscription, Question,
-    SafetyResistance, Size, SocialLinks, Style, SubCategory, SubscriptionType, TierLevel
-};
+use App\Models\{Gender,
+    Material,
+    Product,
+    ProductImage,
+    ProductSize,
+    ProductSubscription,
+    Question,
+    SafetyResistance,
+    Size,
+    SocialLinks,
+    Style,
+    SubCategory,
+    SubscriptionType,
+    TierLevel,
+    WeeklyMargin};
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -201,7 +212,8 @@ class ProductController extends Controller
             'product_detail' => new ProductDetailResource(Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
             ->where('product_slug', $slug)
             ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages', 'ProductSizes', 'GenderName', 'SubscribeOptions')
-            ->first())
+            ->first()),
+            'weekly_margin'=>WeeklyMargin::select('margin_amount')->first()
         ]);
     }
 

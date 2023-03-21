@@ -19,7 +19,7 @@ defineProps({
 
 const displayCart = () =>{
     axios
-        .get('/cart-items')
+        .get('/orders')
         .then((response)=>{
             cart.value = response?.data?.data?.data1
         })
@@ -66,16 +66,16 @@ onMounted(()=>{
                                         <div class="w-20">Size</div>
                                     </th>
                                     <th>
-                                        <div class="w-20">Remove</div>
+                                        <div class="w-20">Selected Subscription </div>
                                     </th>
                                     <th>
                                         <div class="w-24">Total Price</div>
                                     </th>
                                     <th>
-                                        <div class="w-28">Subscription</div>
+                                        <div class="w-28">Subscription Type</div>
                                     </th>
                                     <th class="py-5">
-                                        <div class="w-28">Monthly Payment</div>
+                                        <div class="w-28">Installment Amount</div>
                                     </th>
                                 </tr>
                                 </thead>
