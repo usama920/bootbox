@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('product_subscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('products_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subscriptions_id')->constrained()->onDelete('cascade');
-            $table->integer('price')->nullable();
+            $table->foreignId('subscription_types_id')->constrained()->onDelete('cascade');
+            $table->string('strip_price_id');
+            $table->string('weekly_strip_id');
+            $table->integer('price');
             $table->boolean('status')->default(0)->comment('0 for uncheck, 1 for check');
             $table->timestamps();
         });

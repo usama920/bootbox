@@ -39,13 +39,13 @@ class CartController extends Controller
      */
     public function show()
     {
-        $cart = Cart::select('id', 'products_id', 'quantity', 'sizes_id', 'subscription_price', 'subscriptions_id', 'total_price', 'users_id')
-            ->where('users_id', auth()->user()->id)
-            ->with('CartProduct', 'CartSize', 'CartSubscription')
-            ->get();
-        $largestSubscriptionId = $cart->max('subscriptions_id');
-        $data=[1=>3, 2=>6, 3=>9, 4=>12];
-        return response()->success(['data1'=>CartResource::collection($cart), 'data2'=>$data[$largestSubscriptionId]]);
+//        $cart = Cart::select('id', 'products_id', 'quantity', 'sizes_id', 'subscription_price', 'subscriptions_id', 'total_price', 'users_id')
+//            ->where('users_id', auth()->user()->id)
+//            ->with('CartProduct', 'CartSize', 'CartSubscription')
+//            ->get();
+//        $largestSubscriptionId = $cart->max('subscriptions_id');
+//        $data=[1=>3, 2=>6, 3=>9, 4=>12];
+//        return response()->success(['data1'=>CartResource::collection($cart), 'data2'=>$data[$largestSubscriptionId]]);
     }
 
     /**
@@ -69,7 +69,7 @@ class CartController extends Controller
      */
     public function destroy($id)
     {
-        Cart::where('id', $id)->delete();
-        return response()->success();
+//        Cart::where('id', $id)->delete();
+//        return response()->success();
     }
 }

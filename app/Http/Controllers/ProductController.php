@@ -4,24 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductResource;
-use App\Models\Cart;
-use App\Models\Gender;
-use App\Models\Material;
-use App\Models\Product;
-use App\Models\ProductImage;
-use App\Models\ProductSize;
-use App\Models\ProductSubscription;
-use App\Models\Question;
-use App\Models\SafetyResistance;
-use App\Models\Size;
-use App\Models\SocialLinks;
-use App\Models\Style;
-use App\Models\SubCategory;
-use App\Models\Subscription;
-use App\Models\TierLevel;
-use Illuminate\Http\RedirectResponse;
+use App\Models\{
+    Gender, Material, Product, ProductImage, ProductSize, ProductSubscription, Question,
+    SafetyResistance, Size, SocialLinks, Style, SubCategory, SubscriptionType, TierLevel
+};
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -104,8 +91,10 @@ class ProductController extends Controller
         $description = json_decode($request->description, true);
         $price = json_decode($request->price, true);
         $status = json_decode($request->status, true);
+        $weekly_strip_id = json_decode($request->weekly_strip_id, true);
         $previous_img = json_decode($request->previous_img, true);
         $length = json_decode($request->length, true);
+//        dd($weekly_strip_id);
 
         $product = Product::updateOrCreate([
             'id'=>$id ?? ''
@@ -139,14 +128,18 @@ class ProductController extends Controller
 
         if (!empty($subscription) && !empty($subscription['check']) && count($subscription['check'])>0){
             foreach ($subscription['check'] as $key => $status ) {
-                if (!empty($status) && $status === true && !empty($subscription['price'][$key])){
+                if (!empty($status) && $status === true && !empty($subscription['price'][$key]) && !empty($subscription['stripe_id'][$key])){
                     $check = 1;
                     $price = $subscription['price'][$key];
+                    $strip = $subscription['stripe_id'][$key];
+
                     ProductSubscription::updateOrCreate([
                         'products_id' => $product->id,
-                        'subscriptions_id' => $key,
+                        'subscription_types_id' => $key,
                         ],[
+                        'strip_price_id'=>$strip,
                         'price' => $price,
+                        'weekly_strip_id' => $weekly_strip_id,
                         'status' => $check,
                     ]);
                 }
@@ -229,7 +222,7 @@ class ProductController extends Controller
         $tier = TierLevel::all();
         $safety = SafetyResistance::all();
         $material = Material::all();
-        $subscription = Subscription::all();
+        $subscription = SubscriptionType::all();
         $genders = Gender::all();
 
         return response()->json([
@@ -244,28 +237,21 @@ class ProductController extends Controller
         ]);
     }
 
-    public function addInCart (Request $request)
+    public function order (Request $request)
     {
-        $product = Product::where('product_slug', $request->slug)->first();
-        $sub_product = ProductSubscription::where(array('products_id'=> $product->id, 'subscriptions_id'=> $request->subscription))->first();
-        if($request->subscription === 1)
-            $sub_price = $sub_product->price/3;
-        else if($request->subscription === 2)
-            $sub_price = $sub_product->price/6;
-        else if($request->subscription === 3)
-            $sub_price = $sub_product->price/9;
-        else if($request->subscription === 4)
-            $sub_price = $sub_product->price/12;
-        $formattedValue = number_format($sub_price, 2, '.', '');
-        $cart = Cart::create([
-            'users_id'=>auth()->user()->id,
-            'products_id' => $product->id,
-            'quantity' => 1,
-            'total_price' => $sub_product->price,
-            'subscription_price' => $formattedValue,
-            'sizes_id' => $request->size,
-            'subscriptions_id' => $request->subscription,
+        $request->validate([
+            "size" => 'required',
+            "subscription" => 'required',
+            "slug" => 'required',
+            "type" => 'required',
+            "country" => 'required',
+            "zipcode" => 'required',
+            "state" => 'required',
+            "city" => 'required',
+            "address_1" => 'required',
+            "phone" => 'required',
+            "name" => 'required',
         ]);
-        return response()->success($cart);
+        dd($request->all());
     }
 }

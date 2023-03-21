@@ -103,8 +103,10 @@ const showSocial = () =>{
     axios
         .get('/save-social')
         .then((response)=>{
-            social.value = response.data.data1
-            social.value.questions = !!response?.data?.data2 ? response.data.data2:[{question:'', answer:'', id:''}]
+            if (!!response?.data?.data1)
+                social.value = response.data.data1
+            if (!!response?.data?.data2)
+                social.value.questions = response?.data?.data2
         })
 }
 onMounted(()=>{

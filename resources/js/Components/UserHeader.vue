@@ -75,7 +75,7 @@ defineProps({
                         </ul>
                     </li>
                     <li>
-                        <Link :href="route('cart')" class="sub-menu-item">Cart</Link>
+                        <Link :href="route('cart')" class="sub-menu-item">Order</Link>
                     </li>
                     <li class="has-submenu parent-parent-menu-item">
                         <a href="javascript:void(0)">About</a><span class="menu-arrow"></span>
@@ -86,22 +86,6 @@ defineProps({
                             <li>
                                 <Link :href="route('contact')" class="sub-menu-item">Contact Us</Link>
                             </li>
-<!--                            <li class="has-submenu parent-menu-item"><a href="javascript:void(0)"> Special </a><span class="submenu-arrow"></span>-->
-<!--                                <ul class="submenu">-->
-<!--                                    <li><a href="#" class="sub-menu-item"> Coming Soon</a></li>-->
-<!--                                    <li><a href="#" class="sub-menu-item"> Maintenance</a></li>-->
-<!--                                    <li><a href="#" class="sub-menu-item"> 404!</a></li>-->
-<!--                                    <li><a href="#" class="sub-menu-item"> Thank you</a></li>-->
-<!--                                </ul>-->
-<!--                            </li>-->
-<!--                            <li class="has-submenu parent-menu-item"><a href="javascript:void(0)"> Help Center </a><span class="submenu-arrow"></span>-->
-<!--                                <ul class="submenu">-->
-<!--                                    <li><a href="#" class="sub-menu-item"> Overview</a></li>-->
-<!--                                    <li><a href="#" class="sub-menu-item"> FAQs</a></li>-->
-<!--                                    <li><a href="#" class="sub-menu-item"> Guides</a></li>-->
-<!--                                    <li><a href="#" class="sub-menu-item"> Support</a></li>-->
-<!--                                </ul>-->
-<!--                            </li>-->
                             <li>
                                 <Link :href="route('terms')" class="sub-menu-item">Terms Policy</Link>
                             </li>

@@ -16,8 +16,11 @@ class PrivacyController extends Controller
      */
     public function index(): \Inertia\Response
     {
+        $privacy = Privacy::select('heading', 'description', 'image')->first();
+        if (empty($privacy))
+            $privacy = '';
         return Inertia::render('User/Privacy', [
-            'privacy' => Privacy::select('heading', 'description', 'image')->first()
+            'privacy' => $privacy
         ]);
     }
 

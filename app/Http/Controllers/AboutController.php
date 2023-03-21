@@ -16,8 +16,11 @@ class AboutController extends Controller
      */
     public function index()
     {
+        $about = About::select('heading', 'description', 'image')->first();
+        if (empty($about))
+            $about = '';
         return Inertia::render('User/About', [
-            'about' => About::select('heading', 'description', 'image')->first()
+            'about' => $about
         ]);
     }
 

@@ -98,10 +98,16 @@
             <div class="">
                 <label class="font-bold">Available Subscriptions:</label>
                 <div v-for="data in options.subscription" class="flex items-center my-2">
-                    <input v-model="productInfo.subscription.check[data.id]" :checked="productInfo.subscription[data.id] === true" type="checkbox" :id="'sub'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
-                    <label :for="'sub'+data?.id+'boots'" class="mr-4">{{data?.name}}</label>
-                    <input v-model="productInfo.subscription.price[data.id]" :disabled="productInfo.subscription.check[data.id] !== true" :class="{'opacity-50 bg-gray-500':productInfo.subscription.check[data.id] !== true}" type="number" placeholder="Enter Price" class="ml-5 w-40 rounded h-10">
+                    <input v-model="productInfo.subscription.check[data.id]" type="checkbox" :id="'sub'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
+                    <label :for="'sub'+data?.id+'boots'" class="mr-4 w-40">{{data?.name}}</label>
+                    <input v-model="productInfo.subscription.price[data.id]" :disabled="productInfo.subscription.check[data.id] !== true" :class="{'opacity-50 bg-gray-500':productInfo.subscription.check[data.id] !== true}" type="number" placeholder="Subscription Price" class="ml-5 w-40 rounded h-10">
+                    <input v-model="productInfo.subscription.stripe_id[data.id]" :disabled="productInfo.subscription.check[data.id] !== true" :class="{'opacity-50 bg-gray-500':productInfo.subscription.check[data.id] !== true}" type="number" placeholder="Stripe Price Id" class="ml-5 w-40 rounded h-10">
                 </div>
+            </div>
+            <div class="mt-5">
+                <span class="font-bold">Weekly Subscription Stripe Price Id:</span>
+                <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.weekly_strip_id}}</span>
+                <input v-model="productInfo.weekly_strip_id" type="number" placeholder="Stripe Weekly Price Id" class="w-full rounded h-10">
             </div>
         </form>
         <div class="flex justify-end p-4">
@@ -123,12 +129,12 @@ import commonFunctions from "@/use/common";
 
 const { Toast, ConfirmToast } = commonFunctions()
 
-const productInfo = ref({id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}}, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
+const productInfo = ref({id:'', previous_img:[], weekly_strip_id:'', style:0, gender:0, size:{}, subscription:{check:{}, price:{}, stripe_id:{} }, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
     baseUrl = window.location.origin,
     errors = ref([]),
     ImagesUri = ref([]),
     disable = ref(false),
-    productError = ref({image:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
+    productError = ref({image:'', style:'', size:'', weekly_strip_id:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
     options = ref({style:{}, size:{}, subscription:{}, subCategory:{}, tier:{}, gender:{}, safety:{}, material:{}})
 
 const props = defineProps({
@@ -147,7 +153,7 @@ const images = (e) =>{
 }
 
 const emptyError = () =>{
-    productError.value = {image:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}
+    productError.value = {image:'', style:'', size:'', weekly_strip_id:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}
 }
 const validationError = (post) => {
     emptyError()
@@ -169,8 +175,10 @@ const validationError = (post) => {
         productError.value.description = 'Description is required field'
     if (!post.price)
         productError.value.price = 'Price is required field'
+    if (!post.weekly_strip_id)
+        productError.value.weekly_strip_id = 'Weekly Strip Id required'
 
-    return !productError.value.style && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.name && !productError.value.description && !productError.value.price
+    return !productError.value.style && !productError.value.weekly_strip_id && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.name && !productError.value.description && !productError.value.price
 }
 
 const productSave = (post) =>{
@@ -247,11 +255,11 @@ const productInformation = () =>{
             productInfo.value.size[value?.sizes_id] = value?.status === 1;
         });
     }
-
     if(!!props?.product_info?.product_subscriptions && props?.product_info?.product_subscriptions.length>0){
         _.forEach(props?.product_info?.product_subscriptions, function (value, key) {
-            productInfo.value.subscription.check[value?.subscriptions_id] = value?.status === 1;
-            productInfo.value.subscription.price[value?.subscriptions_id] = value?.price;
+            productInfo.value.subscription.check[value?.subscription_types_id] = value?.status === 1;
+            productInfo.value.subscription.price[value?.subscription_types_id] = value?.price;
+            productInfo.value.subscription.stripe_id[value?.subscription_types_id] = value?.strip_price_id;
         });
     }
 }

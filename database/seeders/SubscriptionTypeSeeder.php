@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Subscription;
+use App\Models\SubscriptionType;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class SubscriptionSeeder extends Seeder
+class SubscriptionTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,6 +20,6 @@ class SubscriptionSeeder extends Seeder
             ['name' => '9 months', 'created_at' => $current_date, 'updated_at' => $current_date],
             ['name' => '12 months', 'created_at' => $current_date, 'updated_at' => $current_date],
         ];
-        Subscription::insert($data);
+        SubscriptionType::insert($data);
     }
 }

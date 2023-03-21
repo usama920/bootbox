@@ -64,7 +64,7 @@ onMounted(()=>{
                  <section class="relative md:py-24 py-16">
                      <div class="container">
                          <div class="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mt-10 gap-[30px]">
-                             <div v-if="!!products && products?.length>0" @click="openProduct(data?.product_slug)" v-for="data in products" class="group relative overflow-hidden p-2 rounded-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-800 hover:shadow-md dark:shadow-md hover:dark:shadow-gray-700 transition-all duration-500 hover:-mt-2 h-fit">
+                             <div v-if="!!products && products?.length>0" @click="openProduct(data?.product_slug)" v-for="data in products" class="group cursor-pointer relative overflow-hidden p-2 rounded-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-800 hover:shadow-md dark:shadow-md hover:dark:shadow-gray-700 transition-all duration-500 hover:-mt-2 h-fit">
                                  <div class="relative overflow-hidden">
                                      <div v-if="!!data" class="relative overflow-hidden rounded-lg h-[200px]">
                                          <img alt="image" class="rounded-lg min-h-[200px] min-h-full shadow-md dark:shadow-gray-700 group-hover:scale-110 transition-all duration-500" :src="baseUrl+'/storage/images/products/'+data?.image[0]?.name">

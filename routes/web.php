@@ -57,7 +57,7 @@ Route::get('/display-products', [ProductController::class, 'displayProducts']);
 Route::get('/footer-content', [SocialLinksController::class, 'footerContent']);
 
 Route::get('/product-detail/{slug}', [ProductController::class, 'detail']);
-Route::post('/addToCart', [ProductController::class, 'addInCart']);
+Route::post('/add-order', [ProductController::class, 'order']);
 
 Route::get('/cart-login', function () {
     return Inertia::render('Auth/Register');

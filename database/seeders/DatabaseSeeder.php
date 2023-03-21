@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(StyleSeeder::class);
         $this->call(SizeSeeder::class);
         $this->call(GenderSeeder::class);
-        $this->call(SubscriptionSeeder::class);
+        $this->call(SubscriptionTypeSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(SubCategorySeeder::class);
         $this->call(MaterialSeeder::class);

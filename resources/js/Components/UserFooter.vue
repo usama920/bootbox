@@ -94,13 +94,13 @@ onMounted(()=>{
                                     <div class="flex mt-6">
                                         <i class="w-5 h-5 text-violet-600 mr-3 mt-1 fa-solid fa-envelope"></i>
                                         <div class="">
-                                            <a :href="footer?.contact_email" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer.contact_email}}</a>
+                                            <a :href="footer?.contact_email" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer?.contact_email}}</a>
                                         </div>
                                     </div>
                                     <div class="flex mt-6">
                                         <i class="w-5 h-5 text-violet-600 mr-3 mt-1 fa-solid fa-phone"></i>
                                         <div class="">
-                                            <a :href="'tel:'+footer.contact_number" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer.contact_number}}</a>
+                                            <a :href="'tel:'+footer?.contact_number" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer?.contact_number}}</a>
                                         </div>
                                     </div>
                                 </div>

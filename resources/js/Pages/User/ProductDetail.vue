@@ -35,11 +35,14 @@ const loginForm = useForm({
     }),
     baseUrl = window.location.origin,
     showSubscribe = ref({first: 0, second:0}),
-    product = ref({size:'', subscription:'', slug:''}),
-    error = ref({size:'', subscription:''}),
+    product = ref({size:'', subscription:'', slug:'', type:'', country:'', zipcode:'', state:'', city:'', address_1:'', address_2:'', phone:'', name:'',}),
+    error = ref({size:'', slug:'', subscription:'', type:'', country:'', zipcode:'', state:'', city:'', address_1:'', address_2:'', phone:'', name:''}),
     disable = ref({show: false, text: 'Add to Cart'}),
-    subscriptionPrice = ref({total:0, monthly:0})
+    subscriptionPrice = ref({total:0, monthly:0, weekly:0})
 
+const emptyError = () =>{
+    error.value = {size:'', slug:'', subscription:'', type:'', country:'', zipcode:'', state:'', city:'', address_1:'', address_2:'', phone:'', name:''}
+}
 const submitRegister = () => {
     registerForm.post(route('register'), {
         onFinish: (()=>{
@@ -60,10 +63,10 @@ const submitLogin = () => {
             user.value = usePage()
         })
     })
-};
+}
 
-const subValidation = () =>{
-    error.value = {size:'', subscription:''}
+const subFirstValidation = () => {
+    emptyError()
     if (!product.value.size)
         error.value.size='*select a size'
     if (!product.value.subscription)
@@ -71,8 +74,42 @@ const subValidation = () =>{
     return error.value.size === '' && error.value.subscription === ''
 }
 
+const subValidation = () =>{
+    emptyError()
+    if (!product.value.address_1)
+        error.value.address_1='*Address Lane 1 Required'
+    if (!product.value.address_2)
+        error.value.address_2='*Address Lane 2 Required'
+    if (!product.value.zipcode)
+        error.value.zipcode='*Zipcode Required'
+    if (!product.value.city)
+        error.value.city='*City Required'
+    if (!product.value.country)
+        error.value.country='*Country Required'
+    if (!product.value.name)
+        error.value.name='*Name Required'
+    if (!product.value.phone)
+        error.value.phone='*Phone Number Required'
+    if (!product.value.state)
+        error.value.state='*State Required'
+    if (!product.value.subscription)
+        error.value.subscription='*select a subscription option'
+    if (!product.value.type)
+        error.value.type='*select a subscription type'
+    if (!product.value.size)
+        error.value.size='*select a size'
+    if (!product.value.slug){
+        error.value.slug='*select a size'
+        Toast.fire({icon: "error", title: "something went wrong"})
+    }
+    return error.value.size === '' && error.value.subscription === '' && error.value.type === ''
+        && error.value.state === '' && error.value.phone === '' && error.value.slug === ''
+        && error.value.name === '' && error.value.country === '' && error.value.city === ''
+        && error.value.zipcode === '' && error.value.address_1 === '' && error.value.address_2 === ''
+}
+
 const showSubscribeSecond = () =>{
-    const valid = subValidation()
+    const valid = subFirstValidation()
     if (valid){
         showSubscribe.value.second = 1
         subTotalPayment ()
@@ -80,39 +117,59 @@ const showSubscribeSecond = () =>{
 }
 
 const subTotalPayment = () =>{
-    let test = props.product_detail?.data?.subscription.filter(x=>x.subscriptions_id === product.value.subscription)
-    subscriptionPrice.value.total = test[0].price
+    let test = props.product_detail?.data?.subscription.filter(x=>x.subscription_types_id === product.value.subscription)
+    subscriptionPrice.value.total = test[0]?.price
     let amount = 0;
+    let weekly_amount = 0;
     if (parseInt(product.value.subscription) === 1){
         amount = parseInt(subscriptionPrice.value.total)/3
+        weekly_amount = parseInt(subscriptionPrice.value.total)/12
     }
     else if (parseInt(product.value.subscription) === 2){
         amount = parseInt(subscriptionPrice.value.total)/6
+        weekly_amount = parseInt(subscriptionPrice.value.total)/24 + 2.99
     }
     else if (parseInt(product.value.subscription) === 3){
         amount = parseInt(subscriptionPrice.value.total)/9
+        weekly_amount = parseInt(subscriptionPrice.value.total)/32 + 2.99
     }
     else if (parseInt(product.value.subscription) === 4){
         amount = parseInt(subscriptionPrice.value.total)/12
+        weekly_amount = parseInt(subscriptionPrice.value.total)/48 + 2.99
     }
     subscriptionPrice.value.monthly = amount.toFixed(2)
+    subscriptionPrice.value.weekly = weekly_amount.toFixed(2)
+}
+const checkOutModal = () => {
+    product.value.slug = props.product_detail?.data?.product_slug
+    const valid = subValidation()
+    if (valid) {
+        if(!!user.value?.props?.auth?.user){
+            $('#stripeModal').modal('show')
+        }else
+            $('#loginModal').modal('show');
+    }
 }
 
-const addCart = () =>{
+const checkOut = () =>{
     product.value.slug = props.product_detail?.data?.product_slug
     const valid = subValidation()
     if (valid){
         if(!!user.value?.props?.auth?.user){
             disable.value.show = true
             axios
-                .post('/addToCart', product.value)
+                .post('/add-order', product.value)
                 .then((response)=>{
                     if(response.data.success){
                         Toast.fire({icon: "success", title: "Product Added to Cart!"})
-                        disable.value.text = 'Added to Cart'
                         disable.value.show = true
                     }else
                         disable.value.show = false
+                })
+                .catch((err)=>{
+                    if(!!err.response.data.errors)
+                        Toast.fire({icon: "error", title: err.response.data.message})
+                    disable.value.show = false
                 })
         }else
             $('#loginModal').modal('show');
@@ -204,8 +261,8 @@ const loginModal = () =>{
                                     </div>
                                     <div v-if="!!product_detail?.data?.category" class="my-4">
                                          <div class="p-2 flex items-center" v-for="data in product_detail?.data?.subscription">
-                                             <input @change="showSubscribeSecond()" @click="product.subscription = data?.subscription_name?.id" :checked="product.subscription === data?.subscription_name?.id" class="text-gray-600 mr-2 focus:ring-0" name="subscription" :id="'sub'+data.subscriptions_id+'scribe'" type="radio" >
-                                             <label :for="'sub'+data.subscriptions_id+'scribe'">{{data?.subscription_name?.name }} subscription</label>
+                                             <input @change="showSubscribeSecond()" @click="product.subscription = data?.subscription_name?.id" :checked="product.subscription === data?.subscription_name?.id" class="text-gray-600 mr-2 focus:ring-0" name="subscription" :id="'sub'+data.subscription_types_id+'scribe'" type="radio" >
+                                             <label :for="'sub'+data.subscription_types_id+'scribe'">{{data?.subscription_name?.name }} subscription</label>
                                          </div>
                                     </div>
                                     <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
@@ -236,17 +293,63 @@ const loginModal = () =>{
                                             $ {{ subscriptionPrice.total }}
                                         </div>
                                     </div>
-                                    <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
-                                        Monthly Payment
+                                    <div class="space-y-2">
+                                        <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                            <input @click="product.type = 1" :checked="product.type === 1" name="productEnableType" class="text-gray-600 mr-2 focus:ring-0" id="enable_monthly" type="radio" >
+                                            <label for="enable_monthly">Do you want to enable Monthly Installment</label>
+                                        </div>
+                                        <div class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                            <input @click="product.type = 2" :checked="product.type === 2" name="productEnableType" class="text-gray-600 mr-2 focus:ring-0" id="enable_weekly" type="radio" >
+                                            <label for="enable_weekly">Do you want to enable Weekly Installment</label>
+                                        </div>
                                     </div>
-                                    <div class="mt-4">
-                                        <div class="p-2 flex items-center">
-                                            You have to pay approximately $ {{ subscriptionPrice.monthly }} every month
+                                    <span v-if="!!error.type" class="text-red-600 font-bold text-sm ml-2">{{error.type}}</span>
+                                    <div v-if="product.type === 1" class="mt-4 p-2">
+                                        You have to pay approximately $ {{ subscriptionPrice.monthly }} every month
+                                    </div>
+                                    <div v-else-if="product.type === 2" class="mt-4 p-2">
+                                        You have to pay approximately $ {{ subscriptionPrice.weekly }} every week
+                                    </div>
+                                    <div v-if="product.type === 1 || product.type === 2" class="mt-4">
+                                        <div class="w-full p-3 mb-4 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                            <label for="enable_weekly">Enter Address and Personal Information</label>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.name" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="Full Name" type="text" >
+                                            <span v-if="!!error.name" class="text-red-600 font-bold text-sm">{{error.name}}</span>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.phone" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="Phone Number" type="text" >
+                                            <span v-if="!!error.phone" class="text-red-600 font-bold text-sm">{{error.phone}}</span>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.address_1" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="Address Line 1" type="text" >
+                                            <span v-if="!!error.address_1" class="text-red-600 font-bold text-sm">{{error.address_1}}</span>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.address_2" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="Address Line 2" type="text" >
+                                            <span v-if="!!error.address_2" class="text-red-600 font-bold text-sm">{{error.address_2}}</span>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.city" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="City" type="text" >
+                                            <span v-if="!!error.city" class="text-red-600 font-bold text-sm">{{error.city}}</span>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.state" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="State" type="text" >
+                                            <span v-if="!!error.state" class="text-red-600 font-bold text-sm">{{error.state}}</span>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.zipcode" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="Zipcode" type="text" >
+                                            <span v-if="!!error.zipcode" class="text-red-600 font-bold text-sm">{{error.zipcode}}</span>
+                                        </div>
+                                        <div class="mx-auto md:w-1/2">
+                                            <input v-model="product.country" class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"  placeholder="Country" type="text" >
+                                            <span v-if="!!error.country" class="text-red-600 font-bold text-sm">{{error.country}}</span>
                                         </div>
                                     </div>
                                     <div class="p-5 flex justify-center">
-                                        <button :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" @click="addCart()" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
-                                             {{ disable.text }}
+                                        <button @click="checkOut()" :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                                             Checkout
                                         </button>
                                     </div>
                                 </div>
@@ -257,6 +360,16 @@ const loginModal = () =>{
             </section>
         </UserLayout>
     </div>
+    <modal-dialog ModalId="stripeModal" @CloseModal="CloseModal">
+        <div class="mx-auto">
+            stripe modal contant
+        </div>
+        <div class="p-5 flex justify-center">
+            <button @click="checkOutModal()" :disabled="disable.show" :class="{'!opacity-50 !hover:border-violet-600 hover:bg-violet-600':disable.show}" type="button" class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                Checkout
+            </button>
+        </div>
+    </modal-dialog>
     <modal-dialog ModalId="loginModal" @CloseModal="CloseModal">
         <div class="mx-auto">
             <div v-if="status" class="mb-4 text-sm font-medium text-green-600">

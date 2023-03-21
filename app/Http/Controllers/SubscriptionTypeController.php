@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subscription;
+use App\Models\SubscriptionType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class SubscriptionController extends Controller
+class SubscriptionTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -36,7 +36,7 @@ class SubscriptionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Subscription $subscription): Response
+    public function show(SubscriptionType $subscriptionType): Response
     {
         //
     }
@@ -44,7 +44,7 @@ class SubscriptionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Subscription $subscription): Response
+    public function edit(SubscriptionType $subscriptionType): Response
     {
         //
     }
@@ -52,7 +52,7 @@ class SubscriptionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Subscription $subscription): RedirectResponse
+    public function update(Request $request, SubscriptionType $subscriptionType): RedirectResponse
     {
         //
     }
@@ -60,7 +60,7 @@ class SubscriptionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Subscription $subscription): RedirectResponse
+    public function destroy(SubscriptionType $subscriptionType): RedirectResponse
     {
         //
     }
