@@ -9,8 +9,9 @@ use App\Models\{Gender,
     Product,
     ProductImage,
     ProductSize,
+    ProductOrder,
     ProductSubscription,
-    Question,
+    Question, 
     SafetyResistance,
     Size,
     SocialLinks,
@@ -20,6 +21,7 @@ use App\Models\{Gender,
     TierLevel,
     WeeklyMargin};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -208,12 +210,19 @@ class ProductController extends Controller
      */
     public function detail($slug)
     {
-        return Inertia::render('User/ProductDetail', [
-            'product_detail' => new ProductDetailResource(Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+        $intent = null;
+        if(Auth::check()) {
+            $intent = Auth::user()->createSetupIntent();
+        }
+        $detail = new ProductDetailResource(Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
             ->where('product_slug', $slug)
             ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages', 'ProductSizes', 'GenderName', 'SubscribeOptions')
-            ->first()),
-            'weekly_margin'=>WeeklyMargin::select('margin_amount')->first()
+            ->first());
+    //    dd($detail);
+        return Inertia::render('User/ProductDetail', [
+            'product_detail' => $detail,
+            'weekly_margin'=>WeeklyMargin::select('margin_amount')->first(),
+            'intent' => $intent
         ]);
     }
 
@@ -251,6 +260,8 @@ class ProductController extends Controller
 
     public function order (Request $request)
     {
+        // dd($request->all());
+
         $request->validate([
             "size" => 'required',
             "subscription" => 'required',
@@ -263,7 +274,48 @@ class ProductController extends Controller
             "address_1" => 'required',
             "phone" => 'required',
             "name" => 'required',
+            "stripe_price_weekly_id" => 'required',
+            "stripe_price_monthly_id" => 'required',
         ]);
-        dd($request->all());
+        $product = Product::select('id')->where('product_slug', $request->slug)->first();
+        if(!empty($product)){
+            if($request->type === 1)
+                $stripe_id = $request->stripe_price_weekly_id;
+            else
+                $stripe_id = $request->stripe_price_monthly_id;
+        
+            $order = ProductOrder::create([
+                'user_id' => auth()->user()->id,
+                'products_id'=>$product->id,
+                'subscription_types_id'=>$request->subscription,
+                'product_sizes_id'=>$request->size,
+                'status'=>0,
+                'subscription_type'=>$request->type,
+                'strip_price_id'=>$stripe_id,
+                'total_amount'=>$request->total_amount,
+                'installment_price'=>$request->installment_amount,
+                'name'=>$request->name,
+                'phone'=>$request->phone,
+                'address_1'=>$request->address_1,
+                'address_2'=>$request->address_2,
+                'city'=>$request->city,
+                'state'=>$request->state,
+                'zipcode'=>$request->zipcode,
+                'country'=>$request->country
+            ]);
+            return response()->success($order);
+        }
+    }
+
+    public function StripeSetup()
+    {
+        $subscribe = $intent = '';
+        if(auth()->check()) {
+            $subscribe = auth()->user()->subscribed('default');
+            if ($subscribe === false) {
+                $intent = auth()->user()->createSetupIntent();
+            }
+        }
+        return response()->success(['intent' => $intent, 'subscribe' => $subscribe]);
     }
 }

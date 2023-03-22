@@ -50,6 +50,7 @@ Route::get('/test', function(){
     return view('test');
 })->name('test');
 
+
 Route::get('/display-all-products', [ProductController::class, 'displayAllProduct']);
 Route::get('/display-men-products', [ProductController::class, 'displayMenProduct']);
 Route::get('/display-women-products', [ProductController::class, 'displayWomenProduct']);
@@ -197,6 +198,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [ProductOrderController::class, 'show']);
 
     Route::post('/contact-data', [UserContactController::class, 'store']);
+    Route::get('/stripe_setup', [ProductController::class, 'StripeSetup']);
 
     Route::middleware('role:2')->group(function () {
 

@@ -45,12 +45,13 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-
+        $user->createAsStripeCustomer();
         Auth::login($user);
 
-        if (auth()->user()->role_id == 1)
-            return redirect(RouteServiceProvider::AdminHOME);
-        else if (!empty($request->cart) && $request->cart)
+//        if (auth()->user()->role_id == 1)
+//            return redirect(RouteServiceProvider::AdminHOME);
+//        else
+        if (!empty($request->cart) && $request->cart)
             $this->cart();
         else
             return redirect(RouteServiceProvider::HOME);

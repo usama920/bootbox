@@ -101,13 +101,13 @@
                     <input v-model="productInfo.subscription.check[data.id]" type="checkbox" :id="'sub'+data?.id+'boots'" class="rounded mr-1" :value="data?.id">
                     <label :for="'sub'+data?.id+'boots'" class="mr-4 w-40">{{data?.name}}</label>
                     <input v-model="productInfo.subscription.price[data.id]" :disabled="productInfo.subscription.check[data.id] !== true" :class="{'opacity-50 bg-gray-500':productInfo.subscription.check[data.id] !== true}" type="number" placeholder="Subscription Price" class="ml-5 w-40 rounded h-10">
-                    <input v-model="productInfo.subscription.stripe_id[data.id]" :disabled="productInfo.subscription.check[data.id] !== true" :class="{'opacity-50 bg-gray-500':productInfo.subscription.check[data.id] !== true}" type="number" placeholder="Stripe Price Id" class="ml-5 w-40 rounded h-10">
+                    <input v-model="productInfo.subscription.stripe_id[data.id]" :disabled="productInfo.subscription.check[data.id] !== true" :class="{'opacity-50 bg-gray-500':productInfo.subscription.check[data.id] !== true}" type="text" placeholder="Stripe Price Id" class="ml-5 w-40 rounded h-10">
                 </div>
             </div>
             <div class="mt-5">
                 <span class="font-bold">Weekly Subscription Stripe Price Id:</span>
                 <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.weekly_strip_id}}</span>
-                <input v-model="productInfo.weekly_strip_id" type="number" placeholder="Stripe Weekly Price Id" class="w-full rounded h-10">
+                <input v-model="productInfo.weekly_strip_id" type="text" placeholder="Stripe Weekly Price Id" class="w-full rounded h-10">
             </div>
         </form>
         <div class="flex justify-end p-4">
