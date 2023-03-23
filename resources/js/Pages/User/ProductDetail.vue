@@ -37,8 +37,8 @@ const loginForm = useForm({
     }),
     baseUrl = window.location.origin,
     showSubscribe = ref({ first: 0, second: 0 }),
-    product = ref({ size: '', subscription: '', slug: '', type: '', country: '', zipcode: '',       state: '', city: '', address_1: '', address_2: '', phone: '', name: '', 
-        stripe_price_weekly_id: '', stripe_price_monthly_id: '', total_amount:'', installment_amount:'' 
+    product = ref({ size: '', subscription: '', slug: '', type: '', country: '', zipcode: '',       state: '', city: '', address_1: '', address_2: '', phone: '', name: '',
+        stripe_price_weekly_id: '', stripe_price_monthly_id: '', total_amount:'', installment_amount:''
     }),
     error = ref({ size: '', slug: '', subscription: '', type: '', country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '' }),
     disable = ref({ show: false, text: 'Add to Cart' }),
@@ -55,10 +55,12 @@ const emptyError = () => {
 const submitRegister = () => {
     registerForm.post(route('register'), {
         onFinish: (() => {
-            registerForm.reset('password', 'password_confirmation')
-            $('#registerModal').modal('hide')
-            Toast.fire({ icon: "success", title: "Account Registered Successfully" })
-            user.value = usePage()
+            if(Object.values(registerForm?.errors).length === 0) {
+                registerForm.reset('password', 'password_confirmation')
+                $('#registerModal').modal('hide')
+                Toast.fire({icon: "success", title: "Account Registered Successfully"})
+                user.value = usePage()
+            }
         })
     })
 };
@@ -66,10 +68,12 @@ const submitRegister = () => {
 const submitLogin = () => {
     loginForm.post(route('login'), {
         onFinish: (() => {
-            loginForm.reset('password')
-            $('#loginModal').modal('hide')
-            Toast.fire({ icon: "success", title: "Account Logged in Successfully" })
-            user.value = usePage()
+            if(Object.values(loginForm?.errors).length === 0) {
+                loginForm.reset('password')
+                $('#loginModal').modal('hide')
+                Toast.fire({icon: "success", title: "Account Logged in Successfully"})
+                user.value = usePage()
+            }
         })
     })
 }
@@ -157,9 +161,9 @@ const subTotalPayment = () => {
 
 const checkOut = () => {
 
-    product.value.total_amount = subscriptionPrice.value.total
-    product.value.installment_amount = subscriptionPrice.value.monthly
-    
+    product.value.total_amount = subscriptionPrice.value?.total
+    product.value.installment_amount = subscriptionPrice.value?.monthly
+
     product.value.slug = props.product_detail?.data?.product_slug
     const valid = subValidation()
     if (valid) {
@@ -182,6 +186,13 @@ const checkOut = () => {
         } else
             $('#loginModal').modal('show');
     }
+}
+
+const checkAuthUser = () =>{
+    if (!!user.value?.props?.auth?.user) {
+      showSubscribe.value.first = 1
+    }else
+        $('#loginModal').modal('show');
 }
 
 const CloseModal = () => {
@@ -261,7 +272,7 @@ const loginModal = () => {
                                 }}</span>
                             </div>
                             <div class="mt-6">
-                                <span @click="showSubscribe.first = 1"
+                                <span @click="checkAuthUser()"
                                     class="cursor-pointer px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
                                     Purchase
                                 </span>

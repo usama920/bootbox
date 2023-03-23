@@ -246,6 +246,7 @@ const productInformation = () =>{
     productInfo.value.tier = !!props?.product_info?.tier_levels_id ? props?.product_info?.tier_levels_id:0
     productInfo.value.style = !!props?.product_info?.styles_id ? props?.product_info?.styles_id:0
     productInfo.value.gender = !!props?.product_info?.genders_id ? props?.product_info?.genders_id:0
+    productInfo.value.weekly_strip_id = !!props?.product_info?.product_subscriptions[0]?.weekly_strip_id ? props?.product_info?.product_subscriptions[0]?.weekly_strip_id:''
 
     if(!!props?.product_info?.product_images)
         productInfo.value.previous_img = props?.product_info?.product_images
