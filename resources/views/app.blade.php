@@ -19,7 +19,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
         <link rel="shortcut icon" href="{{asset('/assets/images/favicon.ico')}}">
-        <link href="{{asset('/assets/libs/tiny-slider/tiny-slider.css')}}" rel="stylesheet">
         <link href="{{asset('/assets/libs/@iconscout/unicons/css/line.css')}}" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="{{asset('/assets/css/icons.css')}}">
         <link rel="stylesheet" href="{{asset('/assets/css/tailwind.css')}}">
@@ -31,7 +30,6 @@
     <body class="font-sans antialiased">
         @inertia
 
-        <script src="{{asset('assets/libs/tiny-slider/min/tiny-slider.js')}}"></script>
         <script src="{{asset('assets/libs/feather-icons/feather.min.js')}}"></script>
         <script src="{{asset('assets/js/plugins.init.js')}}"></script>
         <script src="{{asset('assets/js/app.js')}}"></script>

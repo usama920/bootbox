@@ -37,7 +37,7 @@ const loginForm = useForm({
     }),
     baseUrl = window.location.origin,
     showSubscribe = ref({ first: 0, second: 0 }),
-    product = ref({ size: '', subscription: '', slug: '', type: '', country: '', zipcode: '',       state: '', city: '', address_1: '', address_2: '', phone: '', name: '',
+    product = ref({ size: '', subscription: '', slug: '', type: 0, country: '', zipcode: '',       state: '', city: '', address_1: '', address_2: '', phone: '', name: '',
         stripe_price_weekly_id: '', stripe_price_monthly_id: '', total_amount:'', installment_amount:''
     }),
     error = ref({ size: '', slug: '', subscription: '', type: '', country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '' }),
@@ -107,7 +107,7 @@ const subValidation = () => {
         error.value.state = '*State Required'
     if (!product.value.subscription)
         error.value.subscription = '*select a subscription option'
-    if (!product.value.type)
+    if (product.value.type !== 0 && product.value.type !== 1)
         error.value.type = '*select a subscription type'
     if (!product.value.size)
         error.value.size = '*select a size'
