@@ -11,7 +11,7 @@ use App\Models\{Gender,
     ProductSize,
     ProductOrder,
     ProductSubscription,
-    Question, 
+    Question,
     SafetyResistance,
     Size,
     SocialLinks,
@@ -91,6 +91,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+//        dd($request->all());
         $id = json_decode($request->id, true);
         $gender = json_decode($request->gender, true);
         $style = json_decode($request->style, true);
@@ -104,10 +105,8 @@ class ProductController extends Controller
         $description = json_decode($request->description, true);
         $price = json_decode($request->price, true);
         $status = json_decode($request->status, true);
-        $weekly_strip_id = json_decode($request->weekly_strip_id, true);
         $previous_img = json_decode($request->previous_img, true);
         $length = json_decode($request->length, true);
-//        dd($weekly_strip_id);
 
         $product = Product::updateOrCreate([
             'id'=>$id ?? ''
@@ -139,33 +138,25 @@ class ProductController extends Controller
             }
         }
 
-
         // $this->prx($subscription);
 
 
         if (!empty($subscription) && !empty($subscription['check']) && count($subscription['check'])>0){
             ProductSubscription::where(['products_id' => $product->id])->delete();
             foreach ($subscription['check'] as $key => $status ) {
-                if (!empty($status) && $status === true && !empty($subscription['price'][$key]) && !empty($subscription['stripe_id'][$key])){
+                if (!empty($status) && $status === true && !empty($subscription['price'][$key]) && !empty($subscription['stripe_id'][$key]) && !empty($subscription['stripe_weekly_id'][$key])){
                     $check = 1;
                     $price = $subscription['price'][$key];
-                    $strip = $subscription['stripe_id'][$key];
-                    // ProductSubscription::Create([
-                    //     'products_id' => $product->id,
-                    //     'subscription_types_id' => $key,
-                    //     'strip_price_id' => $strip,
-                    //     'price' => $price,
-                    //     'weekly_strip_id' => $weekly_strip_id,
-                    //     'status' => $check,
-                    // ]);
-                    
+                    $strip_monthly = $subscription['stripe_id'][$key];
+                    $strip_weekly = $subscription['stripe_weekly_id'][$key];
+
                     ProductSubscription::updateOrCreate([
                         'products_id' => $product->id,
                         'subscription_types_id' => $key,
                         ],[
-                        'strip_price_id'=>$strip,
+                        'strip_price_id'=>$strip_monthly,
                         'price' => $price,
-                        'weekly_strip_id' => $weekly_strip_id,
+                        'weekly_strip_id' => $strip_weekly,
                         'status' => $check,
                     ]);
                 }
@@ -280,8 +271,6 @@ class ProductController extends Controller
 
     public function order (Request $request)
     {
-        // dd($request->all());
-
         $request->validate([
             "size" => 'required',
             "subscription" => 'required',
@@ -303,7 +292,7 @@ class ProductController extends Controller
                 $stripe_id = $request->stripe_price_weekly_id;
             else
                 $stripe_id = $request->stripe_price_monthly_id;
-        
+
             $existingOrders = ProductOrder::where(['user_id' => Auth::user()->id, 'status' => 0])->get();
             if(count($existingOrders) > 0) {
                 ProductOrder::where(['user_id' => Auth::user()->id, 'status' => 0])->delete();

@@ -157,13 +157,8 @@ const showSubscribeSecond = () => {
 }
 
 const subTotalPayment = () => {
-
     let test = props.product_detail?.data?.subscription.filter(x => x.subscription_types_id === product.value.subscription)
-
-    product.value.stripe_price_monthly_id = test[0]?.strip_price_id
-    product.value.stripe_price_weekly_id = test[0]?.weekly_strip_id
     subscriptionPrice.value.total = test[0]?.price
-
     let amount = 0;
     let weekly_amount = 0;
     if (parseInt(product.value.subscription) === 1) {
@@ -184,13 +179,20 @@ const subTotalPayment = () => {
     }
     subscriptionPrice.value.monthly = amount.toFixed(2)
     subscriptionPrice.value.weekly = weekly_amount.toFixed(2)
+
+    product.value.stripe_price_monthly_id = test[0]?.strip_price_id
+    product.value.stripe_price_weekly_id = test[0]?.weekly_strip_id
+
+}
+
+const selectType = (val)=>{
+    product.value.type = val
+    subTotalPayment()
 }
 
 const checkOut = () => {
-
     product.value.total_amount = subscriptionPrice.value?.total
     product.value.installment_amount = subscriptionPrice.value?.monthly
-
     product.value.slug = props.product_detail?.data?.product_slug
     const valid = subValidation()
     if (valid) {
@@ -200,7 +202,6 @@ const checkOut = () => {
                 .post('/add-order', product.value)
                 .then((response) => {
                     if (response.data.success) {
-                        console.log(response.data)
                         Toast.fire({ icon: "success", title: "Order Added" })
                         disable.value.show = true
                         window.location.href = '/stripe/checkout/' + response.data.data
@@ -386,14 +387,14 @@ onMounted(()=>{
                                     <div class="space-y-2">
                                         <div
                                             class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
-                                            <input @click="product.type = 0" :checked="product.type === 0"
+                                            <input @change="showSubscribeSecond()" @click="selectType(0)" :checked="product.type === 0"
                                                 name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
                                                 id="enable_monthly" type="radio">
                                             <label for="enable_monthly">Monthly Installment</label>
                                         </div>
                                         <div
                                             class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
-                                            <input @click="product.type = 1" :checked="product.type === 1"
+                                            <input @change="showSubscribeSecond()" @click="selectType(1)" :checked="product.type === 1"
                                                 name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
                                                 id="enable_weekly" type="radio">
                                             <label for="enable_weekly">Weekly Installment</label>

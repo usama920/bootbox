@@ -610,6 +610,7 @@ class ComposerStaticInit59417dcf78bdcef9921fb5d418de49d8
         'App\\Http\\Resources\\ProductResource' => __DIR__ . '/../..' . '/app/Http/Resources/ProductResource.php',
         'App\\Http\\Resources\\SizeResource' => __DIR__ . '/../..' . '/app/Http/Resources/SizeResource.php',
         'App\\Http\\Resources\\SubCategoryResource' => __DIR__ . '/../..' . '/app/Http/Resources/SubCategoryResource.php',
+        'App\\Listeners\\StripeEventListener' => __DIR__ . '/../..' . '/app/Listeners/StripeEventListener.php',
         'App\\Mail\\AccountVerifyMail' => __DIR__ . '/../..' . '/app/Mail/AccountVerifyMail.php',
         'App\\Mail\\ContactReplyMail' => __DIR__ . '/../..' . '/app/Mail/ContactReplyMail.php',
         'App\\Mail\\NewsletterMail' => __DIR__ . '/../..' . '/app/Mail/NewsletterMail.php',

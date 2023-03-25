@@ -64,6 +64,7 @@ return array(
     'App\\Http\\Resources\\ProductResource' => $baseDir . '/app/Http/Resources/ProductResource.php',
     'App\\Http\\Resources\\SizeResource' => $baseDir . '/app/Http/Resources/SizeResource.php',
     'App\\Http\\Resources\\SubCategoryResource' => $baseDir . '/app/Http/Resources/SubCategoryResource.php',
+    'App\\Listeners\\StripeEventListener' => $baseDir . '/app/Listeners/StripeEventListener.php',
     'App\\Mail\\AccountVerifyMail' => $baseDir . '/app/Mail/AccountVerifyMail.php',
     'App\\Mail\\ContactReplyMail' => $baseDir . '/app/Mail/ContactReplyMail.php',
     'App\\Mail\\NewsletterMail' => $baseDir . '/app/Mail/NewsletterMail.php',
