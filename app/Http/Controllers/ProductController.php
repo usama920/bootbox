@@ -139,13 +139,26 @@ class ProductController extends Controller
             }
         }
 
+
+        // $this->prx($subscription);
+
+
         if (!empty($subscription) && !empty($subscription['check']) && count($subscription['check'])>0){
+            ProductSubscription::where(['products_id' => $product->id])->delete();
             foreach ($subscription['check'] as $key => $status ) {
                 if (!empty($status) && $status === true && !empty($subscription['price'][$key]) && !empty($subscription['stripe_id'][$key])){
                     $check = 1;
                     $price = $subscription['price'][$key];
                     $strip = $subscription['stripe_id'][$key];
-
+                    // ProductSubscription::Create([
+                    //     'products_id' => $product->id,
+                    //     'subscription_types_id' => $key,
+                    //     'strip_price_id' => $strip,
+                    //     'price' => $price,
+                    //     'weekly_strip_id' => $weekly_strip_id,
+                    //     'status' => $check,
+                    // ]);
+                    
                     ProductSubscription::updateOrCreate([
                         'products_id' => $product->id,
                         'subscription_types_id' => $key,
@@ -187,6 +200,13 @@ class ProductController extends Controller
             }
         }
         return response()->success($product);
+    }
+
+    public function prx($value)
+    {
+        echo "<pre>";
+        print_r($value);
+        die;
     }
 
     /**
@@ -284,7 +304,11 @@ class ProductController extends Controller
             else
                 $stripe_id = $request->stripe_price_monthly_id;
         
-            $order = ProductOrder::create([
+            $existingOrders = ProductOrder::where(['user_id' => Auth::user()->id, 'status' => 0])->get();
+            if(count($existingOrders) > 0) {
+                ProductOrder::where(['user_id' => Auth::user()->id, 'status' => 0])->delete();
+            }
+            ProductOrder::create([
                 'user_id' => auth()->user()->id,
                 'products_id'=>$product->id,
                 'subscription_types_id'=>$request->subscription,
@@ -303,8 +327,18 @@ class ProductController extends Controller
                 'zipcode'=>$request->zipcode,
                 'country'=>$request->country
             ]);
-            return response()->success($order);
+            return response()->success($stripe_id);
         }
+    }
+
+    public function Checkout(Request $request, $stripe_price_id)
+    {
+        return $request->user()
+            ->newSubscription('default', $stripe_price_id)
+            ->checkout([
+            'success_url' => url('/'),
+            'cancel_url' => url('/show-products/all')
+        ]);
     }
 
     public function StripeSetup()

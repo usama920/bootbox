@@ -200,8 +200,10 @@ const checkOut = () => {
                 .post('/add-order', product.value)
                 .then((response) => {
                     if (response.data.success) {
+                        console.log(response.data)
                         Toast.fire({ icon: "success", title: "Order Added" })
                         disable.value.show = true
+                        window.location.href = '/stripe/checkout/' + response.data.data
                     } else
                         disable.value.show = false
                 })
@@ -210,6 +212,7 @@ const checkOut = () => {
                         Toast.fire({ icon: "error", title: err.response.data.message })
                     disable.value.show = false
                 })
+
         } else
             $('#loginModal').modal('show');
     }

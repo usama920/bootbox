@@ -197,7 +197,9 @@ Route::middleware('auth')->group(function () {
 
     });
 
-//    user
+    //    user
+    Route::get('/stripe/checkout/{price_id}', [ProductController::class, 'Checkout']);
+
     Route::get('/cart', function () {
         return Inertia::render('User/Cart');
     })->name('cart');

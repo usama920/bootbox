@@ -17,7 +17,9 @@ use function realpath;
 use function sprintf;
 use function trim;
 use function unlink;
+use PHPUnit\Event\EventFacadeIsSealedException;
 use PHPUnit\Event\Facade as EventFacade;
+use PHPUnit\Event\UnknownSubscriberTypeException;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Logging\EventLogger;
 use PHPUnit\Logging\JUnit\JunitXmlLogger;
@@ -63,6 +65,7 @@ use PHPUnit\TextUI\Output\Printer;
 use PHPUnit\TextUI\XmlConfiguration\Configuration as XmlConfiguration;
 use PHPUnit\TextUI\XmlConfiguration\DefaultConfiguration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
+use SebastianBergmann\Timer\Timer;
 use Throwable;
 
 /**
@@ -130,7 +133,10 @@ final class Application
 
             $resultCache = $this->initializeTestResultCache($configuration);
 
-            EventFacade::seal();
+            EventFacade::instance()->seal();
+
+            $timer = new Timer;
+            $timer->start();
 
             $runner = new TestRunner;
 
@@ -139,6 +145,8 @@ final class Application
                 $resultCache,
                 $testSuite
             );
+
+            $duration = $timer->stop();
 
             $testDoxResult = null;
 
@@ -162,7 +170,7 @@ final class Application
 
             $result = TestResultFacade::result();
 
-            OutputFacade::printResult($result, $testDoxResult);
+            OutputFacade::printResult($result, $testDoxResult, $duration);
             CodeCoverage::instance()->generateReports($printer, $configuration);
 
             $shellExitCode = (new ShellExitCodeCalculator)->calculate(
@@ -191,20 +199,31 @@ final class Application
         }
 
         printf(
-            '%s%sAn error occurred inside PHPUnit.%s%sMessage:  %s%sLocation: %s:%d%s%s%s%s',
+            '%s%sAn error occurred inside PHPUnit.%s%sMessage:  %s',
             PHP_EOL,
             PHP_EOL,
             PHP_EOL,
             PHP_EOL,
-            $message,
-            PHP_EOL,
-            $t->getFile(),
-            $t->getLine(),
-            PHP_EOL,
-            PHP_EOL,
-            $t->getTraceAsString(),
-            PHP_EOL
+            $message
         );
+
+        $first = true;
+
+        do {
+            printf(
+                '%s%s: %s:%d%s%s%s%s',
+                PHP_EOL,
+                $first ? 'Location' : 'Caused by',
+                $t->getFile(),
+                $t->getLine(),
+                PHP_EOL,
+                PHP_EOL,
+                $t->getTraceAsString(),
+                PHP_EOL
+            );
+
+            $first = false;
+        } while ($t = $t->getPrevious());
 
         exit(Result::CRASH);
     }
@@ -377,7 +396,7 @@ final class Application
 
     private function executeHelpCommandWhenThereIsNothingElseToDo(Configuration $configuration, TestSuite $testSuite): void
     {
-        if ($testSuite->isEmpty() && !$configuration->hasCliArgument() && !$configuration->hasDefaultTestSuite()) {
+        if ($testSuite->isEmpty() && !$configuration->hasCliArgument() && $configuration->testSuite()->isEmpty()) {
             $this->execute(new ShowHelpCommand(Result::FAILURE));
         }
     }
@@ -451,6 +470,10 @@ final class Application
         }
     }
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     private function registerLogfileWriters(Configuration $configuration): void
     {
         if ($configuration->hasLogEventsText()) {
@@ -458,7 +481,7 @@ final class Application
                 unlink($configuration->logEventsText());
             }
 
-            EventFacade::registerTracer(
+            EventFacade::instance()->registerTracer(
                 new EventLogger(
                     $configuration->logEventsText(),
                     false
@@ -471,7 +494,7 @@ final class Application
                 unlink($configuration->logEventsVerboseText());
             }
 
-            EventFacade::registerTracer(
+            EventFacade::instance()->registerTracer(
                 new EventLogger(
                     $configuration->logEventsVerboseText(),
                     true
@@ -482,6 +505,7 @@ final class Application
         if ($configuration->hasLogfileJunit()) {
             new JunitXmlLogger(
                 OutputFacade::printerFor($configuration->logfileJunit()),
+                EventFacade::instance()
             );
         }
 
@@ -489,28 +513,37 @@ final class Application
             new TeamCityLogger(
                 DefaultPrinter::from(
                     $configuration->logfileTeamcity()
-                )
+                ),
+                EventFacade::instance()
             );
         }
     }
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     private function testDoxResultCollector(Configuration $configuration): ?TestDoxResultCollector
     {
         if ($configuration->hasLogfileTestdoxHtml() ||
             $configuration->hasLogfileTestdoxText() ||
             $configuration->outputIsTestDox()) {
-            return new TestDoxResultCollector;
+            return new TestDoxResultCollector(EventFacade::instance());
         }
 
         return null;
     }
 
+    /**
+     * @throws EventFacadeIsSealedException
+     * @throws UnknownSubscriberTypeException
+     */
     private function initializeTestResultCache(Configuration $configuration): ResultCache
     {
         if ($configuration->cacheResult()) {
             $cache = new DefaultResultCache($configuration->testResultCacheFile());
 
-            new ResultCacheHandler($cache);
+            new ResultCacheHandler($cache, EventFacade::instance());
 
             return $cache;
         }
