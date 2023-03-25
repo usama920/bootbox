@@ -37,7 +37,7 @@ const loginForm = useForm({
     }),
     baseUrl = window.location.origin,
     showSubscribe = ref({ first: 0, second: 0 }),
-    product = ref({ size: '', subscription: '', slug: '', type: 0, country: '', zipcode: '',       state: '', city: '', address_1: '', address_2: '', phone: '', name: '',
+    product = ref({ size: '', subscription: '', slug: '', type: 0, country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '',
         stripe_price_weekly_id: '', stripe_price_monthly_id: '', total_amount:'', installment_amount:''
     }),
     error = ref({ size: '', slug: '', subscription: '', type: '', country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '' }),
@@ -46,18 +46,45 @@ const loginForm = useForm({
     intentToken = ref(),
     isSubscribed = ref(),
     stripeAPIToken = ref('pk_test_51HrIs7FtvvCwpQsaLUnLOU5WBT9HLwh8b3gg0mKCAmXRi7eH1qbG21DtbbsVmd8TfdF7sQSHenYKTCmaNweyrK2C00idGk6dCZ'),
-    card = ref()
+    card = ref(),
+    code = ref(''),
+    processing = ref(false)
 
 
 const emptyError = () => {
     error.value = { size: '', slug: '', subscription: '', type: '', country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '' }
 }
+
+const submitVerification = () => {
+    if (!!code.value && code.value.length === 6) {
+        processing.value = true
+        axios
+            .post('/account-verify', {'code': code.value})
+            .then((response) => {
+                if(response.data.success){
+                    Toast.fire({icon: "success", title: "Email Verified"})
+                    $('#verificationModal').modal('hide')
+                    router.visit('/product-detail/'+props.product_detail.data.slug)
+                }
+            })
+            .catch((err)=>{
+                if(!!err.response.data.error){
+                    Toast.fire({icon: "error", title: err.response.data.error})
+                }
+            })
+    }else{
+        processing.value = false
+        Toast.fire({icon: "error", title: "Six digits Verification code required"})
+    }
+};
+
 const submitRegister = () => {
     registerForm.post(route('register'), {
         onFinish: (() => {
             if(Object.values(registerForm?.errors).length === 0) {
                 registerForm.reset('password', 'password_confirmation')
                 $('#registerModal').modal('hide')
+                $('#verificationModal').modal('show')
                 Toast.fire({icon: "success", title: "Account Registered Successfully"})
                 user.value = usePage()
             }
@@ -173,7 +200,7 @@ const checkOut = () => {
                 .post('/add-order', product.value)
                 .then((response) => {
                     if (response.data.success) {
-                        Toast.fire({ icon: "success", title: "Product Added to Cart!" })
+                        Toast.fire({ icon: "success", title: "Order Added" })
                         disable.value.show = true
                     } else
                         disable.value.show = false
@@ -190,7 +217,22 @@ const checkOut = () => {
 
 const checkAuthUser = () =>{
     if (!!user.value?.props?.auth?.user) {
-      showSubscribe.value.first = 1
+        disable.value.show = true
+        if(!user.value?.props?.auth?.user?.email_verified_at){
+            axios
+                .get('/cart-email-verify')
+                .then((response)=>{
+                    if(response.data.success){
+                        $('#verificationModal').modal('show');
+                    }
+            }).finally(()=>{
+                disable.value.show = false
+            })
+
+        } else{
+            disable.value.show = false
+            showSubscribe.value.first = 1
+        }
     }else
         $('#loginModal').modal('show');
 }
@@ -210,6 +252,9 @@ const loginModal = () => {
     $('#loginModal').modal('show')
 }
 
+onMounted(()=>{
+
+})
 </script>
 
 <template>
@@ -272,10 +317,12 @@ const loginModal = () => {
                                 }}</span>
                             </div>
                             <div class="mt-6">
-                                <span @click="checkAuthUser()"
-                                    class="cursor-pointer px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                                <button @click="checkAuthUser()" :disabled ="disable.show"
+                                        :class="{'opacity-50':disable.show}"
+                                        type="button"
+                                    class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
                                     Purchase
-                                </span>
+                                </button>
                             </div>
                             <div v-if="showSubscribe.first === 1" class="grid grid-cols-1 mt-8">
                                 <div class="bg-slate-800 rounded-md shadow shadow-gray-800 p-6">
@@ -365,14 +412,14 @@ const loginModal = () => {
                                         <div class="mx-auto md:w-1/2">
                                             <input v-model="product.name"
                                                 class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"
-                                                placeholder="Full Name" type="text">
+                                                placeholder="Full Name" type="text" />
                                             <span v-if="!!error.name"
                                                 class="text-red-600 font-bold text-sm">{{ error.name }}</span>
                                         </div>
                                         <div class="mx-auto md:w-1/2">
                                             <input v-model="product.phone"
                                                 class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"
-                                                placeholder="Phone Number" type="text">
+                                                placeholder="Phone Number" type="tel" />
                                             <span v-if="!!error.phone"
                                                 class="text-red-600 font-bold text-sm">{{ error.phone }}</span>
                                         </div>
@@ -407,7 +454,7 @@ const loginModal = () => {
                                         <div class="mx-auto md:w-1/2">
                                             <input v-model="product.zipcode"
                                                 class="text-white rounded flex w-full justify-center mx-auto mt-2 bg-gray-600 placeholder:text-gray-100 focus:ring-0"
-                                                placeholder="Zipcode" type="text">
+                                                placeholder="Zipcode" type="number">
                                             <span v-if="!!error.zipcode"
                                                 class="text-red-600 font-bold text-sm">{{ error.zipcode }}</span>
                                         </div>
@@ -509,7 +556,27 @@ const loginModal = () => {
             </div>
         </form>
     </div>
-</modal-dialog></template>
+</modal-dialog>
+    <modal-dialog ModalId="verificationModal" @CloseModal="CloseModal">
+        <div class="mx-auto">
+
+            <form @submit.prevent="submitVerification()">
+                <div>
+                    <InputLabel class="text-center !text-[17px] font-bold" for="Verification" value="Verification code" />
+                    <TextInput id="Verification" type="text" class="mt-1 block w-full" v-model="code" />
+                </div>
+                <div class="mb-4 text-sm text-center font-medium text-gray-600">
+                    Check your email and enter 6 digits verification code here
+                </div>
+                <div class="mt-6">
+                    <PrimaryButton class="w-full" :class="{ 'opacity-25':processing }" :disabled="processing">
+                        Submit
+                    </PrimaryButton>
+                </div>
+            </form>
+        </div>
+    </modal-dialog>
+</template>
 <style scoped>
 
 </style>

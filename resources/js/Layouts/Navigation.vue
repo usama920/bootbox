@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <nav class="mt-10" x-data="{ isMultiLevelMenuOpen: true }">
+        <nav class="my-10" x-data="{ isMultiLevelMenuOpen: true }">
             <nav-link :href="route('dashboard')" :active="route().current('dashboard')">
                 <template #icon>
                     <i class="fa-solid fa-user"></i>
@@ -142,10 +142,10 @@
                             <i class="fas fa-circle text-gray-100"></i>
                             <Link class="w-full" :href="route('products.index')">All Products</Link>
                         </li>
-                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
-                            <i class="fas fa-circle text-gray-100"></i>
-                            <Link class="w-full" :href="route('view-coupon.index')">Coupons</Link>
-                        </li>
+<!--                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">-->
+<!--                            <i class="fas fa-circle text-gray-100"></i>-->
+<!--                            <Link class="w-full" :href="route('view-coupon.index')">Coupons</Link>-->
+<!--                        </li>-->
                     </ul>
                 </div>
             </transition>
@@ -183,17 +183,21 @@
                     <ul class="overflow-hidden p-2 mx-4 mt-2 space-y-2 text-sm font-medium text-white bg-gray-700 bg-opacity-50 rounded-md shadow-inner"
                         aria-label="submenu">
                         <li class="px-2 py-1 transition-colors duration-150 space-x-2">
-                            <i class="fas fa-circle text-green-500"></i>
-                            <Link class="w-full" :href="route('products.index')">Delivered</Link>
+                            <i class="fas fa-circle text-white"></i>
+                            <Link class="w-full" :href="route('order.index')">All Orders</Link>
                         </li>
-                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
-                            <i class="fas fa-circle text-yellow-500"></i>
-                            <Link class="w-full" :href="route('products.index')">In Process</Link>
-                        </li>
-                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
-                            <i class="fas fa-circle text-red-500"></i>
-                            <Link class="w-full" :href="route('products.index')">Cancelled</Link>
-                        </li>
+<!--                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">-->
+<!--                            <i class="fas fa-circle text-green-500"></i>-->
+<!--                            <Link class="w-full" :href="route('order.index')">Delivered</Link>-->
+<!--                        </li>-->
+<!--                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">-->
+<!--                            <i class="fas fa-circle text-yellow-500"></i>-->
+<!--                            <Link class="w-full" :href="route('products.index')">In Process</Link>-->
+<!--                        </li>-->
+<!--                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">-->
+<!--                            <i class="fas fa-circle text-red-500"></i>-->
+<!--                            <Link class="w-full" :href="route('products.index')">Cancelled</Link>-->
+<!--                        </li>-->
                     </ul>
                 </div>
             </transition>

@@ -87,16 +87,16 @@ onMounted(()=>{
                     </a>
                     <ul v-if="dropShow === 3" class="bg-violet-600 text-[14px] font-semibold text-center font-normal rounded-lg md:absolute z-50">
                         <template v-if="!!$page.props.auth.user">
-                            <li>
-                                <Link :href="route('dashboard')" class="!block py-1 whitespace-nowrap rounded-b-lg px-8 hover:bg-violet-700">Dashboard</Link>
+                            <li v-if="$page.props.auth.user?.roles_id === 1">
+                                <Link :href="route('dashboard')" class="!block py-1 whitespace-nowrap rounded-t-lg px-8 hover:bg-violet-700">Dashboard</Link>
                             </li>
                             <li>
-                                <Link :href="route('logout')" method="post" as="button" class="!block py-1 whitespace-nowrap rounded-b-lg px-8 hover:bg-violet-700">Logout</Link>
+                                <Link :href="route('logout')" method="post" as="button" :class="{'!rounded-t-lg':$page.props.auth.user?.roles_id !== 1}" class="!block py-1 w-full whitespace-nowrap rounded-b-lg px-8 hover:bg-violet-700">Logout</Link>
                             </li>
                         </template>
                         <template v-else>
                             <li>
-                                <Link :href="route('login')" class="!block py-1 whitespace-nowrap rounded-b-lg px-8 hover:bg-violet-700">Login</Link>
+                                <Link :href="route('login')" class="!block py-1 whitespace-nowrap rounded-t-lg px-8 hover:bg-violet-700">Login</Link>
                             </li>
                             <li>
                                 <Link :href="route('register')" class="!block py-1 whitespace-nowrap rounded-b-lg px-8 hover:bg-violet-700">Signup</Link>

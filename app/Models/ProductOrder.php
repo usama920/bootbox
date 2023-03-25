@@ -21,10 +21,22 @@ class ProductOrder extends Model
         'name',
         'phone',
         'address_1',
-        ' address_2',
+        'address_2',
         'city',
         'state',
         'zipcode',
         'country'
     ];
+    public function orderSubscription()
+    {
+        return $this->hasOne(SubscriptionType::class, 'id', 'subscription_types_id')->select('id', 'name');
+    }
+    public function orderProduct()
+    {
+        return $this->hasOne(Product::class, 'id', 'products_id')->select('id', 'product_name');
+    }
+    public function orderSizes()
+    {
+        return $this->hasOne(ProductSize::class, 'id', 'product_sizes_id')->select('id', 'sizes_id')->with('SizeName');
+    }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\{AboutController,
     Auth\NewPasswordController,
+    Auth\RegisteredUserController,
     CategoryController,
     ContactController,
     ContactReplyController,
@@ -46,11 +47,6 @@ Route::get('/', function () {
     ]);
 })->name('welcome-home');
 
-Route::get('/test', function(){
-    return view('test');
-})->name('test');
-
-
 Route::get('/display-all-products', [ProductController::class, 'displayAllProduct']);
 Route::get('/display-men-products', [ProductController::class, 'displayMenProduct']);
 Route::get('/display-women-products', [ProductController::class, 'displayWomenProduct']);
@@ -79,6 +75,11 @@ Route::get('/privacy', [PrivacyController::class, 'index'])->name('privacy');
 Route::get('/terms', [TermController::class, 'index'])->name('terms');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+Route::get('/account-verify', function () {
+    return Inertia::render('Auth/AccountVerify');
+})->name('account-verify');
+Route::post('/account-verify', [RegisteredUserController::class, 'verify'])->name('account-verify-check');
 
 require __DIR__.'/auth.php';
 
@@ -160,6 +161,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/user-contact-reply', [ContactReplyController::class, 'store']);
         Route::delete('/user-contact/{id}', [ContactReplyController::class, 'destroy']);
 
+        Route::get('/admin-order', [ProductOrderController::class, 'index'])->name('order.index');
+//        Route::get('/admin-order/{id}', [ProductOrderController::class, 'show']);
+//        Route::post('/admin-order', [ProductOrderController::class, 'store']);
+//        Route::delete('/admin-order/{id}', [ProductOrderController::class, 'destroy']);
+
         Route::get('/coupons', [CouponController::class, 'index'])->name('view-coupon.index');
         Route::post('/coupons', [CouponController::class, 'store']);
         Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
@@ -199,6 +205,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/contact-data', [UserContactController::class, 'store']);
     Route::get('/stripe_setup', [ProductController::class, 'StripeSetup']);
+
+    Route::get('/cart-email-verify', [RegisteredUserController::class, 'verificationCode']);
 
     Route::middleware('role:2')->group(function () {
 

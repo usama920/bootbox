@@ -6,15 +6,18 @@ use App\Models\ProductOrder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Inertia\Inertia;
 
 class ProductOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index()
     {
-        //
+        return Inertia::render('Admin/Orders/Orders', [
+            'orders' => ProductOrder::with('orderSubscription', 'orderProduct', 'orderSizes')->paginate(10)
+        ]);
     }
 
     /**
