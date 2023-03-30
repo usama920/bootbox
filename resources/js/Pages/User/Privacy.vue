@@ -42,11 +42,11 @@ onMounted(()=>{
             </div>
             <section class="relative md:py-24 py-16">
                 <div class="container">
-                    <div class="grid lg:grid-cols-12 grid-cols-2 items-center gap-[30px]">
+                    <div class="grid lg:grid-cols-12 sm:grid-cols-2 items-start gap-[30px]">
                         <div class="lg:col-span-5">
                             <div class="relative">
                                 <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg -mt-[15px] -ml-[15px] h-[98%] w-[98%] -z-1"></div>
-                                <img v-if="!!privacy && !!privacy?.image" :src="baseUrl+'/storage/images/privacy/'+privacy?.image" class="rounded-lg shadow shadow-gray-800" alt="">
+                                <img v-if="!!privacy && !!privacy?.image" :src="baseUrl+'/storage/images/privacy/'+privacy?.image" class="rounded-lg mx-auto shadow shadow-gray-800" alt="">
                             </div>
                         </div>
                         <div class="lg:col-span-7">

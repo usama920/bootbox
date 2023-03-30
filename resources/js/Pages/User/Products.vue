@@ -2,12 +2,13 @@
 import {Head, Link, router} from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
 import {onMounted, ref} from "vue";
+import LoadingOverlay from '@/Components/loading.vue';
 
 const products = ref({}),
     baseUrl = window.location.origin,
     heading = ref(),
-    breadCrum = ref()
-
+    breadCrum = ref(),
+    isLoading= ref(false)
 
 defineProps({
     canLogin: Boolean,
@@ -26,6 +27,9 @@ const displayProducts = () =>{
             .then((response)=>{
                 products.value = response.data
             })
+            .finally(()=>{
+                isLoading.value = false
+            })
     } else if (!!type && type === 'women'){
         heading.value = 'Products for Women'
         breadCrum.value = 'Women Products'
@@ -34,6 +38,9 @@ const displayProducts = () =>{
             .then((response)=>{
                 products.value = response.data
             })
+            .finally(()=>{
+                isLoading.value = false
+            })
     } else {
         heading.value = 'All Products'
         breadCrum.value = 'All Products'
@@ -41,6 +48,9 @@ const displayProducts = () =>{
             .get('/display-all-products/')
             .then((response)=>{
                 products.value = response.data
+            })
+            .finally(()=>{
+                isLoading.value = false
             })
     }
 }
@@ -51,11 +61,13 @@ const openProduct = (slug) =>{
 
 onMounted(()=>{
     displayProducts()
+    isLoading.value = true
 })
 </script>
 
 <template>
     <Head title="Home" />
+    <LoadingOverlay v-if="isLoading" />
     <div class="font-urbanist text-base text-black dark:text-white dark:bg-slate-900">
         <span class="fixed blur-[200px] w-[600px] h-[600px] rounded-full top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 bg-gradient-to-tl from-red-600/20 to-violet-600/20 dark:from-red-600/40 dark:to-violet-600/40"></span>
         <UserLayout>

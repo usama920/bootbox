@@ -34,7 +34,7 @@ class ProductController extends Controller
     public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Product/AllProducts', [
-            'products' => Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+            'products' => Product::select('id', 'product_stripe_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
                 ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages','ProductSizes', 'ProductSubscriptions')
                 ->paginate(10)
         ]);
@@ -45,7 +45,7 @@ class ProductController extends Controller
      */
     public function displayProducts()
     {
-        $products = Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id')
+        $products = Product::select('id', 'product_stripe_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id')
             ->where('status' , 0)
             ->with('SubCategoryName', 'ProductImages', 'GenderName')
             ->orderBy('created_at', 'DESC')
@@ -91,8 +91,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-//        dd($request->all());
         $id = json_decode($request->id, true);
+        $product_stripe_id = json_decode($request->product_stripe_id, true);
         $gender = json_decode($request->gender, true);
         $style = json_decode($request->style, true);
         $size = json_decode($request->size, true);
@@ -111,6 +111,7 @@ class ProductController extends Controller
         $product = Product::updateOrCreate([
             'id'=>$id ?? ''
         ],[
+            'product_stripe_id' => $product_stripe_id,
             'product_name'=>$name ?? '',
             'description'=>$description ?? '',
             'product_slug'=>Str::slug($name) ?? '',
@@ -209,7 +210,7 @@ class ProductController extends Controller
             return Inertia::render('Admin/Product/AddProduct');
         else
             return Inertia::render('Admin/Product/AddProduct', [
-                'product_info' => Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'genders_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+                'product_info' => Product::select('id', 'product_stripe_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'genders_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
                     ->where('product_slug', $slug)
                     ->with('ProductImages', 'ProductSizes', 'ProductSubscriptions')
                     ->first()
@@ -225,7 +226,7 @@ class ProductController extends Controller
         if(Auth::check()) {
             $intent = Auth::user()->createSetupIntent();
         }
-        $detail = new ProductDetailResource(Product::select('id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+        $detail = new ProductDetailResource(Product::select('id', 'product_stripe_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
             ->where('product_slug', $slug)
             ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages', 'ProductSizes', 'GenderName', 'SubscribeOptions')
             ->first());

@@ -4,14 +4,17 @@
         <div class="flex justify-between py-2">
             <div class="text-[25px]">Newsletter Email Content</div>
         </div>
-        <textarea v-model="news.newsContent" rows="5" type="text" class="w-full rounded" autocomplete="off" placeholder="............."></textarea>
+        <textarea v-model="news.newsContent" rows="5" type="text" class="w-full rounded" autocomplete="off" placeholder=""></textarea>
+        <div class="flex justify-end text-white">
+            <button :class="{'opacity-50':disable}" :disabled="disable" @click="sendEmail()" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Send Email</button>
+        </div>
         <div class="flex justify-between py-2">
             <div class="text-[25px]">Send Email</div>
         </div>
-        <div class="flex flex-col overflow-x-auto">
+        <div class="flex flex-col overflow-x-none">
             <div class="sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-none">
                         <table class="min-w-full text-left text-sm font-light">
                             <thead>
                             <tr class="border-b whitespace-nowrap bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -36,7 +39,6 @@
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                     <div class="flex items-center space-x-2 text-white mx-auto">
-                                        <button :class="{'opacity-50':disable}" :disabled="disable" @click="sendEmail(news?.email)" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Send Email</button>
                                         <button @click="deleteContact(news?.id)" class="py-1 px-3 bg-red-500 rounded hover:bg-red-600 cursor-pointer">Delete</button>
                                     </div>
                                 </td>
@@ -94,16 +96,16 @@ const deleteContact = (id) =>{
     }
 }
 
-const sendEmail = (email) =>{
-    if (!news.value.newsContent)
-        Toast.fire({icon: "error", title: "Email Content Required"})
-    else if (!email)
-        Toast.fire({icon: "error", title: "Something went wrong"})
-    else {
+const sendEmail = () =>{
+    // if (!news.value.newsContent)
+    //     Toast.fire({icon: "error", title: "Email Content Required"})
+    // else if (!email)
+    //     Toast.fire({icon: "error", title: "Something went wrong"})
+    // else {
         disable.value = true
-        news.value.email = email
+        // news.value.email = email
         axios
-            .post('/send-news-email', news.value)
+            .post('/send-news-email')
             .then((response) => {
                 if(response.data.success)
                     Toast.fire({icon: "success", title: "Email Sent"})
@@ -113,7 +115,7 @@ const sendEmail = (email) =>{
             console.log(err.response)
             Toast.fire({icon: "error", title: err?.response?.data?.errors?.email[0]})
         })
-    }
+    // }
 }
 
 </script>

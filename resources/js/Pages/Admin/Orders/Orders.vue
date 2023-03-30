@@ -108,7 +108,7 @@
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                     <div class="flex items-center space-x-2 text-white mx-auto">
-                                        <div @click="editProduct(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">Update Status</div>
+                                        <div @click="showFurtherDetail(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">Show Further Detail</div>
                                         <div @click="deleteProduct(product?.id)" class="py-1 px-3 bg-red-500 rounded hover:bg-red-600 cursor-pointer">Delete</div>
                                     </div>
                                 </td>
@@ -122,6 +122,28 @@
                 </div>
             </div>
         </div>
+        <modal-dialog ModalId="orderDetail" @CloseModal="CloseModal">
+            <div class="mx-auto text-gray-900">
+                <div>
+                    <label class="mt-1 block font-bold w-full">Status:</label>
+                    <div class="mt-1 block w-full">
+                        <p class="text-gray-900 whitespace-nowrap">
+                            <span class="text-green-600 font-bold" v-if="furtherDetail?.status == 1">Delivered</span>
+                            <span class="text-yellow-600 font-bold" v-else-if="furtherDetail?.status == 2">Pending</span>
+                            <span class="text-red-600 font-bold" v-else>Unpaid</span>
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <label class="mt-1 block font-bold w-full">Installment Paid</label>
+                    <div class="mt-1 block w-full">2</div>
+                </div>
+                <div>
+                    <label class="mt-1 block font-bold w-full">Remaining Installment</label>
+                    <div class="mt-1 block w-full">1</div>
+                </div>
+            </div>
+        </modal-dialog>
     </AuthenticatedLayout>
 </template>
 
@@ -131,8 +153,10 @@ import Pagination from '@/Components/Pagination.vue';
 import {Head, router} from '@inertiajs/vue3';
 import {onMounted, ref} from "vue";
 import commonFunctions from "@/use/common";
+import ModalDialog from '@/Components/ModalDialog.vue';
 
-const { Toast, ConfirmToast } = commonFunctions()
+const { Toast, ConfirmToast } = commonFunctions(),
+    furtherDetail = ref({})
 
 const props = defineProps({
     orders: Object
@@ -148,19 +172,15 @@ const productSubType = (val) =>{
         return 'weekly'
 }
 
-const statusOrder = (status) =>{
-    if(!!status && status === '1')
-        return 'delivered'
-    else if(!!status && status === '2')
-        return 'pending'
-    else
-        return 'not-paid'
+const showFurtherDetail = (id) =>{
+    let test = props.orders.data.filter(x=>x.id===id)
+    furtherDetail.value =test[0]
+    $('#orderDetail').modal('show')
 }
 
-const editProduct = (id) =>{
-     console.log(id)
-}
+const CloseModal = () => {
 
+}
 
 const deleteProduct = (id) =>{
     if (!!id){
@@ -180,6 +200,6 @@ const deleteProduct = (id) =>{
 }
 
 onMounted(()=>{
-    console.log(props.orders.data)
+    console.log(props.orders)
 })
 </script>

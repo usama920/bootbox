@@ -18,15 +18,15 @@
                     <InputError class="mt-2" :message="form.errors.password" />
                 </div>
 
-                <div class="mt-4 flex justify-between">
-                    <label class="inline-flex items-center">
-                        <Checkbox name="remember" v-model:checked="form.remember" />
-                        <span class="mx-2 text-sm text-gray-600">Remember me</span> </label>
+<!--                <div class="mt-4 flex justify-between">-->
+<!--                    <label class="inline-flex items-center">-->
+<!--                        <Checkbox name="remember" v-model:checked="form.remember" />-->
+<!--                        <span class="mx-2 text-sm text-gray-600">Remember me</span> </label>-->
 
-                    <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-gray-600 underline hover:text-gray-900">
-                        Forgot your password?
-                    </Link>
-                </div>
+<!--                    <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-gray-600 underline hover:text-gray-900">-->
+<!--                        Forgot your password?-->
+<!--                    </Link>-->
+<!--                </div>-->
                 <div class="mt-6">
                     <PrimaryButton class="w-full" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                         Log in

@@ -8,7 +8,7 @@
             <div class="border-gray-400 rounded p-4 bg-white border-2">
                 <div>
                     <label class="font-normal text-base">Heading:</label>
-                    <input v-model="about.heading" type="text" class="w-full rounded" autocomplete="off" placeholder="...">
+                    <input v-model="about.heading" type="text" class="w-full rounded" autocomplete="off" placeholder="..." />
                 </div>
                 <div>
                     <label class="font-normal text-base">Description:</label>
@@ -47,7 +47,6 @@ const aboutSave = (post) =>{
     const formData = new FormData();
     for (let item in post) {
         if(post.hasOwnProperty(item)) {
-            console.log(item, post[item])
             if(item === "heading" || item === "description") {
                 formData.append(item,  JSON.stringify(post[item]));
             } else {
@@ -75,8 +74,10 @@ const showAbout = () =>{
     axios
         .get('/save-about')
         .then((response)=>{
-            about.value = response.data?.data
-            about.value.previous_img = !!response.data.data?.image ? response.data.data?.image:''
+            if (!!response.data?.data){
+                about.value = response.data?.data
+                about.value.previous_img = !!response?.data?.data?.image ? response?.data?.data?.image: ''
+            }
         })
 }
 onMounted(()=>{

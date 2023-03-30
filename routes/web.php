@@ -47,6 +47,15 @@ Route::get('/', function () {
     ]);
 })->name('welcome-home');
 
+Route::get('/order=true', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+});
+
 Route::get('/display-all-products', [ProductController::class, 'displayAllProduct']);
 Route::get('/display-men-products', [ProductController::class, 'displayMenProduct']);
 Route::get('/display-women-products', [ProductController::class, 'displayWomenProduct']);
@@ -197,20 +206,20 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    //    user
-    Route::get('/stripe/checkout/{price_id}', [ProductController::class, 'Checkout']);
+    //    AUth
 
-    Route::get('/cart', function () {
-        return Inertia::render('User/Cart');
-    })->name('cart');
-    Route::get('/orders', [ProductOrderController::class, 'show']);
-
-    Route::post('/contact-data', [UserContactController::class, 'store']);
     Route::get('/stripe_setup', [ProductController::class, 'StripeSetup']);
-
     Route::get('/cart-email-verify', [RegisteredUserController::class, 'verificationCode']);
+    Route::post('/contact-data', [UserContactController::class, 'store']);
 
+    //    User
     Route::middleware('role:2')->group(function () {
 
+        Route::get('/cart', function () {
+            return Inertia::render('User/Cart');
+        })->name('cart');
+
+        Route::get('/stripe/checkout/{price_id}', [ProductController::class, 'Checkout']);
+        Route::get('/orders', [ProductOrderController::class, 'show']);
     });
 });

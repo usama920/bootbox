@@ -4,11 +4,12 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, router, Link, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import ModalDialog from '@/Components/ModalDialog.vue';
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import commonFunctions from "@/use/common";
 import { usePage } from '@inertiajs/vue3';
+import LoadingOverlay from '@/Components/loading.vue';
 
 const { Toast, ConfirmToast } = commonFunctions(),
     user = ref(usePage())
@@ -48,14 +49,15 @@ const loginForm = useForm({
     stripeAPIToken = ref('pk_test_51HrIs7FtvvCwpQsaLUnLOU5WBT9HLwh8b3gg0mKCAmXRi7eH1qbG21DtbbsVmd8TfdF7sQSHenYKTCmaNweyrK2C00idGk6dCZ'),
     card = ref(),
     code = ref(''),
-    processing = ref(false)
-
+    processing = ref(false),
+    isLoading= ref(false)
 
 const emptyError = () => {
     error.value = { size: '', slug: '', subscription: '', type: '', country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '' }
 }
 
 const submitVerification = () => {
+    isLoading.value = true
     if (!!code.value && code.value.length === 6) {
         processing.value = true
         axios
@@ -67,18 +69,23 @@ const submitVerification = () => {
                     router.visit('/product-detail/'+props.product_detail.data.slug)
                 }
             })
+            .finally(()=>{
+                isLoading.value = false
+            })
             .catch((err)=>{
                 if(!!err.response.data.error){
                     Toast.fire({icon: "error", title: err.response.data.error})
                 }
             })
     }else{
+        isLoading.value = false
         processing.value = false
         Toast.fire({icon: "error", title: "Six digits Verification code required"})
     }
 };
 
 const submitRegister = () => {
+    isLoading.value = true
     registerForm.post(route('register'), {
         onFinish: (() => {
             if(Object.values(registerForm?.errors).length === 0) {
@@ -88,11 +95,13 @@ const submitRegister = () => {
                 Toast.fire({icon: "success", title: "Account Registered Successfully"})
                 user.value = usePage()
             }
+            isLoading.value = false
         })
     })
 };
 
 const submitLogin = () => {
+    isLoading.value = true
     loginForm.post(route('login'), {
         onFinish: (() => {
             if(Object.values(loginForm?.errors).length === 0) {
@@ -101,6 +110,7 @@ const submitLogin = () => {
                 Toast.fire({icon: "success", title: "Account Logged in Successfully"})
                 user.value = usePage()
             }
+            isLoading.value = false
         })
     })
 }
@@ -157,24 +167,23 @@ const showSubscribeSecond = () => {
 }
 
 const subTotalPayment = () => {
+    isLoading.value = true
     let test = props.product_detail?.data?.subscription.filter(x => x.subscription_types_id === product.value.subscription)
     subscriptionPrice.value.total = test[0]?.price
     let amount = 0;
     let weekly_amount = 0;
+    amount = parseInt(subscriptionPrice.value.total)
+
     if (parseInt(product.value.subscription) === 1) {
-        amount = parseInt(subscriptionPrice.value.total) / 3
         weekly_amount = parseInt(subscriptionPrice.value.total) / 12 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 2) {
-        amount = parseInt(subscriptionPrice.value.total) / 6
         weekly_amount = parseInt(subscriptionPrice.value.total) / 24 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 3) {
-        amount = parseInt(subscriptionPrice.value.total) / 9
         weekly_amount = parseInt(subscriptionPrice.value.total) / 32 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 4) {
-        amount = parseInt(subscriptionPrice.value.total) / 12
         weekly_amount = parseInt(subscriptionPrice.value.total) / 48 + props.weekly_margin.margin_amount
     }
     subscriptionPrice.value.monthly = amount.toFixed(2)
@@ -182,7 +191,7 @@ const subTotalPayment = () => {
 
     product.value.stripe_price_monthly_id = test[0]?.strip_price_id
     product.value.stripe_price_weekly_id = test[0]?.weekly_strip_id
-
+    isLoading.value = false
 }
 
 const selectType = (val)=>{
@@ -191,6 +200,7 @@ const selectType = (val)=>{
 }
 
 const checkOut = () => {
+    isLoading.value = true
     product.value.total_amount = subscriptionPrice.value?.total
     product.value.installment_amount = subscriptionPrice.value?.monthly
     product.value.slug = props.product_detail?.data?.product_slug
@@ -208,6 +218,9 @@ const checkOut = () => {
                     } else
                         disable.value.show = false
                 })
+                .finally(()=>{
+                    isLoading.value = false
+                })
                 .catch((err) => {
                     if (!!err.response.data.errors)
                         Toast.fire({ icon: "error", title: err.response.data.message })
@@ -221,6 +234,7 @@ const checkOut = () => {
 
 const checkAuthUser = () =>{
     if (!!user.value?.props?.auth?.user) {
+        isLoading.value = true
         disable.value.show = true
         if(!user.value?.props?.auth?.user?.email_verified_at){
             axios
@@ -231,11 +245,13 @@ const checkAuthUser = () =>{
                     }
             }).finally(()=>{
                 disable.value.show = false
+                isLoading.value = false
             })
 
         } else{
             disable.value.show = false
             showSubscribe.value.first = 1
+            isLoading.value = false
         }
     }else
         $('#loginModal').modal('show');
@@ -255,14 +271,11 @@ const loginModal = () => {
     $('#registerModal').modal('hide')
     $('#loginModal').modal('show')
 }
-
-onMounted(()=>{
-
-})
 </script>
 
 <template>
     <Head title="Product Detail" />
+    <LoadingOverlay v-if="isLoading" />
     <div class="font-urbanist text-base text-black dark:text-white dark:bg-slate-900">
         <UserLayout>
             <section class="relative pt-28 md:pb-24 pb-16">
@@ -320,7 +333,7 @@ onMounted(()=>{
                                 <span class="tmd:text-2xl text-xl font-semibold block mt-2">${{ product_detail?.data?.price
                                 }}</span>
                             </div>
-                            <div class="mt-6">
+                            <div class="mt-6" >
                                 <button @click="checkAuthUser()" :disabled ="disable.show"
                                         :class="{'opacity-50':disable.show}"
                                         type="button"
@@ -375,25 +388,22 @@ onMounted(()=>{
                             </div>
                             <div v-if="showSubscribe.second === 1" class="grid grid-cols-1 mt-8">
                                 <div class="bg-slate-800 rounded-md shadow shadow-gray-800 p-6">
-                                    <div
-                                        class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
-                                        Total Payment of this Subscription
+                                    <div class="w-full mb-2 p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                        Subscription Payment
                                     </div>
-                                    <div class="my-4">
-                                        <div class="p-2 flex items-center">
-                                            $ {{ subscriptionPrice.total }}
-                                        </div>
-                                    </div>
+<!--                                    <div class="my-4">-->
+<!--                                        <div class="p-2 flex items-center">-->
+<!--                                            $ {{ subscriptionPrice.total }}-->
+<!--                                        </div>-->
+<!--                                    </div>-->
                                     <div class="space-y-2">
-                                        <div
-                                            class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                        <div class="w-full px-2">
                                             <input @change="showSubscribeSecond()" @click="selectType(0)" :checked="product.type === 0"
                                                 name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
                                                 id="enable_monthly" type="radio">
                                             <label for="enable_monthly">Monthly Installment</label>
                                         </div>
-                                        <div
-                                            class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                        <div class="w-full px-2">
                                             <input @change="showSubscribeSecond()" @click="selectType(1)" :checked="product.type === 1"
                                                 name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
                                                 id="enable_weekly" type="radio">
@@ -411,7 +421,7 @@ onMounted(()=>{
                                     <div v-if="product.type === 0 || product.type === 1" class="mt-4">
                                         <div
                                             class="w-full p-3 mb-4 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
-                                            <label for="enable_weekly">Enter Address and Personal Information</label>
+                                            <label for="enable_weekly">Personal Information</label>
                                         </div>
                                         <div class="mx-auto md:w-1/2">
                                             <input v-model="product.name"
@@ -561,25 +571,24 @@ onMounted(()=>{
         </form>
     </div>
 </modal-dialog>
-    <modal-dialog ModalId="verificationModal" @CloseModal="CloseModal">
-        <div class="mx-auto">
-
-            <form @submit.prevent="submitVerification()">
-                <div>
-                    <InputLabel class="text-center !text-[17px] font-bold" for="Verification" value="Verification code" />
-                    <TextInput id="Verification" type="text" class="mt-1 block w-full" v-model="code" />
-                </div>
-                <div class="mb-4 text-sm text-center font-medium text-gray-600">
-                    Check your email and enter 6 digits verification code here
-                </div>
-                <div class="mt-6">
-                    <PrimaryButton class="w-full" :class="{ 'opacity-25':processing }" :disabled="processing">
-                        Submit
-                    </PrimaryButton>
-                </div>
-            </form>
-        </div>
-    </modal-dialog>
+<modal-dialog ModalId="verificationModal" @CloseModal="CloseModal">
+    <div class="mx-auto">
+        <form @submit.prevent="submitVerification()">
+            <div>
+                <InputLabel class="text-center !text-[17px] font-bold" for="Verification" value="Verification code" />
+                <TextInput id="Verification" type="text" class="mt-1 block w-full" v-model="code" />
+            </div>
+            <div class="mb-4 text-sm text-center font-medium text-gray-600">
+                Check your email and enter 6 digits verification code here
+            </div>
+            <div class="mt-6">
+                <PrimaryButton class="w-full" :class="{ 'opacity-25':processing }" :disabled="processing">
+                    Submit
+                </PrimaryButton>
+            </div>
+        </form>
+    </div>
+</modal-dialog>
 </template>
 <style scoped>
 

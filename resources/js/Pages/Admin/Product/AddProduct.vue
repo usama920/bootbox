@@ -7,7 +7,12 @@
         </div>
         <form class="space-y-2 px-4 text-lg">
             <div>
-                <label class="font-bold">Product Name:</label>
+                <label class="font-bold">Product Stripe Id:</label>
+                <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.product_stripe_id}}</span>
+                <input v-model="productInfo.product_stripe_id" type="text" class="w-full rounded" autocomplete="off" placeholder="Product Stripe ID">
+            </div>
+            <div>
+                <label class="font-bold">Product Title:</label>
                 <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.name}}</span>
                 <input v-model="productInfo.name" type="text" class="w-full rounded" autocomplete="off" placeholder="Name">
             </div>
@@ -125,12 +130,12 @@ import commonFunctions from "@/use/common";
 
 const { Toast, ConfirmToast } = commonFunctions()
 
-const productInfo = ref({id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}, stripe_id:{},  stripe_weekly_id:{} }, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
+const productInfo = ref({id:'', product_stripe_id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}, stripe_id:{},  stripe_weekly_id:{} }, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
     baseUrl = window.location.origin,
     errors = ref([]),
     ImagesUri = ref([]),
     disable = ref(false),
-    productError = ref({image:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
+    productError = ref({image:'', product_stripe_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
     options = ref({style:{}, size:{}, subscription:{}, subCategory:{}, tier:{}, gender:{}, safety:{}, material:{}})
 
 const props = defineProps({
@@ -149,7 +154,7 @@ const images = (e) =>{
 }
 
 const emptyError = () =>{
-    productError.value = {image:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}
+    productError.value = {image:'', product_stripe_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}
 }
 const validationError = (post) => {
     emptyError()
@@ -171,8 +176,10 @@ const validationError = (post) => {
         productError.value.description = 'Description is required field'
     if (!post.price)
         productError.value.price = 'Price is required field'
+    if (!post.product_stripe_id)
+        productError.value.product_stripe_id = 'Price Stripe Id is required field'
 
-    return !productError.value.style && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.name && !productError.value.description && !productError.value.price
+    return !productError.value.product_stripe_id && !productError.value.style && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.name && !productError.value.description && !productError.value.price
 }
 
 const productSave = (post) =>{
@@ -240,6 +247,7 @@ const productInformation = () =>{
     productInfo.value.tier = !!props?.product_info?.tier_levels_id ? props?.product_info?.tier_levels_id:0
     productInfo.value.style = !!props?.product_info?.styles_id ? props?.product_info?.styles_id:0
     productInfo.value.gender = !!props?.product_info?.genders_id ? props?.product_info?.genders_id:0
+    productInfo.value.product_stripe_id = !!props?.product_info?.product_stripe_id ? props?.product_info?.product_stripe_id:''
 
     if(!!props?.product_info?.product_images)
         productInfo.value.previous_img = props?.product_info?.product_images

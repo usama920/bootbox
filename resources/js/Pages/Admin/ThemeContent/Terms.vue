@@ -50,8 +50,7 @@ const showTerms = () =>{
     axios
         .get('/save-terms')
         .then((response)=>{
-            console.log(response)
-            terms.value = response.data.data
+            terms.value = !!response.data.data ? response.data.data: {agreement:'', intro:''}
         })
 }
 onMounted(()=>{

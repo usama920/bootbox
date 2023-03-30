@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if (auth()->user()->role_id == 1)
+        if (auth()->user()->roles_id == 1)
             return redirect()->intended(RouteServiceProvider::AdminHOME);
         else if (!empty($request->cart) && $request->cart)
             $this->cart();

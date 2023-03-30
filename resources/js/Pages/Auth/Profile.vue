@@ -29,13 +29,13 @@
             <form @submit.prevent="submit">
                 <div class="mt-3">
                     <InputLabel for="name" value="Name" />
-                    <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required />
+                    <input id="name" disabled type="text" class="block mt-1 w-full rounded-full !bg-gray-200 text-black form-input hover:cursor-not-allowed focus:border-indigo-600 mt-1 block w-full" v-model="form.name" required />
                     <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
                 <div class="mt-3">
                     <InputLabel for="email" value="Email" />
-                    <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required />
+                    <input id="email" disabled type="email" class="block mt-1 w-full rounded-full !bg-gray-200 hover:cursor-not-allowed text-black form-input focus:border-indigo-600 mt-1 block w-full" v-model="form.email" required />
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
 
@@ -50,7 +50,6 @@
                     <TextInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" />
                     <InputError class="mt-2" :message="form.errors.password_confirmation" />
                 </div>
-
                 <div class="mt-4 flex justify-end">
                     <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                         Submit
@@ -68,13 +67,25 @@ import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
+import {onMounted} from "vue";
 
 const form = useForm({
     _method: 'PUT',
-    name: usePage().props?.value?.auth?.user?.name,
-    email: usePage().props?.value?.auth?.user?.email,
+    name: '',
+    email: '',
     password: null,
     password_confirmation: null,
+});
+// const form = useForm({
+//     _method: 'PUT',
+//     name: usePage().props?.value?.auth?.user?.name,
+//     email: usePage().props?.value?.auth?.user?.email,
+//     password: null,
+//     password_confirmation: null,
+// });
+
+const page = usePage({
+
 });
 
 const submit = () => {
@@ -83,4 +94,8 @@ const submit = () => {
         onError: () => form.reset('password', 'password_confirmation'),
     });
 };
+onMounted(()=>{
+    form.name = page.props.auth.user.name
+    form.email = page.props.auth.user.email
+})
 </script>

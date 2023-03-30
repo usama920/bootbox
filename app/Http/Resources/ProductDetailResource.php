@@ -15,6 +15,7 @@ class ProductDetailResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'product_stripe_id'=> $this->product_stripe_id ?? '',
             'product_name' => $this->product_name ?? '',
             'product_slug' => $this->product_slug ?? '',
             'description' => $this->description ?? '',

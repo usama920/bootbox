@@ -75,7 +75,7 @@ const showPrivacy = () =>{
     axios
         .get('/save-privacy')
         .then((response)=>{
-            privacy.value = response.data?.data
+            privacy.value = !!response.data?.data ? response.data?.data: {image:'', heading:'', description:'', previous_img:''}
             privacy.value.previous_img = !!response.data.data?.image ? response.data.data?.image:''
         });
 }

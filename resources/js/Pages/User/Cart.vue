@@ -3,6 +3,7 @@ import {Head, Link, router} from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
 import {onMounted, ref} from "vue";
 import commonFunctions from "@/use/common";
+import ModalDialog from '@/Components/ModalDialog.vue';
 
 const { Toast, ConfirmToast } = commonFunctions(),
     products = ref({}),
@@ -21,10 +22,25 @@ const displayCart = () =>{
     axios
         .get('/orders')
         .then((response)=>{
-            cart.value = response?.data?.data?.data1
+            cart.value = response?.data?.data
         })
 }
 
+const typeName = (val, price) =>{
+    if(val === 1){
+
+        return 'weekly'
+    }
+    else return 'monthly'
+}
+
+const showDetail = () =>{
+    $('#orderDetail').modal('show')
+}
+
+const CloseModal = () => {
+
+}
 onMounted(()=>{
     displayCart()
 })
@@ -54,7 +70,7 @@ onMounted(()=>{
                     </div>
                 </div>
                 <div class="max-w-6xl mx-auto">
-<!--                    <div v-if="cart?.length>0">-->
+                    <div v-if="cart?.length>0">
                         <div class="overflow-x-auto">
                             <table class="min-w-full mx-5 xl:mx-0 text-left text-sm font-light">
                                 <thead>
@@ -66,16 +82,19 @@ onMounted(()=>{
                                         <div class="w-20">Size</div>
                                     </th>
                                     <th>
-                                        <div class="w-20">Selected Subscription </div>
+                                        <div class="w-48">Selected Subscription </div>
                                     </th>
                                     <th>
-                                        <div class="w-24">Total Price</div>
+                                        <div class="w-32">Total Price</div>
                                     </th>
                                     <th>
-                                        <div class="w-28">Subscription Type</div>
+                                        <div class="w-40">Subscription Type</div>
                                     </th>
                                     <th class="py-5">
-                                        <div class="w-28">Installment Amount</div>
+                                        <div class="w-44">Installment Amount</div>
+                                    </th>
+                                    <th class="py-5">
+                                        <div class="w-28">Action</div>
                                     </th>
                                 </tr>
                                 </thead>
@@ -83,37 +102,57 @@ onMounted(()=>{
                                 <tr v-for="data in cart" class="text-[16px] font-sans text-white">
                                     <td class="py-2">
                                         <div class="flex items-center">
-                                            <img :src="baseUrl+'/storage/images/products/'+data?.image" class="rounded-md w-20 h-20" alt="">
-                                            <div :title="data?.product" class="whitespace-nowrap overflow-hidden px-2 truncate">{{ data?.product }}</div>
+                                            <div class="whitespace-nowrap overflow-hidden px-2 truncate">{{ data?.order_product?.product_name }}</div>
                                         </div>
                                     </td>
                                     <td class="">
-                                        <p class="whitespace-no-wrap px-2">{{ data?.size }}</p>
+                                        <p class="whitespace-no-wrap px-2">{{ data?.order_sizes?.size_name?.name }}</p>
                                     </td>
                                     <td class="">
                                         <p class="whitespace-no-wrap py-2">
-                                            Remove
+                                            {{ data?.order_subscription?.name }}
                                         </p>
                                     </td>
                                     <td class="">
-                                        <p class="whitespace-no-wrap py-2">${{ data?.price }}</p>
+                                        <p class="whitespace-no-wrap py-2">${{ data?.total_amount }}</p>
                                     </td>
                                     <td class="">
-                                        <p class="whitespace-no-wrap py-2">${{ data?.sub_type }}</p>
+                                        <p class="whitespace-no-wrap py-2">{{ typeName(data?.subscription_type, data?.total_amount) }}</p>
                                     </td>
                                     <td class="">
-                                        <p class="whitespace-no-wrap py-2">{{ data?.sub_price }}</p>
+                                        <p class="whitespace-no-wrap py-2">${{ data?.installment_price }}</p>
+                                    </td>
+                                    <td class="">
+                                        <div class="whitespace-no-wrap py-2 flex items-center space-x-2 text-white mx-auto">
+                                            <button @click="showDetail()" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Detail</button>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
-<!--                    </div>-->
-<!--                    <div v-else class="text-lg p-5 text-center">-->
-<!--                        No Orders added by you !-->
-<!--                    </div>-->
+                    </div>
+                    <div v-else class="text-lg p-5 text-center">
+                        No Orders added by you !
+                    </div>
                 </div>
             </section>
+            <modal-dialog ModalId="orderDetail" @CloseModal="CloseModal">
+                <div class="mx-auto text-gray-900">
+                    <div>
+                        <label class="mt-1 block font-bold w-full">Status:</label>
+                        <div class="mt-1 block w-full">On its way/ Delivered</div>
+                    </div>
+                    <div>
+                        <label class="mt-1 block font-bold w-full">Installment Paid</label>
+                        <div class="mt-1 block w-full">2</div>
+                    </div>
+                    <div>
+                        <label class="mt-1 block font-bold w-full">Remaining Installment</label>
+                        <div class="mt-1 block w-full">1</div>
+                    </div>
+                </div>
+            </modal-dialog>
         </UserLayout>
     </div>
 </template>

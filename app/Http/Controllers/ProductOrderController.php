@@ -15,8 +15,12 @@ class ProductOrderController extends Controller
      */
     public function index()
     {
+        $data=ProductOrder::where('status', '!=' , 0)
+            ->with('orderSubscription', 'orderProduct', 'orderSizes')
+            ->paginate();
+//        dd($data);
         return Inertia::render('Admin/Orders/Orders', [
-            'orders' => ProductOrder::with('orderSubscription', 'orderProduct', 'orderSizes')->paginate(10)
+            'orders' => $data
         ]);
     }
 
@@ -41,7 +45,12 @@ class ProductOrderController extends Controller
      */
     public function show()
     {
-        return response()->success();
+        $data=ProductOrder::where('user_id', auth()->user()->id)
+            ->where('status', '!=' , 0)
+            ->with('orderSubscription', 'orderProduct', 'orderSizes')
+            ->get();
+
+        return response()->success($data);
     }
 
     /**

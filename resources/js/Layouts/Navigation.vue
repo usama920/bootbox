@@ -149,26 +149,6 @@
                     </ul>
                 </div>
             </transition>
-            <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="messageDrop = !messageDrop">
-                <i class="fa-solid fa-message"></i>
-                <span class="mx-3">Messages</span>
-                <i class="fa-solid fa-sort-down -mt-1.5"></i>
-            </a>
-            <transition
-                enter-to-class="transition-all duration-300 ease-in-out"
-                enter-from-class="max-h-0 opacity-25"
-                leave-from-class="opacity-100 max-h-xl"
-                leave-to-class="max-h-0 opacity-0">
-                <div v-show="messageDrop">
-                    <ul class="overflow-hidden p-2 mx-4 mt-2 space-y-2 text-sm font-medium text-white bg-gray-700 bg-opacity-50 rounded-md shadow-inner"
-                        aria-label="submenu">
-                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
-                            <i class="fas fa-circle text-white"></i>
-                            <Link class="w-full" :href="route('products.index')">Unread Messages</Link>
-                        </li>
-                    </ul>
-                </div>
-            </transition>
             <a class="flex items-center mt-4 py-2 px-6 text-gray-100" href="#" @click="orderDrop = !orderDrop">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="mx-3">Orders</span>

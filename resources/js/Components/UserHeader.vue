@@ -32,7 +32,7 @@ onMounted(()=>{
         <div class="container md:flex justify-between">
             <div class="flex md:block justify-between items-center w-full md:!w-auto">
                 <Link @click="dropdownItems(0)" :href="route('welcome-home')">
-                    <img src="/assets/logo/logo.jpeg" class="h-20"  alt="">
+                    <img src="/assets/logo/plan-logo.jpg" class="h-20"  alt="">
                 </Link>
                 <i @click="menuShow()" class="md:hidden cursor-pointer fa-solid fa-bars"></i>
             </div>
@@ -96,10 +96,10 @@ onMounted(()=>{
                         </template>
                         <template v-else>
                             <li>
-                                <Link :href="route('login')" class="!block py-1 whitespace-nowrap rounded-t-lg px-8 hover:bg-violet-700">Login</Link>
+                                <Link :href="route('login')" class="!block py-1 whitespace-nowrap !text-white rounded-t-lg px-8 hover:bg-violet-700">Login</Link>
                             </li>
                             <li>
-                                <Link :href="route('register')" class="!block py-1 whitespace-nowrap rounded-b-lg px-8 hover:bg-violet-700">Signup</Link>
+                                <Link :href="route('register')" class="!block py-1 whitespace-nowrap !text-white rounded-b-lg px-8 hover:bg-violet-700">Signup</Link>
                             </li>
                         </template>
                     </ul>

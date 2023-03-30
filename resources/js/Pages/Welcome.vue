@@ -2,11 +2,15 @@
 import {Head, Link, router} from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
 import {onMounted, ref} from "vue";
+import commonFunctions from "@/use/common";
+import LoadingOverlay from '@/Components/loading.vue';
 
-const products = ref({}),
+const { Toast, ConfirmToast } = commonFunctions(),
+    products = ref({}),
     questions = ref({}),
     content = ref({}),
-    baseUrl = window.location.origin
+    baseUrl = window.location.origin,
+    isLoading= ref(false)
 
 defineProps({
     canLogin: Boolean,
@@ -22,7 +26,12 @@ const displayProducts = () =>{
             products.value = !!response?.data?.data1 ? response?.data?.data1: {}
             questions.value = !!response?.data?.data2 ? response?.data?.data2 : {}
             content.value = !!response?.data?.data3 ? response?.data?.data3: {}
-        })
+        }).finally(()=>{
+        isLoading.value = false
+        if(window.location.pathname === '/order=true') {
+            Toast.fire({icon: "success", title: "Order Submitted Successfully"})
+        }
+    })
 }
 
 const openProduct = (slug) =>{
@@ -30,13 +39,15 @@ const openProduct = (slug) =>{
 }
 
 onMounted(()=>{
+    isLoading.value = true
     displayProducts()
 })
 </script>
 
 <template>
     <Head title="Home" />
-    <div class="font-urbanist text-base text-black dark:text-white dark:bg-slate-900">
+    <LoadingOverlay v-if="isLoading" />
+    <div class="font-urbanist text-base text-black dark:text-white bg-slate-900">
         <span class="fixed blur-[200px] w-[600px] h-[600px] rounded-full top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 bg-gradient-to-tl from-red-600/20 to-violet-600/20 dark:from-red-600/40 dark:to-violet-600/40"></span>
         <UserLayout>
              <section class="relative md:pt-48 pt-36 overflow-hidden">

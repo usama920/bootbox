@@ -56,7 +56,7 @@ const showContact = () =>{
     axios
         .get('/save-contact')
         .then((response)=>{
-            contact.value = response.data.data
+            contact.value = !!response.data.data ? response.data.data: {phone_text:'', phone:'', email_text:'', email:''}
         })
 }
 onMounted(()=>{
