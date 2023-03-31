@@ -230,6 +230,7 @@ const checkOut = () => {
         } else
             $('#loginModal').modal('show');
     }
+    isLoading.value = false
 }
 
 const checkAuthUser = () =>{
