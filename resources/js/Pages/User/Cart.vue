@@ -3,13 +3,14 @@ import {Head, Link, router} from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
 import {onMounted, ref} from "vue";
 import commonFunctions from "@/use/common";
-import ModalDialog from '@/Components/ModalDialog.vue';
+import ModalDialog from '@/Components/ModalDialogDark.vue';
 
 const { Toast, ConfirmToast } = commonFunctions(),
     products = ref({}),
     price = ref({total: 0, sub_total:0}),
     baseUrl = window.location.origin,
-    cart = ref([])
+    cart = ref([]),
+    furtherDetail = ref({})
 
 defineProps({
     canLogin: Boolean,
@@ -34,7 +35,9 @@ const typeName = (val, price) =>{
     else return 'monthly'
 }
 
-const showDetail = () =>{
+const showDetail = (id) => {
+    let test = cart.value.filter(x => x.id === id)
+    furtherDetail.value = test[0]
     $('#orderDetail').modal('show')
 }
 
@@ -71,7 +74,7 @@ onMounted(()=>{
                 </div>
                 <div class="max-w-6xl mx-auto">
                     <div v-if="cart?.length>0">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto sm:overflow-hidden">
                             <table class="min-w-full mx-5 xl:mx-0 text-left text-sm font-light">
                                 <thead>
                                 <tr class="border-b !text-left text-white text-[14px] bg-transparent whitespace-nowrap font-normal uppercase text-gray-500">
@@ -79,20 +82,23 @@ onMounted(()=>{
                                         <div class="w-32 ml-2">Products</div>
                                     </th>
                                     <th>
-                                        <div class="w-20">Size</div>
+                                        <div class="w-16">Size</div>
                                     </th>
                                     <th>
-                                        <div class="w-48">Selected Subscription </div>
+                                        <div class="w-36">Subscription Status</div>
                                     </th>
                                     <th>
+                                        <div class="w-36">Subscription Span</div>
+                                    </th>
+                                    <!-- <th>
                                         <div class="w-32">Total Price</div>
-                                    </th>
+                                    </th> -->
                                     <th>
                                         <div class="w-40">Subscription Type</div>
                                     </th>
-                                    <th class="py-5">
+                                    <!-- <th class="py-5">
                                         <div class="w-44">Installment Amount</div>
-                                    </th>
+                                    </th> -->
                                     <th class="py-5">
                                         <div class="w-28">Action</div>
                                     </th>
@@ -110,21 +116,26 @@ onMounted(()=>{
                                     </td>
                                     <td class="">
                                         <p class="whitespace-no-wrap py-2">
-                                            {{ data?.order_subscription?.name }}
+                                            {{ data?.subscription_status }}
                                         </p>
                                     </td>
                                     <td class="">
-                                        <p class="whitespace-no-wrap py-2">${{ data?.total_amount }}</p>
+                                        <p class="whitespace-no-wrap py-2">
+                                            {{ data?.order_subscription?.name }}
+                                        </p>
                                     </td>
+                                    <!-- <td class="">
+                                        <p class="whitespace-no-wrap py-2">${{ data?.total_amount }}</p>
+                                    </td> -->
                                     <td class="">
                                         <p class="whitespace-no-wrap py-2">{{ typeName(data?.subscription_type, data?.total_amount) }}</p>
                                     </td>
-                                    <td class="">
+                                    <!-- <td class="">
                                         <p class="whitespace-no-wrap py-2">${{ data?.installment_price }}</p>
-                                    </td>
+                                    </td> -->
                                     <td class="">
                                         <div class="whitespace-no-wrap py-2 flex items-center space-x-2 text-white mx-auto">
-                                            <button @click="showDetail()" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Detail</button>
+                                            <button @click="showDetail(data?.id)" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Detail</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -137,19 +148,54 @@ onMounted(()=>{
                     </div>
                 </div>
             </section>
-            <modal-dialog ModalId="orderDetail" @CloseModal="CloseModal">
+            <modal-dialog maxWidth="!w-[700px] !max-w-[700px]" ModalId="orderDetail" @CloseModal="CloseModal">
                 <div class="mx-auto text-gray-900">
                     <div>
-                        <label class="mt-1 block font-bold w-full">Status:</label>
-                        <div class="mt-1 block w-full">On its way/ Delivered</div>
-                    </div>
-                    <div>
-                        <label class="mt-1 block font-bold w-full">Installment Paid</label>
-                        <div class="mt-1 block w-full">2</div>
-                    </div>
-                    <div>
-                        <label class="mt-1 block font-bold w-full">Remaining Installment</label>
-                        <div class="mt-1 block w-full">1</div>
+                        <table class="min-w-full !text-white text-left text-sm !font-bold">
+                            <thead>
+                                <tr class="border-b whitespace-nowrap bg-transparent text-left text-xs font-semibold uppercase tracking-wide">
+                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        #No
+                                    </th>
+                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        Paid Amount
+                                    </th>
+                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        From
+                                    </th>
+                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        To
+                                    </th>
+                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        Invoice
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="!!furtherDetail?.order_installments && furtherDetail?.order_installments?.length > 0" v-for="(data, key) in furtherDetail?.order_installments" class="text-gray-700">
+                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                        <p class="text-white whitespace-no-wrap">{{ key + 1 }}</p>
+                                    </td>
+                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                        <p class="text-white whitespace-nowrap">{{ data.paid_amount }}</p>
+                                    </td>
+                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                        <p class="text-white whitespace-nowrap">{{ data.start_at }}</p>
+                                    </td>
+                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                        <p class="text-white whitespace-nowrap">{{ data.end_at }}</p>
+                                    </td>
+                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                        <a v-if="!!data?.invoice_url" :href="data?.invoice_url" target="_blank" class="bg-white px-3 py-1 rounded hover:underline text-blue-600 hover:text-blue-800 font-extrabold whitespace-nowrap">INVOICE</a>
+                                    </td>
+                                </tr>
+                                <tr v-else class="text-center mx-auto">
+                                    <td colspan="5" class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                        <p class="text-white whitespace-no-wrap">Installments data not available</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </modal-dialog>

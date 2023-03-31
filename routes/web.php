@@ -64,7 +64,6 @@ Route::get('/display-products', [ProductController::class, 'displayProducts']);
 Route::get('/footer-content', [SocialLinksController::class, 'footerContent']);
 
 Route::get('/product-detail/{slug}', [ProductController::class, 'detail']);
-Route::post('/add-order', [ProductController::class, 'order']);
 
 Route::get('/cart-login', function () {
     return Inertia::render('Auth/Register');
@@ -171,10 +170,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/user-contact/{id}', [ContactReplyController::class, 'destroy']);
 
         Route::get('/admin-order', [ProductOrderController::class, 'index'])->name('order.index');
-//        Route::get('/admin-order/{id}', [ProductOrderController::class, 'show']);
-//        Route::post('/admin-order', [ProductOrderController::class, 'store']);
-//        Route::delete('/admin-order/{id}', [ProductOrderController::class, 'destroy']);
-
+        Route::get('/admin-order/pending', [ProductOrderController::class, 'PendingOrders'])->name('order.pending');
+        Route::get('/admin-order/on_way', [ProductOrderController::class, 'OnwayOrders'])->name('order.on_way');
+        Route::get('/admin-order/delivered', [ProductOrderController::class, 'DeliveredOrders'])->name('order.delivered');
+        Route::post('/product-status', [ProductOrderController::class, 'status']);
+        Route::post('/product-status-process', [ProductOrderController::class, 'process']);
+               
         Route::get('/coupons', [CouponController::class, 'index'])->name('view-coupon.index');
         Route::post('/coupons', [CouponController::class, 'store']);
         Route::delete('/coupons/{id}', [CouponController::class, 'destroy']);
@@ -221,5 +222,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/stripe/checkout/{price_id}', [ProductController::class, 'Checkout']);
         Route::get('/orders', [ProductOrderController::class, 'show']);
+        Route:: post('/add-order', [ProductController::class, 'order']);
     });
 });

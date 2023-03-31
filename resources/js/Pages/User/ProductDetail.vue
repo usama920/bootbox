@@ -333,6 +333,7 @@ const loginModal = () => {
                                 <span class="tmd:text-2xl text-xl font-semibold block mt-2">${{ product_detail?.data?.price
                                 }}</span>
                             </div>
+
                             <div class="mt-6" >
                                 <button @click="checkAuthUser()" :disabled ="disable.show"
                                         :class="{'opacity-50':disable.show}"
@@ -480,7 +481,8 @@ const loginModal = () => {
                                                 class="text-red-600 font-bold text-sm">{{ error.country }}</span>
                                         </div>
                                     </div>
-                                    <div class="p-5 flex justify-center">
+                                    
+                                    <div v-if="$page.props.auth.user?.roles_id === 2" class="p-5 flex justify-center">
                                         <button @click="checkOut()" :disabled="disable.show"
                                             :class="{ '!opacity-50 !hover:border-violet-600 hover:bg-violet-600': disable.show }"
                                             type="button"

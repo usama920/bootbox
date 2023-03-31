@@ -325,10 +325,11 @@ class ProductController extends Controller
     {
         return $request->user()
             ->newSubscription('default', $stripe_price_id)
+            ->allowPromotionCodes()
             ->checkout([
-            'success_url' => url('/'),
-            'cancel_url' => url('/show-products/all')
-        ]);
+                'success_url' => url('/cart'),
+                'cancel_url' => url('/show-products/all')
+            ]);
     }
 
     public function StripeSetup()

@@ -166,18 +166,18 @@
                             <i class="fas fa-circle text-white"></i>
                             <Link class="w-full" :href="route('order.index')">All Orders</Link>
                         </li>
-<!--                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">-->
-<!--                            <i class="fas fa-circle text-green-500"></i>-->
-<!--                            <Link class="w-full" :href="route('order.index')">Delivered</Link>-->
-<!--                        </li>-->
-<!--                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">-->
-<!--                            <i class="fas fa-circle text-yellow-500"></i>-->
-<!--                            <Link class="w-full" :href="route('products.index')">In Process</Link>-->
-<!--                        </li>-->
-<!--                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">-->
-<!--                            <i class="fas fa-circle text-red-500"></i>-->
-<!--                            <Link class="w-full" :href="route('products.index')">Cancelled</Link>-->
-<!--                        </li>-->
+                       <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                           <i class="fas fa-circle text-green-500"></i>
+                        <Link class="w-full" :href="route('order.pending')">Pending</Link>
+                        </li>
+                        <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                                <i class="fas fa-circle text-yellow-500"></i>
+                                <Link class="w-full" :href="route('order.on_way')">On Its Way</Link>
+                            </li>
+                       <li class="px-2 py-1 transition-colors duration-150 space-x-2">
+                           <i class="fas fa-circle text-green-500"></i>
+                        <Link class="w-full" :href="route('order.delivered')">Delivered</Link>
+                        </li>
                     </ul>
                 </div>
             </transition>

@@ -26,7 +26,7 @@ class NewsletterMail extends Mailable
      */
     public function build(){
         return $this->subject('Mail to Newsletter Subscriber')
-            ->from('bootbox@newsletter.com')
+            ->from(env('MAIL_FROM_ADDRESS'))
             ->view('mail.newsletter');
     }
 }

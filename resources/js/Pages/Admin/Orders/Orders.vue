@@ -17,6 +17,9 @@
                                     Order Status
                                 </th>
                                 <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                                    Subscription Status
+                                </th>
+                                <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
                                     Subscription Type
                                 </th>
                                 <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
@@ -65,10 +68,13 @@
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                     <p class="text-gray-900 whitespace-nowrap">
-                                        <span class="text-green-600 font-bold" v-if="!!product?.status && product?.status === '1'">Delivered</span>
-                                        <span class="text-yellow-600 font-bold" v-else-if="!!product?.status && product?.status === '2'">Pending</span>
-                                        <span class="text-red-600 font-bold" v-else>Unpaid</span>
+                                        <span class="text-green-600 font-extrabold" v-if="!!product?.status && product?.status === '1'">Delivered</span>
+                                        <span class="text-orange-600 font-extrabold" v-else-if="!!product?.status && product?.status === '2'">Pending</span>
+                                        <span class="text-yellow-600 font-extrabold" v-else-if="!!product?.status && product?.status === '3'">On Its Way</span>
                                     </p>
+                                </td>
+                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                    <p class="text-gray-900 whitespace-nowrap">{{ product?.subscription_status }}</p>
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                     <p class="text-gray-900 whitespace-nowrap">{{ product?.order_subscription?.name }}</p>
@@ -107,11 +113,18 @@
                                     <p class="text-gray-900 whitespace-nowrap">{{ product?.country }}</p>
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                    <div class="flex items-center space-x-2 text-white mx-auto">
-                                        <div @click="showFurtherDetail(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">Show Further Detail</div>
-                                        <div @click="deleteProduct(product?.id)" class="py-1 px-3 bg-red-500 rounded hover:bg-red-600 cursor-pointer">Delete</div>
-                                    </div>
-                                </td>
+                                        <div class="flex items-center space-x-2 text-white mx-auto">
+                                            <div @click="showFurtherDetail(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">Further Detail</div>
+                                            <span class="flex space-x-2" v-if="product?.status !== '1'">
+                                                <div v-if="product?.status === '2'" @click="updateProcessStatus(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-yellow-500 hover:bg-yellow-600 cursor-pointer">
+                                                    On Its Way
+                                                </div>
+                                                <div @click="updateStatus(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">
+                                                    Delivered
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </td>
                             </tr>
                             </tbody>
                         </table>
@@ -122,25 +135,54 @@
                 </div>
             </div>
         </div>
-        <modal-dialog ModalId="orderDetail" @CloseModal="CloseModal">
+        <modal-dialog maxWidth="!w-[700px] !max-w-[700px]" ModalId="orderDetail" @CloseModal="CloseModal">
             <div class="mx-auto text-gray-900">
                 <div>
-                    <label class="mt-1 block font-bold w-full">Status:</label>
-                    <div class="mt-1 block w-full">
-                        <p class="text-gray-900 whitespace-nowrap">
-                            <span class="text-green-600 font-bold" v-if="furtherDetail?.status == 1">Delivered</span>
-                            <span class="text-yellow-600 font-bold" v-else-if="furtherDetail?.status == 2">Pending</span>
-                            <span class="text-red-600 font-bold" v-else>Unpaid</span>
-                        </p>
-                    </div>
-                </div>
-                <div>
-                    <label class="mt-1 block font-bold w-full">Installment Paid</label>
-                    <div class="mt-1 block w-full">2</div>
-                </div>
-                <div>
-                    <label class="mt-1 block font-bold w-full">Remaining Installment</label>
-                    <div class="mt-1 block w-full">1</div>
+                    <table class="min-w-full text-left text-sm font-light">
+                        <thead>
+                            <tr class="border-b whitespace-nowrap bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                                    #No
+                                </th>
+                                <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                                    Paid Amount
+                                </th>
+                                <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                                    From
+                                </th>
+                                <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                                    To
+                                </th>
+                                <th class="border-b-2 border-gray-200 bg-gray-100 px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                                    Invoice
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-if="!!furtherDetail?.order_installments && furtherDetail?.order_installments?.length > 0" v-for="(data, key) in furtherDetail?.order_installments" class="text-gray-700">
+                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                    <p class="text-gray-900 whitespace-no-wrap">{{ key + 1 }}</p>
+                                </td>
+                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                    <p class="text-gray-900 whitespace-nowrap">{{ data.paid_amount }}</p>
+                                </td>
+                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                    <p class="text-gray-900 whitespace-nowrap">{{ data.start_at }}</p>
+                                </td>
+                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                    <p class="text-gray-900 whitespace-nowrap">{{ data.end_at }}</p>
+                                </td>
+                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                    <a v-if="!!data?.invoice_url" :href="data?.invoice_url" target="_blank" class="text-blue-600 hover:text-blue-800 font-extrabold whitespace-nowrap">INVOICE</a>
+                                </td>
+                            </tr>
+                            <tr v-else class="text-center mx-auto">
+                                <td colspan="5" class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                    <p class="text-gray-900 whitespace-no-wrap">Installments data not available</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </modal-dialog>
@@ -182,21 +224,28 @@ const CloseModal = () => {
 
 }
 
-const deleteProduct = (id) =>{
-    if (!!id){
-        ConfirmToast.fire({}).then((confirmed) => {
-            if (confirmed.isConfirmed === true) {
-                axios
-                    .delete('/admin-order/'+id)
-                    .then((response) => {
-                        if(response.data.success) {
-                            Toast.fire({icon: "success", title: "Order Deleted!"})
-                            router.visit('/admin-order')
-                        }
-                    })
+const updateStatus = (id) => {
+    console.log(id)
+    axios
+        .post('/product-status', { id: id })
+        .then((response) => {
+            if (response.data.success) {
+                Toast.fire({ icon: "success", title: "Status Changed to Delivered!" })
+                router.visit('/admin-order')
             }
         })
-    }
+}
+
+const updateProcessStatus = (id) => {
+    console.log(id)
+    axios
+        .post('/product-status-process', { id: id })
+        .then((response) => {
+            if (response.data.success) {
+                Toast.fire({ icon: "success", title: "Status Changed to On Its Way!" })
+                router.visit('/admin-order')
+            }
+        })
 }
 
 onMounted(()=>{

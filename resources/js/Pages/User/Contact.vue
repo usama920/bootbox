@@ -75,7 +75,7 @@ const saveContact = (post)=>{
                                 <h5 class="title text-xl font-semibold">Phone</h5>
                                 <p class="text-slate-400 mt-3">{{contact?.phone_text}}</p>
                                 <div class="mt-5">
-                                    <a :href="contact?.phone" class="btn btn-link text-violet-600 hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">{{contact?.phone}}</a>
+                                    <a :href="'tel:' + contact?.phone" class="btn btn-link text-violet-600 hover:text-violet-600 after:bg-violet-600 duration-500 ease-in-out">{{contact?.phone}}</a>
                                 </div>
                             </div>
                         </div>

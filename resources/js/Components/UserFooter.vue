@@ -94,7 +94,7 @@ onMounted(()=>{
                                     <div class="flex mt-6">
                                         <i class="w-5 h-5 text-violet-600 mr-3 mt-1 fa-solid fa-envelope"></i>
                                         <div class="">
-                                            <a :href="footer?.contact_email" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer?.contact_email}}</a>
+                                            <a :href="'mailto:' + footer?.contact_email" class="text-[16px] text-gray-300 hover:text-gray-400 duration-500 ease-in-out">{{footer?.contact_email}}</a>
                                         </div>
                                     </div>
                                     <div class="flex mt-6">
@@ -116,7 +116,7 @@ onMounted(()=>{
                     <div class="md:text-left text-center">
                         <p class="mb-0 text-gray-300">©
                             {{ yearShow() }} Boot Box. Develop by <i class="mdi mdi-heart text-red-600"></i>
-                            <a href="https://shreethemes.in/" target="_blank" class="text-reset"> Usama Aslam</a>.
+                            <a href="https://www.fiverr.com/usama_axlam?up_rollout=true" target="_blank" class="text-reset"> Usama Aslam</a>.
                         </p>
                     </div>
                     <ul class="list-none md:text-right space-x-4 text-center">
@@ -136,7 +136,7 @@ onMounted(()=>{
                             </a>
                         </li>
                         <li class="inline">
-                            <a :href="footer?.social_email" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
+                            <a :href="'mailto:' + footer?.social_email" class="btn btn-icon btn-sm border border-gray-800 rounded-md hover:border-violet-600 dark:hover:border-violet-600 hover:bg-violet-600 dark:hover:bg-violet-600">
                                 <i class="uil uil-envelope align-middle" title="email"></i>
                             </a>
                         </li>

@@ -27,7 +27,7 @@ class ContactReplyMail extends Mailable
      */
     public function build(){
         return $this->subject('Question Reply by BootBox')
-            ->from('bootbox@contact.com')
+            ->from(env('MAIL_FROM_ADDRESS'))
             ->view('mail.contact_reply');
     }
 }

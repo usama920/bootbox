@@ -25,7 +25,7 @@ class TwoStepVerifyMail extends Mailable
      */
     public function build(){
         return $this->subject('User Verification Email')
-            ->from('bootbox@verification.com')
+            ->from(env('MAIL_FROM_ADDRESS'))
             ->view('mail.verification');
     }
 }

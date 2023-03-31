@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Cashier\Subscription;
 
 class ProductOrder extends Model
 {
@@ -11,7 +12,9 @@ class ProductOrder extends Model
     protected $fillable=[
         'user_id',
         'products_id',
+        'stripe_subscription_id',
         'subscription_types_id',
+        'subscription_count',
         'product_sizes_id',
         'status',
         'subscription_type',
@@ -29,8 +32,9 @@ class ProductOrder extends Model
     ];
     public function orderSubscription()
     {
-        return $this->hasOne(SubscriptionType::class, 'id', 'subscription_types_id')->select('id', 'name');
+        return $this->hasOne(SubscriptionType::class, 'id', 'subscription_types_id')->select('id', 'name', 'months');
     }
+
     public function orderProduct()
     {
         return $this->hasOne(Product::class, 'id', 'products_id')->select('id', 'product_name');
@@ -39,4 +43,10 @@ class ProductOrder extends Model
     {
         return $this->hasOne(ProductSize::class, 'id', 'product_sizes_id')->select('id', 'sizes_id')->with('SizeName');
     }
+
+    public function OrderInstallments()
+    {
+        return $this->hasMany(SubscriptionInstallments::class, 'sub_id', 'stripe_subscription_id')->orderBy('id', 'DESC'); 
+    }
+
 }

@@ -19,7 +19,6 @@ class NewsletterController extends Controller
     {
         return Inertia::render('Admin/Newsletter/Newsletter', [
             'news_letter' => Newsletter::select('id', 'email', 'status')
-//                ->where('status', 1)
                 ->paginate(10)
         ]);
     }
@@ -30,9 +29,16 @@ class NewsletterController extends Controller
     public function email(Request $request)
     {
         $request->validate([
-            'email'=>'required',
             'newsContent' => 'required',
         ]);
+        $all_subscribers = [];
+        $emails = Newsletter::select('id', 'email', 'status')->get();
+        foreach ($emails as $email) {
+            array_push($all_subscribers, $email->email);
+        }
+        if(count($all_subscribers) == 0) {
+            return response()->success();
+        }
         $status = ['content'=>$request->newsContent];
         Mail::to($request->email)->send(new NewsletterMail($status));
         return response()->success();

@@ -6,6 +6,7 @@ use App\Models\ProductOrder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProductOrderController extends Controller
@@ -15,10 +16,104 @@ class ProductOrderController extends Controller
      */
     public function index()
     {
-        $data=ProductOrder::where('status', '!=' , 0)
-            ->with('orderSubscription', 'orderProduct', 'orderSizes')
-            ->paginate();
-//        dd($data);
+        $data = ProductOrder::where('status', '!=', 0)
+            ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments')
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
+        foreach ($data as $key => $order) {
+            $subscription_status = DB::table('subscriptions')->where(['stripe_id' => $order->stripe_subscription_id])->first();
+            if ($subscription_status && $subscription_status->stripe_status == 'active') {
+                $data[$key]->subscription_status = 'Active';
+            } else if ($subscription_status && $subscription_status->stripe_status == 'canceled') {
+                $data[$key]->subscription_status = 'Cancelled';
+            }
+
+            if (isset($order->OrderInstallments) && count($order->OrderInstallments) > 0) {
+                $installments = $order->OrderInstallments;
+                foreach ($installments as $keyy => $install) {
+                    $data[$key]->OrderInstallments[$keyy]->start_at = date('Y/m/d H:i:s', $install->start_at);
+                    $data[$key]->OrderInstallments[$keyy]->end_at = date('Y/m/d H:i:s', $install->end_at);
+                }
+            }
+        }
+        return Inertia::render('Admin/Orders/Orders', [
+            'orders' => $data
+        ]);
+    }
+
+    public function PendingOrders()
+    {
+        $data = ProductOrder::where('status', '=', 2)
+            ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments')
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
+        foreach ($data as $key => $order) {
+            $subscription_status = DB::table('subscriptions')->where(['stripe_id' => $order->stripe_subscription_id])->first();
+            if ($subscription_status && $subscription_status->stripe_status == 'active') {
+                $data[$key]->subscription_status = 'Active';
+            } else if ($subscription_status && $subscription_status->stripe_status == 'canceled') {
+                $data[$key]->subscription_status = 'Cancelled';
+            }
+            if (isset($order->OrderInstallments) && count($order->OrderInstallments) > 0) {
+                $installments = $order->OrderInstallments;
+                foreach ($installments as $keyy => $install) {
+                    $data[$key]->OrderInstallments[$keyy]->start_at = date('Y/m/d H:i:s', $install->start_at);
+                    $data[$key]->OrderInstallments[$keyy]->end_at = date('Y/m/d H:i:s', $install->end_at);
+                }
+            }
+        }
+        return Inertia::render('Admin/Orders/Orders', [
+            'orders' => $data
+        ]);
+    }
+
+    public function OnwayOrders()
+    {
+        $data = ProductOrder::where('status', '=', 3)
+            ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments')
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
+        foreach ($data as $key => $order) {
+            $subscription_status = DB::table('subscriptions')->where(['stripe_id' => $order->stripe_subscription_id])->first();
+            if ($subscription_status && $subscription_status->stripe_status == 'active') {
+                $data[$key]->subscription_status = 'Active';
+            } else if ($subscription_status && $subscription_status->stripe_status == 'canceled') {
+                $data[$key]->subscription_status = 'Cancelled';
+            }
+            if (isset($order->OrderInstallments) && count($order->OrderInstallments) > 0) {
+                $installments = $order->OrderInstallments;
+                foreach ($installments as $keyy => $install) {
+                    $data[$key]->OrderInstallments[$keyy]->start_at = date('Y/m/d H:i:s', $install->start_at);
+                    $data[$key]->OrderInstallments[$keyy]->end_at = date('Y/m/d H:i:s', $install->end_at);
+                }
+            }
+        }
+        return Inertia::render('Admin/Orders/Orders', [
+            'orders' => $data
+        ]);
+    }
+
+    public function DeliveredOrders()
+    {
+        $data = ProductOrder::where('status', '=', 1)
+            ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments')
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
+        foreach ($data as $key => $order) {
+            $subscription_status = DB::table('subscriptions')->where(['stripe_id' => $order->stripe_subscription_id])->first();
+            if ($subscription_status && $subscription_status->stripe_status == 'active') {
+                $data[$key]->subscription_status = 'Active';
+            } else if ($subscription_status && $subscription_status->stripe_status == 'canceled') {
+                $data[$key]->subscription_status = 'Cancelled';
+            }
+            if (isset($order->OrderInstallments) && count($order->OrderInstallments) > 0) {
+                $installments = $order->OrderInstallments;
+                foreach ($installments as $keyy => $install) {
+                    $data[$key]->OrderInstallments[$keyy]->start_at = date('Y/m/d H:i:s', $install->start_at);
+                    $data[$key]->OrderInstallments[$keyy]->end_at = date('Y/m/d H:i:s', $install->end_at);
+                }
+            }
+        }
         return Inertia::render('Admin/Orders/Orders', [
             'orders' => $data
         ]);
@@ -27,17 +122,13 @@ class ProductOrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function status(Request $request)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request): RedirectResponse
-    {
-        //
+        if (!empty($request->id)) {
+            ProductOrder::where('id', $request->id)->update(['status' => 1]);
+            return response()->success();
+        } else
+            return response()->error('something went wrong', 500);
     }
 
     /**
@@ -45,10 +136,26 @@ class ProductOrderController extends Controller
      */
     public function show()
     {
-        $data=ProductOrder::where('user_id', auth()->user()->id)
-            ->where('status', '!=' , 0)
-            ->with('orderSubscription', 'orderProduct', 'orderSizes')
+        $data = ProductOrder::where('user_id', auth()->user()->id)
+            ->where('status', '!=', 0)
+            ->orderBy('id', 'DESC')
+            ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments')
             ->get();
+        foreach ($data as $key => $order) {
+            $subscription_status = DB::table('subscriptions')->where(['stripe_id' => $order->stripe_subscription_id])->first();
+            if ($subscription_status && $subscription_status->stripe_status == 'active') {
+                $data[$key]->subscription_status = 'Active';
+            } else if ($subscription_status && $subscription_status->stripe_status == 'canceled') {
+                $data[$key]->subscription_status = 'Cancelled';
+            }
+            if (isset($order->OrderInstallments) && count($order->OrderInstallments) > 0) {
+                $installments = $order->OrderInstallments;
+                foreach ($installments as $keyy => $install) {
+                    $data[$key]->OrderInstallments[$keyy]->start_at = date('Y/m/d H:i:s', $install->start_at);
+                    $data[$key]->OrderInstallments[$keyy]->end_at = date('Y/m/d H:i:s', $install->end_at);
+                }
+            }
+        }
 
         return response()->success($data);
     }
@@ -56,9 +163,13 @@ class ProductOrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ProductOrder $productOrder): Response
+    public function process(Request $request)
     {
-        //
+        if (!empty($request->id)) {
+            ProductOrder::where('id', $request->id)->update(['status' => 3]);
+            return response()->success();
+        } else
+            return response()->error('something went wrong', 500);
     }
 
     /**
