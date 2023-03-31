@@ -105,7 +105,7 @@ const sendEmail = () =>{
         disable.value = true
         // news.value.email = email
         axios
-            .post('/send-news-email')
+            .post('/send-news-email', {newsContent: news.value.newsContent})
             .then((response) => {
                 if(response.data.success)
                     Toast.fire({icon: "success", title: "Email Sent"})

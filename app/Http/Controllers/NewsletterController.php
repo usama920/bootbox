@@ -31,16 +31,20 @@ class NewsletterController extends Controller
         $request->validate([
             'newsContent' => 'required',
         ]);
+        
         $all_subscribers = [];
         $emails = Newsletter::select('id', 'email', 'status')->get();
+        
         foreach ($emails as $email) {
             array_push($all_subscribers, $email->email);
         }
+        
         if(count($all_subscribers) == 0) {
-            return response()->success();
+            return response()->error();
         }
+
         $status = ['content'=>$request->newsContent];
-        Mail::to($request->email)->send(new NewsletterMail($status));
+        Mail::bcc($all_subscribers)->send(new NewsletterMail($status));
         return response()->success();
     }
 

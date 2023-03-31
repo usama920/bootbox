@@ -100,6 +100,9 @@ onMounted(()=>{
                                         <div class="w-44">Installment Amount</div>
                                     </th> -->
                                     <th class="py-5">
+                                        <div class="w-28">Status</div>
+                                    </th>
+                                    <th class="py-5">
                                         <div class="w-28">Action</div>
                                     </th>
                                 </tr>
@@ -133,6 +136,13 @@ onMounted(()=>{
                                     <!-- <td class="">
                                         <p class="whitespace-no-wrap py-2">${{ data?.installment_price }}</p>
                                     </td> -->
+                                    <td class="">
+                                        <p class="text-gray-900 whitespace-nowrap">
+                                            <span class="text-green-600 font-extrabold" v-if="!!data?.status && data?.status === '1'">Delivered</span>
+                                            <span class="text-orange-600 font-extrabold" v-else-if="!!data?.status && data?.status === '2'">Pending</span>
+                                            <span class="text-yellow-600 font-extrabold" v-else-if="!!data?.status && data?.status === '3'">On Its Way</span>
+                                        </p>
+                                    </td>
                                     <td class="">
                                         <div class="whitespace-no-wrap py-2 flex items-center space-x-2 text-white mx-auto">
                                             <button @click="showDetail(data?.id)" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Detail</button>

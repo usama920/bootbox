@@ -142,12 +142,15 @@ class ProductOrderController extends Controller
             ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments')
             ->get();
         foreach ($data as $key => $order) {
+
             $subscription_status = DB::table('subscriptions')->where(['stripe_id' => $order->stripe_subscription_id])->first();
+
             if ($subscription_status && $subscription_status->stripe_status == 'active') {
                 $data[$key]->subscription_status = 'Active';
             } else if ($subscription_status && $subscription_status->stripe_status == 'canceled') {
                 $data[$key]->subscription_status = 'Cancelled';
             }
+
             if (isset($order->OrderInstallments) && count($order->OrderInstallments) > 0) {
                 $installments = $order->OrderInstallments;
                 foreach ($installments as $keyy => $install) {
@@ -155,6 +158,7 @@ class ProductOrderController extends Controller
                     $data[$key]->OrderInstallments[$keyy]->end_at = date('Y/m/d H:i:s', $install->end_at);
                 }
             }
+            
         }
 
         return response()->success($data);
