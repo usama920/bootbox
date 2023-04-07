@@ -33,11 +33,12 @@ class SizeController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->name);
         $request->validate([
-            'name' => 'required|string|unique:size,name,'.$request->id,
+            'name' => 'required|unique:sizes,name,'.$request->id,
         ]);
         Size::updateOrCreate([
-            'id'=>$request->id,
+            'id'=>intval($request->id) ?? '',
         ],[
             'name'=>$request->name ?? '',
         ]);

@@ -66,7 +66,7 @@ onMounted(()=>{
                         <div class="grid md:grid-cols-12 grid-cols-1 gap-[30px] -mt-24">
                             <div class="lg:col-span-4 md:col-span-12">
                                 <a href="#" class="text-[22px] focus:outline-none">
-                                    <img src="/assets/logo/logo.jpeg" alt="">
+                                    <img src="/assets/logo/plan-logo.jpg" alt="">
                                 </a>
                             </div>
                             <div class="lg:col-span-2 md:col-span-4">
@@ -115,7 +115,7 @@ onMounted(()=>{
                 <div class="grid md:grid-cols-2 items-center gap-6">
                     <div class="md:text-left text-center">
                         <p class="mb-0 text-gray-300">©
-                            {{ yearShow() }} Boot Box. Develop by <i class="mdi mdi-heart text-red-600"></i>
+                            {{ yearShow() }} Boot Box. Developed by <i class="mdi mdi-heart text-red-600"></i>
                             <a href="https://www.fiverr.com/usama_axlam?up_rollout=true" target="_blank" class="text-reset"> Usama Aslam</a>.
                         </p>
                     </div>

@@ -32,7 +32,7 @@ onMounted(()=>{
         <div class="container md:flex justify-between">
             <div class="flex md:block justify-between items-center w-full md:!w-auto">
                 <Link @click="dropdownItems(0)" :href="route('welcome-home')">
-                    <img src="/assets/logo/plan-logo.jpg" class="h-20"  alt="">
+                    <img src="/assets/logo/Bootbox-Logo-Landscape-Vector-page-0.jpg" class="h-20"  alt="">
                 </Link>
                 <i @click="menuShow()" class="md:hidden cursor-pointer fa-solid fa-bars"></i>
             </div>

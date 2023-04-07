@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('subscription_types_id')->constrained()->onDelete('cascade');
             $table->string('strip_price_id');
             $table->string('weekly_strip_id');
-            $table->integer('price');
+            $table->float('price');
             $table->boolean('status')->default(0)->comment('0 for uncheck, 1 for check');
             $table->timestamps();
         });

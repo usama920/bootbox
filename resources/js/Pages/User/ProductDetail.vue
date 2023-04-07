@@ -175,16 +175,16 @@ const subTotalPayment = () => {
     amount = parseInt(subscriptionPrice.value.total)
 
     if (parseInt(product.value.subscription) === 1) {
-        weekly_amount = parseInt(subscriptionPrice.value.total) / 12 + props.weekly_margin.margin_amount
+        weekly_amount = parseInt(subscriptionPrice.value.total) / 4 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 2) {
-        weekly_amount = parseInt(subscriptionPrice.value.total) / 24 + props.weekly_margin.margin_amount
+        weekly_amount = parseInt(subscriptionPrice.value.total) / 4 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 3) {
-        weekly_amount = parseInt(subscriptionPrice.value.total) / 32 + props.weekly_margin.margin_amount
+        weekly_amount = parseInt(subscriptionPrice.value.total) / 4 + props.weekly_margin.margin_amount
     }
     else if (parseInt(product.value.subscription) === 4) {
-        weekly_amount = parseInt(subscriptionPrice.value.total) / 48 + props.weekly_margin.margin_amount
+        weekly_amount = parseInt(subscriptionPrice.value.total) / 4 + props.weekly_margin.margin_amount
     }
     subscriptionPrice.value.monthly = amount.toFixed(2)
     subscriptionPrice.value.weekly = weekly_amount.toFixed(2)
