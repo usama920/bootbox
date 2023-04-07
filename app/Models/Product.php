@@ -14,6 +14,7 @@ class Product extends Model
         'product_slug',
         'description',
         'product_price',
+        'full_price_strip_id',
         'status',
         'sub_categories_id',
         'styles_id',

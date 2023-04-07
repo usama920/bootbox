@@ -27,12 +27,12 @@ const displayCart = () =>{
         })
 }
 
-const typeName = (val, price) =>{
-    if(val === 1){
-
-        return 'weekly'
-    }
-    else return 'monthly'
+const typeName = (val) =>{
+    if(val === 0)
+        return 'Monthly'
+    else if(val === 1)
+        return 'Weekly'
+    else return 'Full Payment'
 }
 
 const showDetail = (id) => {
@@ -74,7 +74,7 @@ onMounted(()=>{
                 </div>
                 <div class="max-w-6xl mx-auto">
                     <div v-if="cart?.length>0">
-                        <div class="overflow-x-auto sm:overflow-hidden">
+                        <div class="overflow-x-auto lg:overflow-hidden">
                             <table class="min-w-full mx-5 xl:mx-0 text-left text-sm font-light">
                                 <thead>
                                 <tr class="border-b !text-left text-white text-[14px] bg-transparent whitespace-nowrap font-normal uppercase text-gray-500">
@@ -85,20 +85,14 @@ onMounted(()=>{
                                         <div class="w-16">Size</div>
                                     </th>
                                     <th>
-                                        <div class="w-36">Subscription Status</div>
+                                        <div class="w-44">Subscription Status</div>
                                     </th>
                                     <th>
-                                        <div class="w-36">Subscription Span</div>
+                                        <div class="w-44">Subscription Span</div>
                                     </th>
-                                    <!-- <th>
-                                        <div class="w-32">Total Price</div>
-                                    </th> -->
                                     <th>
                                         <div class="w-40">Subscription Type</div>
                                     </th>
-                                    <!-- <th class="py-5">
-                                        <div class="w-44">Installment Amount</div>
-                                    </th> -->
                                     <th class="py-5">
                                         <div class="w-28">Status</div>
                                     </th>
@@ -119,23 +113,21 @@ onMounted(()=>{
                                     </td>
                                     <td class="">
                                         <p class="whitespace-no-wrap py-2">
-                                            {{ data?.subscription_status }}
+                                            <span v-if="!!data?.subscription_status">{{ data?.subscription_status }}</span>
+                                            <span v-else>---</span>
                                         </p>
                                     </td>
                                     <td class="">
                                         <p class="whitespace-no-wrap py-2">
-                                            {{ data?.order_subscription?.name }}
+                                            <span v-if="!!data?.order_subscription?.name">{{ data?.order_subscription?.name }}</span>
+                                            <span v-else>Paid</span>
                                         </p>
                                     </td>
-                                    <!-- <td class="">
-                                        <p class="whitespace-no-wrap py-2">${{ data?.total_amount }}</p>
-                                    </td> -->
                                     <td class="">
-                                        <p class="whitespace-no-wrap py-2">{{ typeName(data?.subscription_type, data?.total_amount) }}</p>
+                                        <p class="whitespace-no-wrap py-2">
+                                             {{ typeName(data?.subscription_type) }}
+                                        </p>
                                     </td>
-                                    <!-- <td class="">
-                                        <p class="whitespace-no-wrap py-2">${{ data?.installment_price }}</p>
-                                    </td> -->
                                     <td class="">
                                         <p class="text-gray-900 whitespace-nowrap">
                                             <span class="text-green-600 font-extrabold" v-if="!!data?.status && data?.status === '1'">Delivered</span>
@@ -143,7 +135,7 @@ onMounted(()=>{
                                             <span class="text-yellow-600 font-extrabold" v-else-if="!!data?.status && data?.status === '3'">On Its Way</span>
                                         </p>
                                     </td>
-                                    <td class="">
+                                    <td v-if="data?.subscription_type !== 2">
                                         <div class="whitespace-no-wrap py-2 flex items-center space-x-2 text-white mx-auto">
                                             <button @click="showDetail(data?.id)" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Detail</button>
                                         </div>
@@ -158,54 +150,56 @@ onMounted(()=>{
                     </div>
                 </div>
             </section>
-            <modal-dialog maxWidth="!w-[700px] !max-w-[700px]" ModalId="orderDetail" @CloseModal="CloseModal">
-                <div class="mx-auto text-gray-900">
-                    <div>
-                        <table class="min-w-full !text-white text-left text-sm !font-bold">
-                            <thead>
-                                <tr class="border-b whitespace-nowrap bg-transparent text-left text-xs font-semibold uppercase tracking-wide">
-                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
-                                        #No
-                                    </th>
-                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
-                                        Paid Amount
-                                    </th>
-                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
-                                        From
-                                    </th>
-                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
-                                        To
-                                    </th>
-                                    <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
-                                        Invoice
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="!!furtherDetail?.order_installments && furtherDetail?.order_installments?.length > 0" v-for="(data, key) in furtherDetail?.order_installments" class="text-gray-700">
-                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                        <p class="text-white whitespace-no-wrap">{{ key + 1 }}</p>
-                                    </td>
-                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                        <p class="text-white whitespace-nowrap">{{ data.paid_amount }}</p>
-                                    </td>
-                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                        <p class="text-white whitespace-nowrap">{{ data.start_at }}</p>
-                                    </td>
-                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                        <p class="text-white whitespace-nowrap">{{ data.end_at }}</p>
-                                    </td>
-                                    <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                        <a v-if="!!data?.invoice_url" :href="data?.invoice_url" target="_blank" class="bg-white px-3 py-1 rounded hover:underline text-blue-600 hover:text-blue-800 font-extrabold whitespace-nowrap">INVOICE</a>
-                                    </td>
-                                </tr>
-                                <tr v-else class="text-center mx-auto">
-                                    <td colspan="5" class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                        <p class="text-white whitespace-no-wrap">Installments data not available</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <modal-dialog maxWidth="lg:!w-[700px] lg:!max-w-[700px]" ModalId="orderDetail" @CloseModal="CloseModal">
+                <div class="text-gray-900">
+                    <div class="mx-auto max-w-6xl">
+                        <div class="overflow-x-auto sm:overflow-hidden">
+                            <table class="min-w-full !text-white text-left text-sm !font-bold">
+                                <thead>
+                                    <tr class="border-b whitespace-nowrap bg-transparent text-left text-xs font-semibold uppercase tracking-wide">
+                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            #No
+                                        </th>
+                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            Paid Amount
+                                        </th>
+                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            From
+                                        </th>
+                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            To
+                                        </th>
+                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                            Invoice
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="!!furtherDetail?.order_installments && furtherDetail?.order_installments?.length > 0" v-for="(data, key) in furtherDetail?.order_installments" class="text-gray-700">
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-no-wrap">{{ key + 1 }}</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-nowrap">{{ data.paid_amount }}</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-nowrap">{{ data.start_at }}</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-nowrap">{{ data.end_at }}</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <a v-if="!!data?.invoice_url" :href="data?.invoice_url" target="_blank" class="bg-white px-3 py-1 rounded hover:underline text-blue-600 hover:text-blue-800 font-extrabold whitespace-nowrap">INVOICE</a>
+                                        </td>
+                                    </tr>
+                                    <tr v-else class="text-center mx-auto">
+                                        <td colspan="5" class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-no-wrap">Installments data not available</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </modal-dialog>

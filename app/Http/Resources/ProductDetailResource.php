@@ -16,6 +16,7 @@ class ProductDetailResource extends JsonResource
     {
         return [
             'product_stripe_id'=> $this->product_stripe_id ?? '',
+            'full_price_strip_id'=> $this->full_price_strip_id ?? '',
             'product_name' => $this->product_name ?? '',
             'product_slug' => $this->product_slug ?? '',
             'description' => $this->description ?? '',

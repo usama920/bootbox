@@ -22,9 +22,14 @@
                 <textarea v-model="productInfo.description" type="text" class="w-full rounded" rows="5" autocomplete="off" placeholder="About Product"></textarea>
             </div>
             <div>
-                <label class="font-bold">Price:</label>
+                <label class="font-bold">Full Price:</label>
                 <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.price}}</span>
-                <input v-model="productInfo.price" type="number" class="w-full rounded" autocomplete="off" placeholder="Price">
+                <input v-model="productInfo.price" type="number" class="w-full rounded" autocomplete="off" placeholder="One Time Price">
+            </div>
+            <div>
+                <label class="font-bold">Full Price Stripe ID:</label>
+                <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.full_price_strip_id}}</span>
+                <input v-model="productInfo.full_price_strip_id" type="text" class="w-full rounded" autocomplete="off" placeholder="One time Strip Price ID">
             </div>
             <div>
                 <label class="font-bold">Pictures:</label>
@@ -130,12 +135,12 @@ import commonFunctions from "@/use/common";
 
 const { Toast, ConfirmToast } = commonFunctions()
 
-const productInfo = ref({id:'', product_stripe_id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}, stripe_id:{},  stripe_weekly_id:{} }, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
+const productInfo = ref({id:'',full_price_strip_id:'', product_stripe_id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}, stripe_id:{},  stripe_weekly_id:{} }, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
     baseUrl = window.location.origin,
     errors = ref([]),
     ImagesUri = ref([]),
     disable = ref(false),
-    productError = ref({image:'', product_stripe_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
+    productError = ref({image:'',full_price_strip_id:'', product_stripe_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
     options = ref({style:{}, size:{}, subscription:{}, subCategory:{}, tier:{}, gender:{}, safety:{}, material:{}})
 
 const props = defineProps({
@@ -154,7 +159,7 @@ const images = (e) =>{
 }
 
 const emptyError = () =>{
-    productError.value = {image:'', product_stripe_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}
+    productError.value = {image:'', product_stripe_id:'', full_price_strip_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}
 }
 const validationError = (post) => {
     emptyError()
@@ -178,8 +183,10 @@ const validationError = (post) => {
         productError.value.price = 'Price is required field'
     if (!post.product_stripe_id)
         productError.value.product_stripe_id = 'Price Stripe Id is required field'
+    if (!post.full_price_strip_id)
+        productError.value.full_price_strip_id = 'Strip Price Id is required field'
 
-    return !productError.value.product_stripe_id && !productError.value.style && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.name && !productError.value.description && !productError.value.price
+    return !productError.value.full_price_strip_id && !productError.value.product_stripe_id && !productError.value.style && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.name && !productError.value.description && !productError.value.price
 }
 
 const productSave = (post) =>{
@@ -248,6 +255,7 @@ const productInformation = () =>{
     productInfo.value.style = !!props?.product_info?.styles_id ? props?.product_info?.styles_id:0
     productInfo.value.gender = !!props?.product_info?.genders_id ? props?.product_info?.genders_id:0
     productInfo.value.product_stripe_id = !!props?.product_info?.product_stripe_id ? props?.product_info?.product_stripe_id:''
+    productInfo.value.full_price_strip_id = !!props?.product_info?.full_price_strip_id ? props?.product_info?.full_price_strip_id:''
 
     if(!!props?.product_info?.product_images)
         productInfo.value.previous_img = props?.product_info?.product_images

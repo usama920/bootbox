@@ -38,7 +38,7 @@ const loginForm = useForm({
     }),
     baseUrl = window.location.origin,
     showSubscribe = ref({ first: 0, second: 0 }),
-    product = ref({ size: '', subscription: '', slug: '', type: 0, country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '',
+    product = ref({ size: '', full_price_strip_id:'', full_price_activation:0, subscription: '', slug: '', type: 0, country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '',
         stripe_price_weekly_id: '', stripe_price_monthly_id: '', total_amount:'', installment_amount:''
     }),
     error = ref({ size: '', slug: '', subscription: '', type: '', country: '', zipcode: '', state: '', city: '', address_1: '', address_2: '', phone: '', name: '' }),
@@ -117,10 +117,15 @@ const submitLogin = () => {
 
 const subFirstValidation = () => {
     emptyError()
-    if (!product.value.size)
-        error.value.size = '*select a size'
-    if (!product.value.subscription)
-        error.value.subscription = '*select a subscription option'
+    if(showSubscribe.value.first === 2){
+        if (!product.value.size)
+            error.value.size = '*select a size'
+    } else if(showSubscribe.value.first === 1) {
+        if (!product.value.size)
+            error.value.size = '*select a size'
+        if (!product.value.subscription)
+            error.value.subscription = '*select a subscription option'
+    }
     return error.value.size === '' && error.value.subscription === ''
 }
 
@@ -142,8 +147,6 @@ const subValidation = () => {
         error.value.phone = '*Phone Number Required'
     if (!product.value.state)
         error.value.state = '*State Required'
-    if (!product.value.subscription)
-        error.value.subscription = '*select a subscription option'
     if (product.value.type !== 0 && product.value.type !== 1)
         error.value.type = '*select a subscription type'
     if (!product.value.size)
@@ -151,6 +154,10 @@ const subValidation = () => {
     if (!product.value.slug) {
         error.value.slug = '*select a size'
         Toast.fire({ icon: "error", title: "something went wrong" })
+    }
+    if(showSubscribe.value.first === 1) {
+        if (!product.value.subscription)
+            error.value.subscription = '*select a subscription option'
     }
     return error.value.size === '' && error.value.subscription === '' && error.value.type === ''
         && error.value.state === '' && error.value.phone === '' && error.value.slug === ''
@@ -161,8 +168,9 @@ const subValidation = () => {
 const showSubscribeSecond = () => {
     const valid = subFirstValidation()
     if (valid) {
+        if (showSubscribe.value.first === 1)
+            subTotalPayment()
         showSubscribe.value.second = 1
-        subTotalPayment()
     }
 }
 
@@ -200,10 +208,14 @@ const selectType = (val)=>{
 }
 
 const checkOut = () => {
+
     isLoading.value = true
+    product.value.full_price_activation = showSubscribe.value.first
     product.value.total_amount = subscriptionPrice.value?.total
     product.value.installment_amount = subscriptionPrice.value?.monthly
+    product.value.full_price_strip_id = props.product_detail?.data?.full_price_strip_id
     product.value.slug = props.product_detail?.data?.product_slug
+
     const valid = subValidation()
     if (valid) {
         if (!!user.value?.props?.auth?.user) {
@@ -233,7 +245,9 @@ const checkOut = () => {
     isLoading.value = false
 }
 
-const checkAuthUser = () =>{
+const checkAuthUser = (val) =>{
+    emptyError()
+    showSubscribe.value.second = 0
     if (!!user.value?.props?.auth?.user) {
         isLoading.value = true
         disable.value.show = true
@@ -251,8 +265,11 @@ const checkAuthUser = () =>{
 
         } else{
             disable.value.show = false
-            showSubscribe.value.first = 1
             isLoading.value = false
+            if (val===1)
+                showSubscribe.value.first = 1
+            else
+                showSubscribe.value.first = 2
         }
     }else
         $('#loginModal').modal('show');
@@ -336,22 +353,27 @@ const loginModal = () => {
                             </div>
 
                             <div class="mt-6" >
-                                <button @click="checkAuthUser()" :disabled ="disable.show"
-                                        :class="{'opacity-50':disable.show}"
+                                <button @click="checkAuthUser(1)" :disabled ="disable.show || showSubscribe.first === 1"
+                                        :class="{'opacity-50 hover:bg-violet-600':disable.show || showSubscribe.first === 1}"
                                         type="button"
-                                    class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
-                                    Purchase
+                                    class="px-4 py-2 mr-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                                    Subscribe
+                                </button>
+                                <button @click="checkAuthUser(2)" :disabled ="disable.show || showSubscribe.first === 2"
+                                        :class="{'opacity-50 hover:bg-violet-600':disable.show || showSubscribe.first === 2}"
+                                        type="button"
+                                        class="px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                                    Buy Now
                                 </button>
                             </div>
-                            <div v-if="showSubscribe.first === 1" class="grid grid-cols-1 mt-8">
+                            <div v-if="showSubscribe.first !== 0" class="grid grid-cols-1 mt-8">
                                 <div class="bg-slate-800 rounded-md shadow shadow-gray-800 p-6">
-                                    <div
-                                        class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                    <div v-if="showSubscribe.first === 1" class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
                                         Select Subscription Type
                                         <span v-if="!!error.subscription"
                                             class="text-red-600 font-bold text-sm ml-2">{{ error.subscription }}</span>
                                     </div>
-                                    <div v-if="!!product_detail?.data?.category" class="my-4">
+                                    <div v-if="showSubscribe.first === 1 && !!product_detail?.data?.category" class="my-4">
                                         <div class="p-2 flex items-center"
                                             v-for="data in product_detail?.data?.subscription">
                                             <input @change="showSubscribeSecond()"
@@ -364,8 +386,7 @@ const loginModal = () => {
                                                 }} subscription</label>
                                         </div>
                                     </div>
-                                    <div
-                                        class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                    <div v-if="showSubscribe.first !== 0" class="w-full p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
                                         Select Size
                                         <span v-if="!!error.size"
                                             class="text-red-600 font-bold text-sm ml-2">{{ error.size }}</span>
@@ -383,42 +404,40 @@ const loginModal = () => {
                                     <div class="p-5 flex justify-center">
                                         <span @click="showSubscribeSecond()"
                                             class="cursor-pointer px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
-                                            Show Subscription Schedule
+                                            <span v-if="showSubscribe.first === 1">Show Subscription Schedule</span>
+                                            <span v-else-if="showSubscribe.first === 2">Proceed</span>
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div v-if="showSubscribe.second === 1" class="grid grid-cols-1 mt-8">
                                 <div class="bg-slate-800 rounded-md shadow shadow-gray-800 p-6">
-                                    <div class="w-full mb-2 p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
-                                        Subscription Payment
-                                    </div>
-<!--                                    <div class="my-4">-->
-<!--                                        <div class="p-2 flex items-center">-->
-<!--                                            $ {{ subscriptionPrice.total }}-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-                                    <div class="space-y-2">
-                                        <div class="w-full px-2">
-                                            <input @change="showSubscribeSecond()" @click="selectType(0)" :checked="product.type === 0"
-                                                name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
-                                                id="enable_monthly" type="radio">
-                                            <label for="enable_monthly">Monthly Installment</label>
+                                    <div v-if="showSubscribe.first !== 2">
+                                        <div class="w-full mb-2 p-3 bg-white dark:bg-slate-900 shadow dark:shadow-gray-800 rounded-md">
+                                            Subscription Payment
                                         </div>
-                                        <div class="w-full px-2">
-                                            <input @change="showSubscribeSecond()" @click="selectType(1)" :checked="product.type === 1"
-                                                name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
-                                                id="enable_weekly" type="radio">
-                                            <label for="enable_weekly">Weekly Installment</label>
+                                        <div class="space-y-2">
+                                            <div class="w-full px-2">
+                                                <input @change="showSubscribeSecond()" @click="selectType(0)" :checked="product.type === 0"
+                                                    name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
+                                                    id="enable_monthly" type="radio">
+                                                <label for="enable_monthly">Monthly Installment</label>
+                                            </div>
+                                            <div class="w-full px-2">
+                                                <input @change="showSubscribeSecond()" @click="selectType(1)" :checked="product.type === 1"
+                                                    name="productEnableType" class="text-gray-600 mr-2 focus:ring-0"
+                                                    id="enable_weekly" type="radio">
+                                                <label for="enable_weekly">Weekly Installment</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <span v-if="!!error.type"
-                                        class="text-red-600 font-bold text-sm ml-2">{{ error.type }}</span>
-                                    <div v-if="product.type === 0" class="mt-4 p-2">
-                                        You have to pay approximately $ {{ subscriptionPrice.monthly }} every month
-                                    </div>
-                                    <div v-else-if="product.type === 1" class="mt-4 p-2">
-                                        You have to pay approximately $ {{ subscriptionPrice.weekly }} every week
+                                        <span v-if="!!error.type"
+                                            class="text-red-600 font-bold text-sm ml-2">{{ error.type }}</span>
+                                        <div v-if="product.type === 0" class="mt-4 p-2">
+                                            You have to pay approximately $ {{ subscriptionPrice.monthly }} every month
+                                        </div>
+                                        <div v-else-if="product.type === 1" class="mt-4 p-2">
+                                            You have to pay approximately $ {{ subscriptionPrice.weekly }} every week
+                                        </div>
                                     </div>
                                     <div v-if="product.type === 0 || product.type === 1" class="mt-4">
                                         <div
@@ -482,7 +501,7 @@ const loginModal = () => {
                                                 class="text-red-600 font-bold text-sm">{{ error.country }}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div v-if="$page.props.auth.user?.roles_id === 2" class="p-5 flex justify-center">
                                         <button @click="checkOut()" :disabled="disable.show"
                                             :class="{ '!opacity-50 !hover:border-violet-600 hover:bg-violet-600': disable.show }"

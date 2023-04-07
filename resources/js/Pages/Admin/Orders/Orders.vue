@@ -74,10 +74,16 @@
                                     </p>
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                    <p class="text-gray-900 whitespace-nowrap">{{ product?.subscription_status }}</p>
+                                    <p class="text-gray-900 whitespace-nowrap">
+                                        <span v-if="!!product?.subscription_status">{{ product?.subscription_status }}</span>
+                                        <span v-else>---</span>
+                                    </p>
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                    <p class="text-gray-900 whitespace-nowrap">{{ product?.order_subscription?.name }}</p>
+                                    <p class="text-gray-900 whitespace-nowrap">
+                                        <span v-if="!!product?.order_subscription?.name">{{ product?.order_subscription?.name }}</span>
+                                        <span v-else>Full Payment</span>
+                                    </p>
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                     <p class="text-gray-900 whitespace-nowrap">{{ productSubType(product?.subscription_type) }}</p>
@@ -113,18 +119,18 @@
                                     <p class="text-gray-900 whitespace-nowrap">{{ product?.country }}</p>
                                 </td>
                                 <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                        <div class="flex items-center space-x-2 text-white mx-auto">
-                                            <div @click="showFurtherDetail(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">Further Detail</div>
-                                            <span class="flex space-x-2" v-if="product?.status !== '1'">
-                                                <div v-if="product?.status === '2'" @click="updateProcessStatus(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-yellow-500 hover:bg-yellow-600 cursor-pointer">
-                                                    On Its Way
-                                                </div>
-                                                <div @click="updateStatus(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">
-                                                    Delivered
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </td>
+                                    <div class="flex items-center space-x-2 text-white mx-auto">
+                                        <div @click="showFurtherDetail(product?.id)" v-if="product?.subscription_type !== 2" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">Further Detail</div>
+                                        <span class="flex space-x-2" v-if="product?.status !== '1'">
+                                            <div v-if="product?.status === '2'" @click="updateProcessStatus(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-yellow-500 hover:bg-yellow-600 cursor-pointer">
+                                                On Its Way
+                                            </div>
+                                            <div @click="updateStatus(product?.id)" class="py-1 rounded px-3 whitespace-nowrap bg-green-500 hover:bg-green-600 cursor-pointer">
+                                                Delivered
+                                            </div>
+                                        </span>
+                                    </div>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -209,9 +215,11 @@ const errors = ref([]),
 
 const productSubType = (val) =>{
     if (val === 0)
-        return 'monthly'
+        return 'Monthly'
+    else if (val === 1)
+        return 'Weekly'
     else
-        return 'weekly'
+        return 'Fully Paid'
 }
 
 const showFurtherDetail = (id) =>{

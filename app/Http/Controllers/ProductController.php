@@ -107,6 +107,7 @@ class ProductController extends Controller
         $status = json_decode($request->status, true);
         $previous_img = json_decode($request->previous_img, true);
         $length = json_decode($request->length, true);
+        $full_price_strip_id = json_decode($request->full_price_strip_id, true);
 
         $product = Product::updateOrCreate([
             'id'=>$id ?? ''
@@ -115,6 +116,7 @@ class ProductController extends Controller
             'product_name'=>$name ?? '',
             'description'=>$description ?? '',
             'product_slug'=>Str::slug($name) ?? '',
+            'full_price_strip_id'=>$full_price_strip_id ?? '',
             'product_price'=>$price ?? '',
             'sub_categories_id'=>$subCategory ?? '',
             'styles_id'=>$style ?? '',
@@ -210,7 +212,7 @@ class ProductController extends Controller
             return Inertia::render('Admin/Product/AddProduct');
         else
             return Inertia::render('Admin/Product/AddProduct', [
-                'product_info' => Product::select('id', 'product_stripe_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'genders_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+                'product_info' => Product::select('id', 'product_stripe_id', 'full_price_strip_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'styles_id', 'genders_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
                     ->where('product_slug', $slug)
                     ->with('ProductImages', 'ProductSizes', 'ProductSubscriptions')
                     ->first()
@@ -226,11 +228,11 @@ class ProductController extends Controller
         if(Auth::check()) {
             $intent = Auth::user()->createSetupIntent();
         }
-        $detail = new ProductDetailResource(Product::select('id', 'product_stripe_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
+        $detail = new ProductDetailResource(Product::select('id', 'full_price_strip_id', 'product_stripe_id', 'product_name', 'description', 'product_slug', 'product_price', 'status', 'sub_categories_id', 'genders_id', 'styles_id', 'materials_id', 'tier_levels_id','safety_resistances_id')
             ->where('product_slug', $slug)
             ->with('SubCategoryName', 'StyleName', 'MaterialName', 'TierName', 'SafetyName', 'ProductImages', 'ProductSizes', 'GenderName', 'SubscribeOptions')
             ->first());
-    //    dd($detail);
+
         return Inertia::render('User/ProductDetail', [
             'product_detail' => $detail,
             'weekly_margin'=>WeeklyMargin::select('margin_amount')->first(),
@@ -274,9 +276,7 @@ class ProductController extends Controller
     {
         $request->validate([
             "size" => 'required',
-            "subscription" => 'required',
             "slug" => 'required',
-            "type" => 'required',
             "country" => 'required',
             "zipcode" => 'required',
             "state" => 'required',
@@ -284,34 +284,53 @@ class ProductController extends Controller
             "address_1" => 'required',
             "phone" => 'required',
             "name" => 'required',
-            "stripe_price_weekly_id" => 'required',
-            "stripe_price_monthly_id" => 'required',
+            "full_price_activation" => 'required',
         ]);
-        $product = Product::select('id')->where('product_slug', $request->slug)->first();
+        if($request->full_price_activation === 1) {
+            $request->validate([
+                "subscription" => 'required',
+                "type" => 'required',
+                "stripe_price_weekly_id" => 'required',
+                "stripe_price_monthly_id" => 'required',
+            ]);
+        }
+        $product = Product::select('id', 'product_price')->where('product_slug', $request->slug)->first();
         if(!empty($product)){
-            if($request->type === 1)
-                $stripe_id = $request->stripe_price_weekly_id;
-            else
-                $stripe_id = $request->stripe_price_monthly_id;
-
+            if($request->full_price_activation === 1) {
+                $type = $request->type;
+                $installment_amount = floatval($request->installment_amount);
+                if ($type === 1)
+                    $stripe_id = $request->stripe_price_weekly_id;
+                else
+                    $stripe_id = $request->stripe_price_monthly_id;
+                $subscription_types_id = $request->subscription;
+                $price_of_product = floatval($request->total_amount);
+            }elseif($request->full_price_activation === 2){
+                $type = 2;
+                $installment_amount = 0;
+                $stripe_id = $request->full_price_strip_id;
+                $price_of_product = floatval($product->product_price);
+                $subscription_types_id = null;
+            }
             $existingOrders = ProductOrder::where(['user_id' => Auth::user()->id, 'status' => 0])->get();
             if(count($existingOrders) > 0) {
                 ProductOrder::where(['user_id' => Auth::user()->id, 'status' => 0])->delete();
             }
+
             ProductOrder::create([
                 'user_id' => auth()->user()->id,
                 'products_id'=>$product->id,
-                'subscription_types_id'=>$request->subscription,
+                'subscription_types_id'=>$subscription_types_id,
                 'product_sizes_id'=>$request->size,
                 'status'=>0,
-                'subscription_type'=>$request->type,
+                'subscription_type'=>$type,
                 'strip_price_id'=>$stripe_id,
-                'total_amount'=>$request->total_amount,
-                'installment_price'=>$request->installment_amount,
+                'total_amount'=>$price_of_product,
+                'installment_price'=>$installment_amount,
                 'name'=>$request->name,
                 'phone'=>$request->phone,
                 'address_1'=>$request->address_1,
-                'address_2'=>$request->address_2,
+                'address_2'=>$request->address_2 ?? '',
                 'city'=>$request->city,
                 'state'=>$request->state,
                 'zipcode'=>$request->zipcode,

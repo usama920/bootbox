@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable(false)->constrained()->onDelete('cascade');
             $table->foreignId('products_id')->nullable(false)->constrained()->onDelete('cascade');
-            $table->foreignId('subscription_types_id')->nullable(false)->constrained()->onDelete('cascade');
+            $table->foreignId('subscription_types_id')->nullable(true)->constrained()->onDelete('cascade');
             $table->foreignId('product_sizes_id')->nullable(false)->constrained()->onDelete('cascade');
-            $table->boolean('subscription_type')->comment('0 for monthly, 1 for weekly');
+            $table->integer('subscription_type')->nullable(true)->comment('0 for monthly, 1 for weekly, 2 for full payment');
             $table->string('status')->comment('1 or delivered, 2 for pending');
             $table->string('strip_price_id');
-            $table->string('total_amount');
-            $table->string('installment_price');
+            $table->float('total_amount');
+            $table->float('installment_price');
             $table->string('name');
             $table->string('phone');
             $table->string('address_1');
