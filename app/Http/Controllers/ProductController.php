@@ -92,6 +92,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $id = json_decode($request->id, true);
+        $name = json_decode($request->product_name, true);
         $product_stripe_id = json_decode($request->product_stripe_id, true);
         $gender = json_decode($request->gender, true);
         $style = json_decode($request->style, true);
@@ -101,13 +102,13 @@ class ProductController extends Controller
         $tier = json_decode($request->tier, true);
         $safety = json_decode($request->safety, true);
         $material = json_decode($request->material, true);
-        $name = json_decode($request->name, true);
         $description = json_decode($request->description, true);
         $price = json_decode($request->price, true);
         $status = json_decode($request->status, true);
         $previous_img = json_decode($request->previous_img, true);
         $length = json_decode($request->length, true);
         $full_price_strip_id = json_decode($request->full_price_strip_id, true);
+        $product_slug = $this->getUsername($name);
 
         $product = Product::updateOrCreate([
             'id'=>$id ?? ''
@@ -115,7 +116,7 @@ class ProductController extends Controller
             'product_stripe_id' => $product_stripe_id,
             'product_name'=>$name ?? '',
             'description'=>$description ?? '',
-            'product_slug'=>Str::slug($name) ?? '',
+            'product_slug'=> $product_slug ?? '',
             'full_price_strip_id'=>$full_price_strip_id ?? '',
             'product_price'=>$price ?? '',
             'sub_categories_id'=>$subCategory ?? '',
@@ -140,9 +141,6 @@ class ProductController extends Controller
                 ]);
             }
         }
-
-        // $this->prx($subscription);
-
 
         if (!empty($subscription) && !empty($subscription['check']) && count($subscription['check'])>0){
             ProductSubscription::where(['products_id' => $product->id])->delete();
@@ -361,5 +359,22 @@ class ProductController extends Controller
             }
         }
         return response()->success(['intent' => $intent, 'subscribe' => $subscribe]);
+    }
+
+    public function getUsername($string)
+    {
+        $slug = Str::slug($string);
+        $exists = Product::where('product_slug', 'LIKE', '%' . $slug . '%')->get();
+        if (count($exists) > 0) {
+            foreach ($exists as $user) {
+                $data[] = $user->product_slug;
+            }
+            if (in_array($slug, $data)) {
+                $count = 0;
+                while (in_array(($slug . '-' . ++$count), $data));
+                $slug = $slug . '-' . $count;
+            }
+        }
+        return $slug;
     }
 }

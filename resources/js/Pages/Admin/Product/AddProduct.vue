@@ -13,8 +13,8 @@
             </div>
             <div>
                 <label class="font-bold">Product Title:</label>
-                <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.name}}</span>
-                <input v-model="productInfo.name" type="text" class="w-full rounded" autocomplete="off" placeholder="Name">
+                <span class="text-red-500 ml-2 text-sm font-bold" >{{productError?.product_name}}</span>
+                <input v-model="productInfo.product_name" type="text" class="w-full rounded" autocomplete="off" placeholder="Name">
             </div>
             <div>
                 <label class="font-bold">Description:</label>
@@ -135,12 +135,12 @@ import commonFunctions from "@/use/common";
 
 const { Toast, ConfirmToast } = commonFunctions()
 
-const productInfo = ref({id:'',full_price_strip_id:'', product_stripe_id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}, stripe_id:{},  stripe_weekly_id:{} }, subCategory:0, tier:0, safety:0, material:0, name:'', description:'', price:'', status:'', images:[]}),
+const productInfo = ref({id:'',full_price_strip_id:'', product_stripe_id:'', previous_img:[], style:0, gender:0, size:{}, subscription:{check:{}, price:{}, stripe_id:{},  stripe_weekly_id:{} }, subCategory:0, tier:0, safety:0, material:0, product_name:'', description:'', price:'', status:'', images:[]}),
     baseUrl = window.location.origin,
     errors = ref([]),
     ImagesUri = ref([]),
     disable = ref(false),
-    productError = ref({image:'',full_price_strip_id:'', product_stripe_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}),
+    productError = ref({image:'',full_price_strip_id:'', product_stripe_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', product_name:'', description:'', price:''}),
     options = ref({style:{}, size:{}, subscription:{}, subCategory:{}, tier:{}, gender:{}, safety:{}, material:{}})
 
 const props = defineProps({
@@ -159,7 +159,7 @@ const images = (e) =>{
 }
 
 const emptyError = () =>{
-    productError.value = {image:'', product_stripe_id:'', full_price_strip_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', name:'', description:'', price:''}
+    productError.value = {image:'', product_stripe_id:'', full_price_strip_id:'', style:'', size:'', subCategory:'', tier:'', safety:'', material:'', product_name:'', description:'', price:''}
 }
 const validationError = (post) => {
     emptyError()
@@ -175,8 +175,8 @@ const validationError = (post) => {
         productError.value.image = 'Images are required'
     if (!post.material)
         productError.value.material = 'Material is required field'
-    if (!post.name)
-        productError.value.name = 'Name is required field'
+    if (!post.product_name)
+        productError.value.product_name = 'Name is required field'
     if (!post.description)
         productError.value.description = 'Description is required field'
     if (!post.price)
@@ -186,7 +186,7 @@ const validationError = (post) => {
     if (!post.full_price_strip_id)
         productError.value.full_price_strip_id = 'Strip Price Id is required field'
 
-    return !productError.value.full_price_strip_id && !productError.value.product_stripe_id && !productError.value.style && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.name && !productError.value.description && !productError.value.price
+    return !productError.value.full_price_strip_id && !productError.value.product_stripe_id && !productError.value.style && !productError.value.subCategory && !productError.value.tier && !productError.value.safety && !productError.value.image && !productError.value.material && !productError.value.product_name && !productError.value.description && !productError.value.price
 }
 
 const productSave = (post) =>{
@@ -221,6 +221,10 @@ const productSave = (post) =>{
                 }
             })
             .finally(() => disable.value = false)
+            .catch((err)=>{
+                if (!!err.response.data.message)
+                    Toast.fire({icon: "error", title: err.response.data.message})
+            })
     } else
         disable.value = false
 }
@@ -244,7 +248,7 @@ const productDetail = () =>{
 
 const productInformation = () =>{
     productInfo.value.id = props?.product_info?.id
-    productInfo.value.name = !!props?.product_info?.product_name ? props?.product_info?.product_name:''
+    productInfo.value.product_name = !!props?.product_info?.product_name ? props?.product_info?.product_name:''
     productInfo.value.description = !!props?.product_info?.description ? props?.product_info?.description:''
     productInfo.value.price = !!props?.product_info?.product_price ? props?.product_info?.product_price:''
     productInfo.value.status = !!props?.product_info?.status ? props?.product_info?.status: 0
