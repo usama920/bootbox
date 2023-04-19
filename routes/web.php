@@ -220,7 +220,7 @@ Route::middleware('auth')->group(function () {
             return Inertia::render('User/Cart');
         })->name('cart');
 
-        Route::get('/stripe/checkout/{price_id}', [ProductController::class, 'Checkout']);
+        Route::get('/stripe/checkout/{price_id}/{type}', [ProductController::class, 'Checkout']);
         Route::get('/orders', [ProductOrderController::class, 'show']);
         Route:: post('/add-order', [ProductController::class, 'order']);
     });

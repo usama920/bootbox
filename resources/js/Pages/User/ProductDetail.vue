@@ -226,7 +226,11 @@ const checkOut = () => {
                     if (response.data.success) {
                         Toast.fire({ icon: "success", title: "Order Added" })
                         disable.value.show = true
-                        window.location.href = '/stripe/checkout/' + response.data.data
+                        if (response.data.data.checkout_type == 2) {
+                            window.location.href = '/stripe/checkout/' + response.data.data.stripe_id + '/buy'
+                        } else {
+                            window.location.href = '/stripe/checkout/' + response.data.data.stripe_id + '/sub'
+                        }
                     } else
                         disable.value.show = false
                 })
@@ -327,15 +331,17 @@ const loginModal = () => {
                                     <span class="font-medium text-slate-400 block mb-1">Material</span>
                                     <span class="font-medium block">{{ product_detail?.data?.material }}</span>
                                 </div>
+
                                 <div v-if="product_detail?.data?.size?.length > 0" class="mt-4">
                                     <span class="font-medium text-slate-400 block mb-1">Available Sizes</span>
-                                    <span class="flex space-x-2">
-                                        <span class="flex px-2 py-1 rounded bg-gray-600"
+                                    <div class="grid grid-cols-4 lg:grid-cols-6">
+                                        <div class="flex m-1 text-center justify-center px-2 py-1 rounded bg-gray-600"
                                             v-for="size in product_detail?.data?.size">
                                             {{ size?.name }}
-                                        </span>
-                                    </span>
+                                        </div>
+                                    </div>
                                 </div>
+
                                 <div v-if="!!product_detail?.data?.gender" class="mt-4">
                                     <span class="font-medium text-slate-400 block mb-1">For Gender</span>
                                     <span class="font-medium block">{{ product_detail?.data?.gender }}</span>
@@ -391,11 +397,13 @@ const loginModal = () => {
                                         <span v-if="!!error.size"
                                             class="text-red-600 font-bold text-sm ml-2">{{ error.size }}</span>
                                     </div>
+
                                     <div v-if="product_detail?.data?.size?.length > 0" class="mt-4">
-                                        <div class="flex space-x-2 p-2">
+                                        <div class="grid grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
                                             <span @click="product.size = size.id"
                                                 :class="{ '!bg-gray-800': product.size === size.id }"
-                                                class="px-2 py-1 rounded bg-gray-600 cursor-pointer hover:bg-gray-800 border border-white"
+                                                class="m-1 text-center justify-center px-2 py-1 rounded bg-gray-600
+                                                cursor-pointer hover:bg-gray-800 border border-white"
                                                 v-for="size in product_detail?.data?.size">
                                                 {{ size?.name }}
                                             </span>
@@ -403,11 +411,13 @@ const loginModal = () => {
                                     </div>
                                     <div class="p-5 flex justify-center">
                                         <span @click="showSubscribeSecond()"
-                                            class="cursor-pointer px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white">
+                                            class="cursor-pointer text-[14px] sm:text-[16px] px-4 py-2 rounded-full
+                                            bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white whitespace-nowrap">
                                             <span v-if="showSubscribe.first === 1">Show Subscription Schedule</span>
                                             <span v-else-if="showSubscribe.first === 2">Proceed</span>
                                         </span>
                                     </div>
+                                    
                                 </div>
                             </div>
                             <div v-if="showSubscribe.second === 1" class="grid grid-cols-1 mt-8">

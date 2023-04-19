@@ -118,8 +118,6 @@ onMounted(()=>{
                             {{ yearShow() }} Boot Box. Developed by
                             <i class="mdi mdi-heart text-red-600"></i>
                             <a href="https://www.fiverr.com/usama_axlam?up_rollout=true" target="_blank" class="text-reset"> Usama Aslam</a>
-                            <i class="ml-2 mdi mdi-heart text-red-600"></i>
-                            <a href="https://www.fiverr.com/majhiana1122?source=gig_page" target="_blank" class="text-reset"> Ahmad Aslam</a>
                         </p>
                     </div>
                     <ul class="list-none md:text-right space-x-4 text-center">

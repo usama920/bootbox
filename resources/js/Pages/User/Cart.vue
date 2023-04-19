@@ -1,13 +1,13 @@
 <script setup>
-import {Head, Link, router} from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import UserLayout from '@/Layouts/UserLayout.vue'
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import commonFunctions from "@/use/common";
 import ModalDialog from '@/Components/ModalDialogDark.vue';
 
 const { Toast, ConfirmToast } = commonFunctions(),
     products = ref({}),
-    price = ref({total: 0, sub_total:0}),
+    price = ref({ total: 0, sub_total: 0 }),
     baseUrl = window.location.origin,
     cart = ref([]),
     furtherDetail = ref({})
@@ -19,23 +19,23 @@ defineProps({
     phpVersion: String,
 });
 
-const displayCart = () =>{
+const displayCart = () => {
     axios
         .get('/orders')
-        .then((response)=>{
+        .then((response) => {
             cart.value = response?.data?.data
         })
 }
 
-const typeName = (val) =>{
-    if(val === 0)
+const typeName = (val) => {
+    if (val === 0)
         return 'Monthly'
-    else if(val === 1)
+    else if (val === 1)
         return 'Weekly'
     else return 'Full Payment'
 }
 
-const showDetail = (id) => {
+const showDetail = (id, type) => {
     let test = cart.value.filter(x => x.id === id)
     furtherDetail.value = test[0]
     $('#orderDetail').modal('show')
@@ -44,7 +44,7 @@ const showDetail = (id) => {
 const CloseModal = () => {
 
 }
-onMounted(()=>{
+onMounted(() => {
     displayCart()
 })
 </script>
@@ -52,7 +52,8 @@ onMounted(()=>{
 <template>
     <Head title="Home" />
     <div class="font-urbanist text-base text-white bg-slate-900">
-        <span class="fixed blur-[200px] w-[600px] h-[600px] rounded-full top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 bg-gradient-to-tl from-red-600/40 to-violet-600/40"></span>
+        <span
+            class="fixed blur-[200px] w-[600px] h-[600px] rounded-full top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 bg-gradient-to-tl from-red-600/40 to-violet-600/40"></span>
         <UserLayout>
             <section class="relative">
                 <div class="container py-20">
@@ -63,84 +64,95 @@ onMounted(()=>{
                     </div>
                     <div class="text-center">
                         <ul class="breadcrumb tracking-[0.5px] breadcrumb-light mb-0 inline-block">
-                            <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white/50 hover:text-white">
+                            <li
+                                class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white/50 hover:text-white">
                                 <Link :href="route('welcome-home')">Home</Link>
                             </li>
-                            <li class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white">
+                            <li
+                                class="inline breadcrumb-item text-[15px] font-semibold duration-500 ease-in-out text-white">
                                 Orders
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="max-w-6xl mx-auto">
-                    <div v-if="cart?.length>0">
+                    <div v-if="cart?.length > 0">
                         <div class="overflow-x-auto lg:overflow-hidden">
                             <table class="min-w-full mx-5 xl:mx-0 text-left text-sm font-light">
                                 <thead>
-                                <tr class="border-b !text-left text-white text-[14px] bg-transparent whitespace-nowrap font-normal uppercase text-gray-500">
-                                    <th>
-                                        <div class="w-32 ml-2">Products</div>
-                                    </th>
-                                    <th>
-                                        <div class="w-16">Size</div>
-                                    </th>
-                                    <th>
-                                        <div class="w-44">Subscription Status</div>
-                                    </th>
-                                    <th>
-                                        <div class="w-44">Subscription Span</div>
-                                    </th>
-                                    <th>
-                                        <div class="w-40">Subscription Type</div>
-                                    </th>
-                                    <th class="py-5">
-                                        <div class="w-28">Status</div>
-                                    </th>
-                                    <th class="py-5">
-                                        <div class="w-28">Action</div>
-                                    </th>
-                                </tr>
+                                    <tr
+                                        class="border-b !text-left text-white text-[14px] bg-transparent whitespace-nowrap font-normal uppercase text-gray-500">
+                                        <th>
+                                            <div class="w-32 ml-2">Products</div>
+                                        </th>
+                                        <th>
+                                            <div class="w-16">Size</div>
+                                        </th>
+                                        <th>
+                                            <div class="w-44">Subscription Status</div>
+                                        </th>
+                                        <th>
+                                            <div class="w-44">Subscription Span</div>
+                                        </th>
+                                        <th>
+                                            <div class="w-40">Subscription Type</div>
+                                        </th>
+                                        <th class="py-5">
+                                            <div class="w-28">Status</div>
+                                        </th>
+                                        <th class="py-5">
+                                            <div class="w-28">Action</div>
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="data in cart" class="text-[16px] font-sans text-white">
-                                    <td class="py-2">
-                                        <div class="flex items-center">
-                                            <div class="whitespace-nowrap overflow-hidden px-2 truncate">{{ data?.order_product?.product_name }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="">
-                                        <p class="whitespace-no-wrap px-2">{{ data?.order_sizes?.size_name?.name }}</p>
-                                    </td>
-                                    <td class="">
-                                        <p class="whitespace-no-wrap py-2">
-                                            <span v-if="!!data?.subscription_status">{{ data?.subscription_status }}</span>
-                                            <span v-else>---</span>
-                                        </p>
-                                    </td>
-                                    <td class="">
-                                        <p class="whitespace-no-wrap py-2">
-                                            <span v-if="!!data?.order_subscription?.name">{{ data?.order_subscription?.name }}</span>
-                                            <span v-else>Paid</span>
-                                        </p>
-                                    </td>
-                                    <td class="">
-                                        <p class="whitespace-no-wrap py-2">
-                                             {{ typeName(data?.subscription_type) }}
-                                        </p>
-                                    </td>
-                                    <td class="">
-                                        <p class="text-gray-900 whitespace-nowrap">
-                                            <span class="text-green-600 font-extrabold" v-if="!!data?.status && data?.status === '1'">Delivered</span>
-                                            <span class="text-orange-600 font-extrabold" v-else-if="!!data?.status && data?.status === '2'">Pending</span>
-                                            <span class="text-yellow-600 font-extrabold" v-else-if="!!data?.status && data?.status === '3'">On Its Way</span>
-                                        </p>
-                                    </td>
-                                    <td v-if="data?.subscription_type !== 2">
-                                        <div class="whitespace-no-wrap py-2 flex items-center space-x-2 text-white mx-auto">
-                                            <button @click="showDetail(data?.id)" class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Detail</button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    <tr v-for="data in cart" class="text-[16px] font-sans text-white">
+                                        <td class="py-2">
+                                            <div class="flex items-center">
+                                                <div class="whitespace-nowrap overflow-hidden px-2 truncate">{{
+                                                    data?.order_product?.product_name }}</div>
+                                            </div>
+                                        </td>
+                                        <td class="">
+                                            <p class="whitespace-no-wrap px-2">{{ data?.order_sizes?.size_name?.name }}</p>
+                                        </td>
+                                        <td class="">
+                                            <p class="whitespace-no-wrap py-2">
+                                                <span v-if="!!data?.subscription_status">{{ data?.subscription_status
+                                                }}</span>
+                                                <span v-else>---</span>
+                                            </p>
+                                        </td>
+                                        <td class="">
+                                            <p class="whitespace-no-wrap py-2">
+                                                <span v-if="!!data?.order_subscription?.name">{{
+                                                    data?.order_subscription?.name }}</span>
+                                                <span v-else>Paid</span>
+                                            </p>
+                                        </td>
+                                        <td class="">
+                                            <p class="whitespace-no-wrap py-2">
+                                                {{ typeName(data?.subscription_type) }}
+                                            </p>
+                                        </td>
+                                        <td class="">
+                                            <p class="text-gray-900 whitespace-nowrap">
+                                                <span class="text-green-600 font-extrabold"
+                                                    v-if="!!data?.status && data?.status === '1'">Delivered</span>
+                                                <span class="text-orange-600 font-extrabold"
+                                                    v-else-if="!!data?.status && data?.status === '2'">Pending</span>
+                                                <span class="text-yellow-600 font-extrabold"
+                                                    v-else-if="!!data?.status && data?.status === '3'">On Its Way</span>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <div
+                                                class="whitespace-no-wrap py-2 flex items-center space-x-2 text-white mx-auto">
+                                                <button @click="showDetail(data?.id)"
+                                                    class="py-1 rounded px-3 bg-green-500 hover:bg-green-600 cursor-pointer">Detail</button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -156,53 +168,81 @@ onMounted(()=>{
                         <div class="overflow-x-auto sm:overflow-hidden">
                             <table class="min-w-full !text-white text-left text-sm !font-bold">
                                 <thead>
-                                    <tr class="border-b whitespace-nowrap bg-transparent text-left text-xs font-semibold uppercase tracking-wide">
-                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                    <tr
+                                        class="border-b whitespace-nowrap bg-transparent text-left text-xs font-semibold uppercase tracking-wide">
+                                        <th
+                                            class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                             #No
                                         </th>
-                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        <th
+                                            class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                             Paid Amount
                                         </th>
-                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        <th
+                                            class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                             From
                                         </th>
-                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        <th
+                                            class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                             To
                                         </th>
-                                        <th class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                                        <th
+                                            class="border-b-2 border-gray-200 bg-transparent px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                             Invoice
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-if="!!furtherDetail?.order_installments && furtherDetail?.order_installments?.length > 0" v-for="(data, key) in furtherDetail?.order_installments" class="text-gray-700">
+                                    <tr v-if="!!furtherDetail?.order_installments && furtherDetail?.order_installments?.length > 0"
+                                        v-for="(data, key) in furtherDetail?.order_installments" class="text-gray-700">
                                         <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
                                             <p class="text-white whitespace-no-wrap">{{ key + 1 }}</p>
                                         </td>
                                         <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                            <p class="text-white whitespace-nowrap">{{ data.paid_amount }}</p>
+                                            <p class="text-white whitespace-nowrap">{{ data?.paid_amount }}</p>
                                         </td>
                                         <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                            <p class="text-white whitespace-nowrap">{{ data.start_at }}</p>
+                                            <p class="text-white whitespace-nowrap">{{ data?.start_at
+                                            }}</p>
                                         </td>
                                         <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                            <p class="text-white whitespace-nowrap">{{ data.end_at }}</p>
+                                            <p class="text-white whitespace-nowrap">{{ data?.end_at }}
+                                            </p>
                                         </td>
                                         <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                            <a v-if="!!data?.invoice_url" :href="data?.invoice_url" target="_blank" class="bg-white px-3 py-1 rounded hover:underline text-blue-600 hover:text-blue-800 font-extrabold whitespace-nowrap">INVOICE</a>
+                                            <a v-if="!!data?.invoice_url" :href="data?.invoice_url" target="_blank"
+                                                class="bg-white px-3 py-1 rounded hover:underline text-blue-600 hover:text-blue-800 font-extrabold whitespace-nowrap">INVOICE</a>
                                         </td>
                                     </tr>
-                                    <tr v-else class="text-center mx-auto">
-                                        <td colspan="5" class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
-                                            <p class="text-white whitespace-no-wrap">Installments data not available</p>
+                                    <tr v-else-if="!!furtherDetail?.order_installments_with_charge" class="text-gray-700">
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-no-wrap">1</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-nowrap">{{ furtherDetail?.order_installments_with_charge?.paid_amount }}</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-nowrap">---</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <p class="text-white whitespace-nowrap">---</p>
+                                        </td>
+                                        <td class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                            <a v-if="!!furtherDetail?.order_installments_with_charge?.invoice_url"
+                                                :href="furtherDetail?.order_installments_with_charge?.invoice_url" target="_blank"
+                                                class="bg-white px-3 py-1 rounded hover:underline text-blue-600 hover:text-blue-800 font-extrabold whitespace-nowrap">INVOICE</a>
                                         </td>
                                     </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                <tr v-else class="text-center mx-auto">
+                                    <td colspan="5" class="border-b border-gray-200 bg-transparent px-5 py-5 text-sm">
+                                        <p class="text-white whitespace-no-wrap">Data not available</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </modal-dialog>
-        </UserLayout>
-    </div>
-</template>
+            </div>
+        </modal-dialog>
+    </UserLayout>
+</div></template>

@@ -70,5 +70,32 @@ class StripeEventListener
                 }
             }
         }
+
+        if ($event->payload['type'] === 'charge.succeeded') {
+            $user = User::where(['stripe_id' => $event->payload["data"]["object"]["customer"]])->first();
+            if ($user) {
+                $order = ProductOrder::where(['user_id' => $user->id, 'status' => 0])->latest()->first();
+                if ($order) {
+                    $order->status = 2;
+                    $order->stripe_charge_id = $event->payload["data"]["object"]["id"];
+                    $order->save();
+
+                    $amount_paid = $event->payload["data"]["object"]["amount"] / 100;
+                    if ($amount_paid < 0) {
+                        $amount_paid = 0;
+                    }
+
+                    $installment = new SubscriptionInstallments();
+                    $installment->cus_id = $event->payload["data"]["object"]["customer"];
+                    $installment->charge_id = $event->payload["data"]["object"]["id"];
+                    $installment->invoice_url = $event->payload["data"]["object"]["receipt_url"];
+                    $installment->paid_amount = $amount_paid;
+                    $installment->currency = $event->payload["data"]["object"]["currency"];
+                    $installment->save();
+                }
+            }
+        }
+
+
     }
 }

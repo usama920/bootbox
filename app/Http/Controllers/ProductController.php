@@ -108,8 +108,9 @@ class ProductController extends Controller
         $previous_img = json_decode($request->previous_img, true);
         $length = json_decode($request->length, true);
         $full_price_strip_id = json_decode($request->full_price_strip_id, true);
-        $product_slug = $this->getUsername($name);
-
+        
+        $product_slug = $this->getUsername($name, $id);
+        // prx($full_price_strip_id)
         $product = Product::updateOrCreate([
             'id'=>$id ?? ''
         ],[
@@ -334,19 +335,28 @@ class ProductController extends Controller
                 'zipcode'=>$request->zipcode,
                 'country'=>$request->country
             ]);
-            return response()->success($stripe_id);
+            return response()->success([ 'stripe_id' => $stripe_id, 'checkout_type' => $request->full_price_activation] );
         }
     }
 
-    public function Checkout(Request $request, $stripe_price_id)
+    public function Checkout(Request $request, $stripe_price_id, $type)
     {
-        return $request->user()
-            ->newSubscription('default', $stripe_price_id)
-            ->allowPromotionCodes()
-            ->checkout([
-                'success_url' => url('/cart'),
-                'cancel_url' => url('/show-products/all')
-            ]);
+        if($type == "buy") {
+            return $request->user()
+                ->checkout([$stripe_price_id => 1], [
+                    'success_url' => url('/cart'),
+                    'cancel_url' => url('/show-products/all')
+                ]);
+        } else {
+            return $request->user()
+                ->newSubscription('default', $stripe_price_id)
+                ->allowPromotionCodes()
+                ->checkout([
+                    'success_url' => url('/cart'),
+                    'cancel_url' => url('/show-products/all')
+                ]);
+        }
+
     }
 
     public function StripeSetup()
@@ -361,8 +371,12 @@ class ProductController extends Controller
         return response()->success(['intent' => $intent, 'subscribe' => $subscribe]);
     }
 
-    public function getUsername($string)
+    public function getUsername($string, $id)
     {
+        $product_exists = Product::where('id', '=', $id)->first();
+        if($product_exists) {
+            return $product_exists->product_slug;
+        }
         $slug = Str::slug($string);
         $exists = Product::where('product_slug', 'LIKE', '%' . $slug . '%')->get();
         if (count($exists) > 0) {

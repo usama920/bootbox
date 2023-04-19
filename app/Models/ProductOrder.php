@@ -13,6 +13,7 @@ class ProductOrder extends Model
         'user_id',
         'products_id',
         'stripe_subscription_id',
+        'stripe_charge_id',
         'subscription_types_id',
         'subscription_count',
         'product_sizes_id',
@@ -47,6 +48,11 @@ class ProductOrder extends Model
     public function OrderInstallments()
     {
         return $this->hasMany(SubscriptionInstallments::class, 'sub_id', 'stripe_subscription_id')->orderBy('id', 'DESC'); 
+    }
+    
+    public function OrderInstallmentsWithCharge()
+    {
+        return $this->hasOne(SubscriptionInstallments::class, 'charge_id', 'stripe_charge_id')->orderBy('id', 'DESC'); 
     }
 
 }

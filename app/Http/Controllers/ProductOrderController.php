@@ -139,7 +139,7 @@ class ProductOrderController extends Controller
         $data = ProductOrder::where('user_id', auth()->user()->id)
             ->where('status', '!=', 0)
             ->orderBy('id', 'DESC')
-            ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments')
+            ->with('orderSubscription', 'orderProduct', 'orderSizes', 'OrderInstallments', 'OrderInstallmentsWithCharge')
             ->get();
         foreach ($data as $key => $order) {
 
