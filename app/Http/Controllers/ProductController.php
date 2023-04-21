@@ -14,6 +14,7 @@ use App\Models\{Gender,
     Question,
     SafetyResistance,
     Size,
+    SliderImages,
     SocialLinks,
     Style,
     SubCategory,
@@ -53,7 +54,8 @@ class ProductController extends Controller
             ->get();
         $content = SocialLinks::select('question_text')->first();
         $question = Question::select('id', 'question', 'answer')->get();
-        return response()->json(['data1'=>ProductResource::collection($products), 'data2'=>$question,  'data3'=>$content]);
+        $images = SliderImages::select('image')->get();
+        return response()->json(['data1'=>ProductResource::collection($products), 'data2'=>$question,  'data3'=>$content, 'data4'=>$images]);
     }
 
     public function displayAllProduct()
@@ -108,7 +110,7 @@ class ProductController extends Controller
         $previous_img = json_decode($request->previous_img, true);
         $length = json_decode($request->length, true);
         $full_price_strip_id = json_decode($request->full_price_strip_id, true);
-        
+
         $product_slug = $this->getUsername($name, $id);
         // prx($full_price_strip_id)
         $product = Product::updateOrCreate([
